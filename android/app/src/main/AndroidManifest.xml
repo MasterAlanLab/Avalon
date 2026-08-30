@@ -66,6 +66,33 @@
 
                 <data android:host="install-config" />
             </intent-filter>
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+
+                <data android:scheme="flclash" android:host="import-node" />
+            </intent-filter>
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+
+                <data android:scheme="vless" />
+                <data android:scheme="vmess" />
+                <data android:scheme="ss" />
+                <data android:scheme="trojan" />
+                <data android:scheme="hysteria2" />
+                <data android:scheme="hy2" />
+                <data android:scheme="tuic" />
+                <data android:scheme="anytls" />
+                <data android:scheme="socks" />
+                <data android:scheme="socks5" />
+                <data android:scheme="socks4" />
+                <data android:scheme="socks4a" />
+            </intent-filter>
         </activity>
 
         <activity

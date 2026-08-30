@@ -14,6 +14,8 @@ part 'generated/database.g.dart';
 part 'groups.dart';
 part 'icons.dart';
 part 'links.dart';
+part 'nodes.dart';
+part 'chains.dart';
 part 'profiles.dart';
 part 'rules.dart';
 part 'scripts.dart';
@@ -26,14 +28,34 @@ part 'scripts.dart';
     ProfileRuleLinks,
     ProxyGroups,
     IconRecords,
+    ProxyNodes,
+    ProxyNodeBindings,
+    ProxyChains,
+    ProxyChainHops,
+    ProxyChainBindings,
+    ProxyNodeAssets,
+    ProxyGroupMembers,
   ],
-  daos: [ProfilesDao, ScriptsDao, RulesDao, ProxyGroupsDao, IconRecordsDao],
+  daos: [
+    ProfilesDao,
+    ScriptsDao,
+    RulesDao,
+    ProxyGroupsDao,
+    IconRecordsDao,
+    ProxyNodesDao,
+    ProxyNodeBindingsDao,
+    ProxyChainsDao,
+    ProxyChainHopsDao,
+    ProxyChainBindingsDao,
+    ProxyNodeAssetsDao,
+    ProxyGroupMembersDao,
+  ],
 )
 class Database extends _$Database {
   Database([QueryExecutor? executor]) : super(executor ?? _openConnection());
 
   @override
-  int get schemaVersion => 2;
+  int get schemaVersion => 3;
 
   static LazyDatabase _openConnection() {
     return LazyDatabase(() async {
@@ -51,6 +73,15 @@ class Database extends _$Database {
           await m.createTable(iconRecords);
           await _resetOrders();
           await _migrateRules(m);
+        }
+        if (from < 3) {
+          await m.createTable(proxyNodes);
+          await m.createTable(proxyNodeBindings);
+          await m.createTable(proxyChains);
+          await m.createTable(proxyChainHops);
+          await m.createTable(proxyChainBindings);
+          await m.createTable(proxyNodeAssets);
+          await m.createTable(proxyGroupMembers);
         }
       },
     );
@@ -113,12 +144,28 @@ class Database extends _$Database {
     List<Rule> rules,
     List<ProfileRuleLink> links,
     List<ProxyGroup> proxyGroups, {
+    List<ProxyNode> proxyNodes = const [],
+    List<ProxyNodeBinding> proxyNodeBindings = const [],
+    List<ProxyChain> proxyChains = const [],
+    List<ProxyChainHop> proxyChainHops = const [],
+    List<ProxyChainBinding> proxyChainBindings = const [],
+    List<ProxyNodeAsset> proxyNodeAssets = const [],
+    List<ProxyGroupMember> groupMembers = const [],
     bool isOverride = false,
   }) async {
-    if (profiles.isNotEmpty ||
+    if (isOverride ||
+        profiles.isNotEmpty ||
         scripts.isNotEmpty ||
         rules.isNotEmpty ||
-        links.isNotEmpty) {
+        links.isNotEmpty ||
+        proxyGroups.isNotEmpty ||
+        proxyNodes.isNotEmpty ||
+        proxyNodeBindings.isNotEmpty ||
+        proxyChains.isNotEmpty ||
+        proxyChainHops.isNotEmpty ||
+        proxyChainBindings.isNotEmpty ||
+        proxyNodeAssets.isNotEmpty ||
+        groupMembers.isNotEmpty) {
       await batch((b) {
         isOverride
             ? profilesDao.setAllWithBatch(b, profiles)
@@ -128,7 +175,23 @@ class Database extends _$Database {
               );
         scriptsDao.setAllWithBatch(b, scripts);
         rulesDao.restoreWithBatch(b, rules, links);
+        if (isOverride) {
+          b.deleteAll(this.proxyGroupMembers);
+          b.deleteAll(this.proxyChainHops);
+          b.deleteAll(this.proxyChainBindings);
+          b.deleteAll(this.proxyNodeBindings);
+          b.deleteAll(this.proxyNodeAssets);
+          b.deleteAll(this.proxyChains);
+          b.deleteAll(this.proxyNodes);
+        }
         proxyGroupsDao.setAllWithBatch(null, b, proxyGroups);
+        proxyNodesDao.setAllWithBatch(b, proxyNodes);
+        proxyNodeBindingsDao.setAllWithBatch(b, proxyNodeBindings);
+        proxyChainsDao.setAllWithBatch(b, proxyChains);
+        proxyChainHopsDao.setAllWithBatch(b, proxyChainHops);
+        proxyChainBindingsDao.setAllWithBatch(b, proxyChainBindings);
+        proxyNodeAssetsDao.setAllWithBatch(b, proxyNodeAssets);
+        proxyGroupMembersDao.setAllWithBatch(b, groupMembers);
       });
     }
   }

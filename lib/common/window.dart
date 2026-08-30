@@ -22,9 +22,9 @@ class Window {
       exit(0);
     }
     if (system.isWindows) {
-      protocol.register('clash');
-      protocol.register('clashmeta');
-      protocol.register('flclash');
+      for (final scheme in protocolSchemes) {
+        protocol.register(scheme);
+      }
     }
     await windowManager.ensureInitialized();
     final WindowOptions windowOptions = WindowOptions(

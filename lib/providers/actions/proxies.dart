@@ -100,12 +100,40 @@ class ProxiesAction extends _$ProxiesAction {
         providerName: provider.name,
       );
       if (message.isNotEmpty) return message;
-      ref
-          .read(providersProvider.notifier)
-          .setProvider(await coreController.getExternalProvider(provider.name));
+      final updated = await coreController.getExternalProvider(provider.name);
+      ref.read(providersProvider.notifier).setProvider(updated);
+      if (updated != null) await syncProviderSources([updated]);
       return '';
     } finally {
       ref.read(isUpdatingProvider(provider.updatingKey).notifier).value = false;
+    }
+  }
+
+  Future<void> syncProviderSources(
+    Iterable<ExternalProvider> providers, {
+    bool reapply = true,
+  }) async {
+    final profileId = ref.read(currentProfileIdProvider);
+    if (profileId == null) return;
+    var changed = false;
+    for (final provider in providers.where((item) => item.type == 'Proxy')) {
+      final path = provider.path;
+      if (path == null || path.isEmpty) continue;
+      final report = await const NodeSourceSyncService().syncProfileFile(
+        profileId: profileId,
+        file: File(path),
+        provider: provider.name,
+      );
+      changed =
+          changed ||
+          report.created.isNotEmpty ||
+          report.updated.isNotEmpty ||
+          report.stale.isNotEmpty;
+    }
+    if (changed && reapply) {
+      ref
+          .read(setupActionProvider.notifier)
+          .applyProfileDebounce(silence: true);
     }
   }
 }

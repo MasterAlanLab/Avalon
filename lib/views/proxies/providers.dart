@@ -3,10 +3,12 @@ import 'dart:io';
 
 import 'package:fl_clash/common/common.dart';
 import 'package:fl_clash/core/core.dart';
+import 'package:fl_clash/features/nodes/nodes.dart';
 import 'package:fl_clash/models/common.dart';
 import 'package:fl_clash/models/core.dart';
 import 'package:fl_clash/providers/action.dart';
 import 'package:fl_clash/providers/app.dart';
+import 'package:fl_clash/providers/config.dart';
 import 'package:fl_clash/state.dart';
 import 'package:fl_clash/widgets/widgets.dart';
 import 'package:flutter/material.dart';
@@ -100,6 +102,21 @@ class ProviderItem extends StatelessWidget {
       ref
           .read(providersProvider.notifier)
           .setProvider(await coreController.getExternalProvider(provider.name));
+      final profileId = ref.read(currentProfileIdProvider);
+      if (profileId != null) {
+        final report = await const NodeSourceSyncService().syncProfileFile(
+          profileId: profileId,
+          file: File(provider.path!),
+          provider: provider.name,
+        );
+        if (report.created.isNotEmpty ||
+            report.updated.isNotEmpty ||
+            report.stale.isNotEmpty) {
+          ref
+              .read(setupActionProvider.notifier)
+              .applyProfileDebounce(silence: true);
+        }
+      }
       if (message.isNotEmpty) throw message;
     });
     ref.read(proxiesActionProvider.notifier).updateGroupsDebounce();

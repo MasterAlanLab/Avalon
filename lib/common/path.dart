@@ -112,6 +112,14 @@ class AppPath {
     return join(path, 'scripts');
   }
 
+  Future<String> get nodesDirPath async {
+    return join(await homeDirPath, 'nodes');
+  }
+
+  Future<String> getNodeAssetsDirPath(int nodeId) async {
+    return join(await nodesDirPath, nodeId.toString(), 'assets');
+  }
+
   Future<String> getScriptPath(String fileName) async {
     final path = await scriptsDirPath;
     return join(path, '$fileName.js');

@@ -21,6 +21,23 @@ keywords:
 
 generic_name: FlClash
 
+supported_mime_type:
+  - x-scheme-handler/clash
+  - x-scheme-handler/clashmeta
+  - x-scheme-handler/flclash
+  - x-scheme-handler/vless
+  - x-scheme-handler/vmess
+  - x-scheme-handler/ss
+  - x-scheme-handler/trojan
+  - x-scheme-handler/hysteria2
+  - x-scheme-handler/hy2
+  - x-scheme-handler/tuic
+  - x-scheme-handler/anytls
+  - x-scheme-handler/socks
+  - x-scheme-handler/socks5
+  - x-scheme-handler/socks4
+  - x-scheme-handler/socks4a
+
 group: Applications/Internet
 
 startup_notify: true

@@ -8,6 +8,8 @@ import 'clash_config.dart';
 import 'common.dart';
 import 'config.dart';
 import 'core.dart';
+import 'chain.dart';
+import 'node.dart';
 import 'profile.dart';
 
 part 'generated/state.freezed.dart';
@@ -352,6 +354,13 @@ abstract class MigrationData with _$MigrationData {
     @Default([]) List<Profile> profiles,
     @Default([]) List<ProfileRuleLink> links,
     @Default([]) List<ProxyGroup> proxyGroups,
+    @Default([]) List<ProxyNode> proxyNodes,
+    @Default([]) List<ProxyNodeBinding> proxyNodeBindings,
+    @Default([]) List<ProxyChain> proxyChains,
+    @Default([]) List<ProxyChainHop> proxyChainHops,
+    @Default([]) List<ProxyChainBinding> proxyChainBindings,
+    @Default([]) List<ProxyNodeAsset> proxyNodeAssets,
+    @Default([]) List<ProxyGroupMember> proxyGroupMembers,
   }) = _MigrationData;
 }
 

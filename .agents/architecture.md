@@ -39,6 +39,25 @@ Key Go core files:
 - `core/lib.go`: CGO exports.
 - `core/server.go`: desktop socket/named-pipe client and framed message forwarding.
 
+### Single-Core Dialer Chains
+
+Node and chain configuration is compiled before the normal Core setup call. A
+chain is represented by cloned Mihomo proxy entries in the effective profile;
+each later hop sets `dialer-proxy` to the generated entry for the preceding
+hop. The final generated selector is exposed in the same proxy-group list as
+the profile's other groups, so desktop and Android load one YAML through the
+existing Core lifecycle.
+
+The chain compiler owns name allocation, group expansion, cycle detection,
+branch limits, stale-node diagnostics, and compatibility warnings. It never
+starts a second Core or owns a listener. A local SOCKS/HTTP/HTTPS hop is only
+the connection data for an already-running upstream endpoint; its process,
+socket, TUN, and system-proxy ownership remain with the external component.
+
+Single nodes bypass chain compilation and retain their original configuration.
+This keeps manual node import, a one-hop chain, and a multi-hop
+`前置 → 主节点 → 后置` chain on the same config-assembly and lifecycle path.
+
 ## Lifecycle Ownership And Convergence
 
 ### Shared Flutter Layer
@@ -171,7 +190,7 @@ Provider files in `lib/providers/`:
 
 ## Database
 
-The app uses Drift/SQLite in `lib/database/`. Current schema version is 2.
+The app uses Drift/SQLite in `lib/database/`. Current schema version is 3.
 
 Tables:
 
@@ -181,6 +200,11 @@ Tables:
 - `ProfileRuleLinks` (`profile_rule_mapping`)
 - `ProxyGroups`
 - `IconRecords` (`icon_records`)
+- `ProxyNodes` and `ProxyNodeBindings` (`proxy_nodes`, `profile_proxy_nodes`)
+- `ProxyChains`, `ProxyChainHops`, and `ProxyChainBindings`
+  (`proxy_chains`, `proxy_chain_hops`, `profile_proxy_chains`)
+- `ProxyNodeAssets` and `ProxyGroupMembers`
+  (`proxy_node_assets`, `proxy_group_members`)
 
 Rule scenes distinguish global added rules, profile added rules, profile custom rules, and disabled links. Rule and proxy-group ordering use fractional indexing.
 

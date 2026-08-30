@@ -181,8 +181,50 @@ void main() {
     expect(config['dns']['enable'], true);
     expect(config['dns']['nameserver'], contains('system://'));
     expect(config['proxy-groups'], hasLength(1));
+    expect(config['proxy-groups'].single['id'], isNull);
     expect(config['rules'], ['DOMAIN,custom.example,DIRECT']);
   });
+
+  test(
+    'makeRealProfileTask keeps generated chain groups with custom data',
+    () async {
+      final result = await makeRealProfileTask(
+        const MakeRealProfileState(
+          profilesPath: '/profiles',
+          profileId: 10,
+          rawConfig: {
+            'proxy-groups': [
+              {
+                'name': '__flclash_chain_1_selector',
+                'type': 'select',
+                'proxies': ['CHAIN'],
+              },
+            ],
+          },
+          realPatchConfig: PatchClashConfig(),
+          overrideDns: false,
+          appendSystemDns: false,
+          proxyGroups: [
+            ProxyGroup(
+              id: 1,
+              name: 'Select',
+              type: GroupType.Selector,
+              proxies: ['DIRECT'],
+            ),
+          ],
+          rules: [],
+          addedRules: [],
+          defaultUA: 'Fallback-UA',
+        ),
+      );
+      final config = loadYaml(result.a) as YamlMap;
+      expect(config['proxy-groups'], hasLength(2));
+      expect(
+        (config['proxy-groups'] as YamlList).map((item) => item['name']),
+        contains('__flclash_chain_1_selector'),
+      );
+    },
+  );
 
   test('log and list tasks produce stable mapped output', () async {
     final logs = [

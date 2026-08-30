@@ -4523,6 +4523,431 @@ class AppLocalizations {
       args: [count],
     );
   }
+
+  /// `Nodes`
+  String get nodes {
+    return Intl.message('Nodes', name: 'nodes', desc: '', args: []);
+  }
+
+  /// `Chains`
+  String get chains {
+    return Intl.message('Chains', name: 'chains', desc: '', args: []);
+  }
+
+  /// `Node`
+  String get node {
+    return Intl.message('Node', name: 'node', desc: '', args: []);
+  }
+
+  /// `Chain`
+  String get chain {
+    return Intl.message('Chain', name: 'chain', desc: '', args: []);
+  }
+
+  /// `Node library`
+  String get nodeLibrary {
+    return Intl.message(
+      'Node library',
+      name: 'nodeLibrary',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Chain library`
+  String get chainLibrary {
+    return Intl.message(
+      'Chain library',
+      name: 'chainLibrary',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Import node`
+  String get importNode {
+    return Intl.message('Import node', name: 'importNode', desc: '', args: []);
+  }
+
+  /// `Add a single node URI, Base64, YAML, or JSON`
+  String get importNodeDesc {
+    return Intl.message(
+      'Add a single node URI, Base64, YAML, or JSON',
+      name: 'importNodeDesc',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Node data`
+  String get nodeInput {
+    return Intl.message('Node data', name: 'nodeInput', desc: '', args: []);
+  }
+
+  /// `Paste a node URI, multiple URIs, Base64, or Mihomo YAML/JSON`
+  String get nodeInputHint {
+    return Intl.message(
+      'Paste a node URI, multiple URIs, Base64, or Mihomo YAML/JSON',
+      name: 'nodeInputHint',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Node imported`
+  String get importSuccess {
+    return Intl.message(
+      'Node imported',
+      name: 'importSuccess',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Raw Mihomo config`
+  String get rawConfig {
+    return Intl.message(
+      'Raw Mihomo config',
+      name: 'rawConfig',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Manual`
+  String get manual {
+    return Intl.message('Manual', name: 'manual', desc: '', args: []);
+  }
+
+  /// `Export`
+  String get export {
+    return Intl.message('Export', name: 'export', desc: '', args: []);
+  }
+
+  /// `Create chain`
+  String get createChain {
+    return Intl.message(
+      'Create chain',
+      name: 'createChain',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Chain hops`
+  String get chainHop {
+    return Intl.message('Chain hops', name: 'chainHop', desc: '', args: []);
+  }
+
+  /// `One hop per line: node:ID, group:NAME, or local:HOST:PORT`
+  String get chainHopHint {
+    return Intl.message(
+      'One hop per line: node:ID, group:NAME, or local:HOST:PORT',
+      name: 'chainHopHint',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Branch limit`
+  String get branchLimit {
+    return Intl.message(
+      'Branch limit',
+      name: 'branchLimit',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Stale`
+  String get stale {
+    return Intl.message('Stale', name: 'stale', desc: '', args: []);
+  }
+
+  /// `Unbind`
+  String get unbind {
+    return Intl.message('Unbind', name: 'unbind', desc: '', args: []);
+  }
+
+  /// `Set as default`
+  String get setDefault {
+    return Intl.message(
+      'Set as default',
+      name: 'setDefault',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `URI`
+  String get exportUri {
+    return Intl.message('URI', name: 'exportUri', desc: '', args: []);
+  }
+
+  /// `Base64`
+  String get exportBase64 {
+    return Intl.message('Base64', name: 'exportBase64', desc: '', args: []);
+  }
+
+  /// `YAML`
+  String get exportYaml {
+    return Intl.message('YAML', name: 'exportYaml', desc: '', args: []);
+  }
+
+  /// `JSON`
+  String get exportJson {
+    return Intl.message('JSON', name: 'exportJson', desc: '', args: []);
+  }
+
+  /// `Select chain target`
+  String get selectChainTarget {
+    return Intl.message(
+      'Select chain target',
+      name: 'selectChainTarget',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Global group`
+  String get globalGroup {
+    return Intl.message(
+      'Global group',
+      name: 'globalGroup',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Profile group`
+  String get profileGroup {
+    return Intl.message(
+      'Profile group',
+      name: 'profileGroup',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Local endpoint`
+  String get localEndpoint {
+    return Intl.message(
+      'Local endpoint',
+      name: 'localEndpoint',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Add hop`
+  String get addChainHop {
+    return Intl.message('Add hop', name: 'addChainHop', desc: '', args: []);
+  }
+
+  /// `Add a hop to build this chain`
+  String get chainEmpty {
+    return Intl.message(
+      'Add a hop to build this chain',
+      name: 'chainEmpty',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Client`
+  String get chainClient {
+    return Intl.message('Client', name: 'chainClient', desc: '', args: []);
+  }
+
+  /// `Target`
+  String get chainTarget {
+    return Intl.message('Target', name: 'chainTarget', desc: '', args: []);
+  }
+
+  /// `Endpoint type`
+  String get endpointType {
+    return Intl.message(
+      'Endpoint type',
+      name: 'endpointType',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Enter a valid endpoint`
+  String get invalidEndpoint {
+    return Intl.message(
+      'Enter a valid endpoint',
+      name: 'invalidEndpoint',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Username`
+  String get username {
+    return Intl.message('Username', name: 'username', desc: '', args: []);
+  }
+
+  /// `No node could be detected`
+  String get nodeImportNoDraft {
+    return Intl.message(
+      'No node could be detected',
+      name: 'nodeImportNoDraft',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `{count} nodes imported`
+  String nodeImportCount(Object count) {
+    return Intl.message(
+      '$count nodes imported',
+      name: 'nodeImportCount',
+      desc: '',
+      args: [count],
+    );
+  }
+
+  /// `Protocol`
+  String get protocol {
+    return Intl.message('Protocol', name: 'protocol', desc: '', args: []);
+  }
+
+  /// `Active`
+  String get active {
+    return Intl.message('Active', name: 'active', desc: '', args: []);
+  }
+
+  /// `Local override`
+  String get localOverride {
+    return Intl.message(
+      'Local override',
+      name: 'localOverride',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Create node`
+  String get createNode {
+    return Intl.message('Create node', name: 'createNode', desc: '', args: []);
+  }
+
+  /// `All`
+  String get all {
+    return Intl.message('All', name: 'all', desc: '', args: []);
+  }
+
+  /// `Local override cleared`
+  String get localOverrideCleared {
+    return Intl.message(
+      'Local override cleared',
+      name: 'localOverrideCleared',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Clear local override`
+  String get clearLocalOverride {
+    return Intl.message(
+      'Clear local override',
+      name: 'clearLocalOverride',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Node assets`
+  String get nodeAssets {
+    return Intl.message('Node assets', name: 'nodeAssets', desc: '', args: []);
+  }
+
+  /// `ZIP`
+  String get exportZip {
+    return Intl.message('ZIP', name: 'exportZip', desc: '', args: []);
+  }
+
+  /// `Diagnostics`
+  String get exportDiagnostics {
+    return Intl.message(
+      'Diagnostics',
+      name: 'exportDiagnostics',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Import preview`
+  String get importPreview {
+    return Intl.message(
+      'Import preview',
+      name: 'importPreview',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Update existing`
+  String get updateExisting {
+    return Intl.message(
+      'Update existing',
+      name: 'updateExisting',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Create copy`
+  String get createCopy {
+    return Intl.message('Create copy', name: 'createCopy', desc: '', args: []);
+  }
+
+  /// `Bind current profile`
+  String get bindCurrentProfile {
+    return Intl.message(
+      'Bind current profile',
+      name: 'bindCurrentProfile',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Attach asset`
+  String get attachAsset {
+    return Intl.message(
+      'Attach asset',
+      name: 'attachAsset',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Asset field path`
+  String get assetFieldPath {
+    return Intl.message(
+      'Asset field path',
+      name: 'assetFieldPath',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `No node assets`
+  String get noNodeAssets {
+    return Intl.message(
+      'No node assets',
+      name: 'noNodeAssets',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Server`
+  String get server {
+    return Intl.message('Server', name: 'server', desc: '', args: []);
+  }
 }
 
 class AppLocalizationDelegate extends LocalizationsDelegate<AppLocalizations> {

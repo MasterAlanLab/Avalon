@@ -61,25 +61,43 @@ class ApplicationState extends ConsumerState<Application> {
 
   void _initLink() {
     linkManager.initAppLinksListen((url) async {
+      if (system.isDesktop) await window?.show();
+      if (!mounted) return;
+      final localizations = currentAppLocalizations;
+      final primaryColor = context.colorScheme.primary;
+      final isSubscription =
+          url.startsWith('http://') || url.startsWith('https://');
       final res = await globalState.showMessage(
-        title: currentAppLocalizations.addProfile,
+        title: isSubscription
+            ? localizations.addProfile
+            : localizations.importNode,
         message: TextSpan(
           children: [
             TextSpan(text: currentAppLocalizations.doYouWantToPass),
             TextSpan(
               text: ' $url ',
               style: TextStyle(
-                color: context.colorScheme.primary,
+                color: primaryColor,
                 decoration: TextDecoration.underline,
-                decorationColor: context.colorScheme.primary,
+                decorationColor: primaryColor,
               ),
             ),
-            TextSpan(text: currentAppLocalizations.createProfile),
+            TextSpan(
+              text: isSubscription
+                  ? localizations.createProfile
+                  : localizations.importNode,
+            ),
           ],
         ),
       );
       if (res != true) return;
-      ref.read(profilesActionProvider.notifier).addProfileFormURL(url);
+      if (!mounted) return;
+      final profileId = isSubscription
+          ? null
+          : ref.read(currentProfileIdProvider);
+      await ref
+          .read(profilesActionProvider.notifier)
+          .importNodeText(url, profileId: profileId, bind: profileId != null);
     });
   }
 

@@ -14,7 +14,17 @@ class BackupAction extends _$BackupAction {
     final scriptFileNames = res[1];
     final configMap = ref.read(configProvider).toJson();
     configMap['version'] = await preferences.getVersion();
-    return backupTask(configMap, [...profileFileNames, ...scriptFileNames]);
+    final snapshot = File('${await appPath.tempFilePath}.sqlite');
+    await snapshot.safeDelete();
+    try {
+      await database.customStatement('VACUUM INTO ?;', [snapshot.path]);
+      return await backupTask(configMap, [
+        ...profileFileNames,
+        ...scriptFileNames,
+      ], databaseSnapshotPath: snapshot.path);
+    } finally {
+      await snapshot.safeDelete();
+    }
   }
 
   Future<void> restore(RestoreOption option) async {
@@ -35,8 +45,16 @@ class BackupAction extends _$BackupAction {
         migrationData.rules,
         migrationData.links,
         migrationData.proxyGroups,
+        proxyNodes: migrationData.proxyNodes,
+        proxyNodeBindings: migrationData.proxyNodeBindings,
+        proxyChains: migrationData.proxyChains,
+        proxyChainHops: migrationData.proxyChainHops,
+        proxyChainBindings: migrationData.proxyChainBindings,
+        proxyNodeAssets: migrationData.proxyNodeAssets,
+        groupMembers: migrationData.proxyGroupMembers,
         isOverride: isOverride,
       );
+      await installRestoredNodeAssets(isOverride: isOverride);
       final configMap = migrationData.configMap;
       if (option == RestoreOption.onlyProfiles || configMap == null) return;
       final config = Config.fromJson(configMap);

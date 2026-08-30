@@ -22,6 +22,31 @@ class AddProfileView extends StatelessWidget {
         .addProfileFormURL(url);
   }
 
+  Future<void> _handleImportNode() async {
+    final appLocalizations = context.appLocalizations;
+    final value = await globalState.showCommonDialog<String>(
+      child: InputDialog(
+        title: appLocalizations.importNode,
+        labelText: appLocalizations.nodeInput,
+        value: '',
+        keyboardType: TextInputType.multiline,
+        hintText: appLocalizations.nodeInputHint,
+        autovalidateMode: AutovalidateMode.onUnfocus,
+        validator: (value) {
+          if (value == null || value.trim().isEmpty) {
+            return appLocalizations.emptyTip('').trim();
+          }
+          return null;
+        },
+      ),
+    );
+    if (value != null && value.trim().isNotEmpty) {
+      await globalState.container
+          .read(profilesActionProvider.notifier)
+          .addProfileFormInput(value);
+    }
+  }
+
   Future<void> _toScan() async {
     if (system.isDesktop) {
       globalState.container
@@ -32,7 +57,9 @@ class AddProfileView extends StatelessWidget {
     final url = await BaseNavigator.push(context, const ScanPage());
     if (url != null) {
       WidgetsBinding.instance.addPostFrameCallback((_) {
-        _handleAddProfileFormURL(url);
+        globalState.container
+            .read(profilesActionProvider.notifier)
+            .addProfileFormInput(url);
       });
     }
   }
@@ -84,6 +111,12 @@ class AddProfileView extends StatelessWidget {
           title: Text(appLocalizations.url),
           subtitle: Text(appLocalizations.urlDesc),
           onTap: _toAdd,
+        ),
+        ListItem(
+          leading: const Icon(Icons.hub_outlined),
+          title: Text(appLocalizations.importNode),
+          subtitle: Text(appLocalizations.importNodeDesc),
+          onTap: _handleImportNode,
         ),
       ],
     );

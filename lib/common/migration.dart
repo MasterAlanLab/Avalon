@@ -44,6 +44,13 @@ class _AppMigrationStore implements MigrationStore {
       data.rules,
       data.links,
       data.proxyGroups,
+      proxyNodes: data.proxyNodes,
+      proxyNodeBindings: data.proxyNodeBindings,
+      proxyChains: data.proxyChains,
+      proxyChainHops: data.proxyChainHops,
+      proxyChainBindings: data.proxyChainBindings,
+      proxyNodeAssets: data.proxyNodeAssets,
+      groupMembers: data.proxyGroupMembers,
     );
   }
 

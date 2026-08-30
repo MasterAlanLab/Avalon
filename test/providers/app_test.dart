@@ -2,7 +2,6 @@ import 'dart:async';
 import 'dart:typed_data';
 
 import 'package:dio/dio.dart';
-import 'package:fl_clash/common/constant.dart';
 import 'package:fl_clash/common/request.dart';
 import 'package:fl_clash/enum/enum.dart';
 import 'package:fl_clash/models/models.dart';
@@ -347,7 +346,8 @@ void main() {
     test(
       'ignores a canceled stale check after a newer check succeeds',
       () async {
-        request.dio.httpClientAdapter = _DelayedCancelIpAdapter();
+        final adapter = _DelayedCancelIpAdapter();
+        request.dio.httpClientAdapter = adapter;
         final container = ProviderContainer(
           overrides: [
             initProvider.overrideWithBuild((_, _) => true),
@@ -358,11 +358,11 @@ void main() {
 
         final notifier = container.read(networkDetectionProvider.notifier);
         notifier.startCheck();
-        await Future.delayed(commonDuration + const Duration(milliseconds: 50));
+        await _waitUntil(() => adapter.isFirstBatchInFlight);
 
         notifier.startCheck();
-        await Future.delayed(
-          commonDuration + const Duration(milliseconds: 120),
+        await _waitUntil(
+          () => container.read(networkDetectionProvider).ipInfo != null,
         );
 
         expect(container.read(networkDetectionProvider).ipInfo?.ip, '2.2.2.2');
@@ -377,10 +377,22 @@ void main() {
   });
 }
 
+Future<void> _waitUntil(
+  bool Function() condition, {
+  Duration timeout = const Duration(seconds: 5),
+}) async {
+  final deadline = DateTime.now().add(timeout);
+  while (!condition() && DateTime.now().isBefore(deadline)) {
+    await Future.delayed(const Duration(milliseconds: 10));
+  }
+}
+
 class _DelayedCancelIpAdapter implements HttpClientAdapter {
   static const _sourceCount = 7;
 
   int _requestCount = 0;
+
+  bool get isFirstBatchInFlight => _requestCount >= _sourceCount;
 
   @override
   Future<ResponseBody> fetch(

@@ -10,8 +10,9 @@ import 'package:rust_api/rust_api.dart';
 import 'application.dart';
 import 'common/common.dart';
 
-Future<void> main() async {
+Future<void> main(List<String> arguments) async {
   WidgetsFlutterBinding.ensureInitialized();
+  linkManager.setStartupArguments(arguments);
   try {
     if (system.isDesktop) {
       await RustLib.init();

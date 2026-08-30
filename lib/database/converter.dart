@@ -41,3 +41,34 @@ class StringSetConverter extends TypeConverter<Set<String>, String> {
     return json.encode(value.toList());
   }
 }
+
+class JsonMapConverter extends TypeConverter<Map<String, Object?>, String> {
+  const JsonMapConverter();
+
+  @override
+  Map<String, Object?> fromSql(String fromDb) {
+    final value = json.decode(fromDb);
+    return Map<String, Object?>.from(value as Map);
+  }
+
+  @override
+  String toSql(Map<String, Object?> value) => json.encode(value);
+}
+
+class JsonMapNullableConverter
+    extends TypeConverter<Map<String, Object?>?, String?> {
+  const JsonMapNullableConverter();
+
+  @override
+  Map<String, Object?>? fromSql(String? fromDb) {
+    if (fromDb == null) return null;
+    final value = json.decode(fromDb);
+    return Map<String, Object?>.from(value as Map);
+  }
+
+  @override
+  String? toSql(Map<String, Object?>? value) {
+    if (value == null) return null;
+    return json.encode(value);
+  }
+}

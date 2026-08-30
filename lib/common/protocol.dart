@@ -2,6 +2,24 @@ import 'dart:io';
 
 import 'package:win32_registry/win32_registry.dart';
 
+const protocolSchemes = [
+  'clash',
+  'clashmeta',
+  'flclash',
+  'vless',
+  'vmess',
+  'ss',
+  'trojan',
+  'hysteria2',
+  'hy2',
+  'tuic',
+  'anytls',
+  'socks',
+  'socks5',
+  'socks4',
+  'socks4a',
+];
+
 class ProtocolRegistrationPlan {
   final String scheme;
   final String executable;

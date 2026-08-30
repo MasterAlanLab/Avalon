@@ -199,9 +199,14 @@ class SetupAction extends _$SetupAction {
   }
 
   void applyProfileDebounce({bool silence = false, bool force = false}) {
-    debouncer.call(FunctionTag.applyProfile, (silence, force) {
-      applyProfile(silence: silence, force: force);
-    }, args: [silence, force]);
+    debouncer.call(FunctionTag.applyProfile, () async {
+      try {
+        await applyProfile(silence: silence, force: force);
+      } catch (error) {
+        commonPrint.log(error.toString(), logLevel: LogLevel.warning);
+        if (!silence) globalState.showNotifier(error.toString());
+      }
+    });
   }
 
   void changeMode(Mode mode) {
@@ -246,6 +251,9 @@ class SetupAction extends _$SetupAction {
         onUpdated: () async {
           await ref.read(proxiesActionProvider.notifier).updateGroups();
           await ref.read(providersProvider.notifier).syncProviders();
+          await ref
+              .read(proxiesActionProvider.notifier)
+              .syncProviderSources(ref.read(providersProvider));
         },
       );
     });
@@ -301,6 +309,29 @@ class SetupAction extends _$SetupAction {
     if (scriptContent?.isNotEmpty == true) {
       rawConfig = await handleEvaluate(scriptContent!, rawConfig);
     }
+    if (proxyGroups.isNotEmpty) {
+      rawConfig = Map<String, dynamic>.from(rawConfig)
+        ..['proxy-groups'] = proxyGroups
+            .map(_proxyGroupConfig)
+            .toList(growable: false);
+    }
+    final effectiveArtifact = await const ProfileEffectiveConfigService()
+        .assemble(profileId: profileId, profileConfig: rawConfig);
+    final chainErrors = effectiveArtifact.diagnostics
+        .where((item) => item.isError)
+        .toList();
+    if (chainErrors.isNotEmpty) {
+      throw StateError(chainErrors.map((item) => item.message).join('\n'));
+    }
+    for (final diagnostic in effectiveArtifact.diagnostics.where(
+      (item) => !item.isError,
+    )) {
+      commonPrint.log(
+        '${diagnostic.code}: ${diagnostic.message}',
+        logLevel: LogLevel.warning,
+      );
+    }
+    rawConfig = effectiveArtifact.config;
     final directory = await appPath.profilesPath;
     final res = makeRealProfileTask(
       MakeRealProfileState(
@@ -412,8 +443,17 @@ class SetupAction extends _$SetupAction {
     }
     await globalState.loadingRun(
       () async {
+        if (yamlString.trim().isNotEmpty) {
+          final validationMessage = await coreController.validateConfigWithData(
+            yamlString,
+          );
+          if (validationMessage.isNotEmpty &&
+              !validationMessage.endsWith('is empty')) {
+            throw StateError(validationMessage);
+          }
+        }
         final configFilePath = await appPath.configFilePath;
-        await File(configFilePath).safeWriteAsString(yamlString);
+        await _writeConfigAtomically(configFilePath, yamlString);
         final message = await coreController.setupConfig(
           params: _setupParams,
           preloadInvoke: preloadInvoke,
@@ -429,5 +469,40 @@ class SetupAction extends _$SetupAction {
       tag: !silence ? LoadingTag.proxies : null,
     );
     return _SetupTaskResult.completed;
+  }
+
+  Map<String, dynamic> _proxyGroupConfig(ProxyGroup group) {
+    final config = Map<String, dynamic>.from(group.toJson())
+      ..remove('id')
+      ..remove('profileId')
+      ..remove('order');
+    return config;
+  }
+
+  Future<void> _writeConfigAtomically(String path, String content) async {
+    final target = File(path);
+    await target.parent.create(recursive: true);
+    final temporary = File('$path.tmp-${utils.id}');
+    try {
+      await temporary.writeAsString(content, flush: true);
+      try {
+        await temporary.rename(path);
+      } on FileSystemException {
+        if (!await target.exists()) rethrow;
+        final backup = File('$path.bak-${utils.id}');
+        await target.rename(backup.path);
+        try {
+          await temporary.rename(path);
+        } catch (_) {
+          if (!await target.exists() && await backup.exists()) {
+            await backup.rename(path);
+          }
+          rethrow;
+        }
+        await backup.safeDelete();
+      }
+    } finally {
+      await temporary.safeDelete();
+    }
   }
 }

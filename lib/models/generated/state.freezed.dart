@@ -9373,7 +9373,7 @@ $PatchClashConfigCopyWith<$Res> get realPatchConfig {
 /// @nodoc
 mixin _$MigrationData {
 
- Map<String, Object?>? get configMap; List<Rule> get rules; List<Script> get scripts; List<Profile> get profiles; List<ProfileRuleLink> get links; List<ProxyGroup> get proxyGroups;
+ Map<String, Object?>? get configMap; List<Rule> get rules; List<Script> get scripts; List<Profile> get profiles; List<ProfileRuleLink> get links; List<ProxyGroup> get proxyGroups; List<ProxyNode> get proxyNodes; List<ProxyNodeBinding> get proxyNodeBindings; List<ProxyChain> get proxyChains; List<ProxyChainHop> get proxyChainHops; List<ProxyChainBinding> get proxyChainBindings; List<ProxyNodeAsset> get proxyNodeAssets; List<ProxyGroupMember> get proxyGroupMembers;
 /// Create a copy of MigrationData
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -9384,16 +9384,16 @@ $MigrationDataCopyWith<MigrationData> get copyWith => _$MigrationDataCopyWithImp
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is MigrationData&&const DeepCollectionEquality().equals(other.configMap, configMap)&&const DeepCollectionEquality().equals(other.rules, rules)&&const DeepCollectionEquality().equals(other.scripts, scripts)&&const DeepCollectionEquality().equals(other.profiles, profiles)&&const DeepCollectionEquality().equals(other.links, links)&&const DeepCollectionEquality().equals(other.proxyGroups, proxyGroups));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is MigrationData&&const DeepCollectionEquality().equals(other.configMap, configMap)&&const DeepCollectionEquality().equals(other.rules, rules)&&const DeepCollectionEquality().equals(other.scripts, scripts)&&const DeepCollectionEquality().equals(other.profiles, profiles)&&const DeepCollectionEquality().equals(other.links, links)&&const DeepCollectionEquality().equals(other.proxyGroups, proxyGroups)&&const DeepCollectionEquality().equals(other.proxyNodes, proxyNodes)&&const DeepCollectionEquality().equals(other.proxyNodeBindings, proxyNodeBindings)&&const DeepCollectionEquality().equals(other.proxyChains, proxyChains)&&const DeepCollectionEquality().equals(other.proxyChainHops, proxyChainHops)&&const DeepCollectionEquality().equals(other.proxyChainBindings, proxyChainBindings)&&const DeepCollectionEquality().equals(other.proxyNodeAssets, proxyNodeAssets)&&const DeepCollectionEquality().equals(other.proxyGroupMembers, proxyGroupMembers));
 }
 
 
 @override
-int get hashCode => Object.hash(runtimeType,const DeepCollectionEquality().hash(configMap),const DeepCollectionEquality().hash(rules),const DeepCollectionEquality().hash(scripts),const DeepCollectionEquality().hash(profiles),const DeepCollectionEquality().hash(links),const DeepCollectionEquality().hash(proxyGroups));
+int get hashCode => Object.hash(runtimeType,const DeepCollectionEquality().hash(configMap),const DeepCollectionEquality().hash(rules),const DeepCollectionEquality().hash(scripts),const DeepCollectionEquality().hash(profiles),const DeepCollectionEquality().hash(links),const DeepCollectionEquality().hash(proxyGroups),const DeepCollectionEquality().hash(proxyNodes),const DeepCollectionEquality().hash(proxyNodeBindings),const DeepCollectionEquality().hash(proxyChains),const DeepCollectionEquality().hash(proxyChainHops),const DeepCollectionEquality().hash(proxyChainBindings),const DeepCollectionEquality().hash(proxyNodeAssets),const DeepCollectionEquality().hash(proxyGroupMembers));
 
 @override
 String toString() {
-  return 'MigrationData(configMap: $configMap, rules: $rules, scripts: $scripts, profiles: $profiles, links: $links, proxyGroups: $proxyGroups)';
+  return 'MigrationData(configMap: $configMap, rules: $rules, scripts: $scripts, profiles: $profiles, links: $links, proxyGroups: $proxyGroups, proxyNodes: $proxyNodes, proxyNodeBindings: $proxyNodeBindings, proxyChains: $proxyChains, proxyChainHops: $proxyChainHops, proxyChainBindings: $proxyChainBindings, proxyNodeAssets: $proxyNodeAssets, proxyGroupMembers: $proxyGroupMembers)';
 }
 
 
@@ -9404,7 +9404,7 @@ abstract mixin class $MigrationDataCopyWith<$Res>  {
   factory $MigrationDataCopyWith(MigrationData value, $Res Function(MigrationData) _then) = _$MigrationDataCopyWithImpl;
 @useResult
 $Res call({
- Map<String, Object?>? configMap, List<Rule> rules, List<Script> scripts, List<Profile> profiles, List<ProfileRuleLink> links, List<ProxyGroup> proxyGroups
+ Map<String, Object?>? configMap, List<Rule> rules, List<Script> scripts, List<Profile> profiles, List<ProfileRuleLink> links, List<ProxyGroup> proxyGroups, List<ProxyNode> proxyNodes, List<ProxyNodeBinding> proxyNodeBindings, List<ProxyChain> proxyChains, List<ProxyChainHop> proxyChainHops, List<ProxyChainBinding> proxyChainBindings, List<ProxyNodeAsset> proxyNodeAssets, List<ProxyGroupMember> proxyGroupMembers
 });
 
 
@@ -9421,7 +9421,7 @@ class _$MigrationDataCopyWithImpl<$Res>
 
 /// Create a copy of MigrationData
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? configMap = freezed,Object? rules = null,Object? scripts = null,Object? profiles = null,Object? links = null,Object? proxyGroups = null,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? configMap = freezed,Object? rules = null,Object? scripts = null,Object? profiles = null,Object? links = null,Object? proxyGroups = null,Object? proxyNodes = null,Object? proxyNodeBindings = null,Object? proxyChains = null,Object? proxyChainHops = null,Object? proxyChainBindings = null,Object? proxyNodeAssets = null,Object? proxyGroupMembers = null,}) {
   return _then(_self.copyWith(
 configMap: freezed == configMap ? _self.configMap : configMap // ignore: cast_nullable_to_non_nullable
 as Map<String, Object?>?,rules: null == rules ? _self.rules : rules // ignore: cast_nullable_to_non_nullable
@@ -9429,7 +9429,14 @@ as List<Rule>,scripts: null == scripts ? _self.scripts : scripts // ignore: cast
 as List<Script>,profiles: null == profiles ? _self.profiles : profiles // ignore: cast_nullable_to_non_nullable
 as List<Profile>,links: null == links ? _self.links : links // ignore: cast_nullable_to_non_nullable
 as List<ProfileRuleLink>,proxyGroups: null == proxyGroups ? _self.proxyGroups : proxyGroups // ignore: cast_nullable_to_non_nullable
-as List<ProxyGroup>,
+as List<ProxyGroup>,proxyNodes: null == proxyNodes ? _self.proxyNodes : proxyNodes // ignore: cast_nullable_to_non_nullable
+as List<ProxyNode>,proxyNodeBindings: null == proxyNodeBindings ? _self.proxyNodeBindings : proxyNodeBindings // ignore: cast_nullable_to_non_nullable
+as List<ProxyNodeBinding>,proxyChains: null == proxyChains ? _self.proxyChains : proxyChains // ignore: cast_nullable_to_non_nullable
+as List<ProxyChain>,proxyChainHops: null == proxyChainHops ? _self.proxyChainHops : proxyChainHops // ignore: cast_nullable_to_non_nullable
+as List<ProxyChainHop>,proxyChainBindings: null == proxyChainBindings ? _self.proxyChainBindings : proxyChainBindings // ignore: cast_nullable_to_non_nullable
+as List<ProxyChainBinding>,proxyNodeAssets: null == proxyNodeAssets ? _self.proxyNodeAssets : proxyNodeAssets // ignore: cast_nullable_to_non_nullable
+as List<ProxyNodeAsset>,proxyGroupMembers: null == proxyGroupMembers ? _self.proxyGroupMembers : proxyGroupMembers // ignore: cast_nullable_to_non_nullable
+as List<ProxyGroupMember>,
   ));
 }
 
@@ -9514,10 +9521,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( Map<String, Object?>? configMap,  List<Rule> rules,  List<Script> scripts,  List<Profile> profiles,  List<ProfileRuleLink> links,  List<ProxyGroup> proxyGroups)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( Map<String, Object?>? configMap,  List<Rule> rules,  List<Script> scripts,  List<Profile> profiles,  List<ProfileRuleLink> links,  List<ProxyGroup> proxyGroups,  List<ProxyNode> proxyNodes,  List<ProxyNodeBinding> proxyNodeBindings,  List<ProxyChain> proxyChains,  List<ProxyChainHop> proxyChainHops,  List<ProxyChainBinding> proxyChainBindings,  List<ProxyNodeAsset> proxyNodeAssets,  List<ProxyGroupMember> proxyGroupMembers)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _MigrationData() when $default != null:
-return $default(_that.configMap,_that.rules,_that.scripts,_that.profiles,_that.links,_that.proxyGroups);case _:
+return $default(_that.configMap,_that.rules,_that.scripts,_that.profiles,_that.links,_that.proxyGroups,_that.proxyNodes,_that.proxyNodeBindings,_that.proxyChains,_that.proxyChainHops,_that.proxyChainBindings,_that.proxyNodeAssets,_that.proxyGroupMembers);case _:
   return orElse();
 
 }
@@ -9535,10 +9542,10 @@ return $default(_that.configMap,_that.rules,_that.scripts,_that.profiles,_that.l
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( Map<String, Object?>? configMap,  List<Rule> rules,  List<Script> scripts,  List<Profile> profiles,  List<ProfileRuleLink> links,  List<ProxyGroup> proxyGroups)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( Map<String, Object?>? configMap,  List<Rule> rules,  List<Script> scripts,  List<Profile> profiles,  List<ProfileRuleLink> links,  List<ProxyGroup> proxyGroups,  List<ProxyNode> proxyNodes,  List<ProxyNodeBinding> proxyNodeBindings,  List<ProxyChain> proxyChains,  List<ProxyChainHop> proxyChainHops,  List<ProxyChainBinding> proxyChainBindings,  List<ProxyNodeAsset> proxyNodeAssets,  List<ProxyGroupMember> proxyGroupMembers)  $default,) {final _that = this;
 switch (_that) {
 case _MigrationData():
-return $default(_that.configMap,_that.rules,_that.scripts,_that.profiles,_that.links,_that.proxyGroups);case _:
+return $default(_that.configMap,_that.rules,_that.scripts,_that.profiles,_that.links,_that.proxyGroups,_that.proxyNodes,_that.proxyNodeBindings,_that.proxyChains,_that.proxyChainHops,_that.proxyChainBindings,_that.proxyNodeAssets,_that.proxyGroupMembers);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -9555,10 +9562,10 @@ return $default(_that.configMap,_that.rules,_that.scripts,_that.profiles,_that.l
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( Map<String, Object?>? configMap,  List<Rule> rules,  List<Script> scripts,  List<Profile> profiles,  List<ProfileRuleLink> links,  List<ProxyGroup> proxyGroups)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( Map<String, Object?>? configMap,  List<Rule> rules,  List<Script> scripts,  List<Profile> profiles,  List<ProfileRuleLink> links,  List<ProxyGroup> proxyGroups,  List<ProxyNode> proxyNodes,  List<ProxyNodeBinding> proxyNodeBindings,  List<ProxyChain> proxyChains,  List<ProxyChainHop> proxyChainHops,  List<ProxyChainBinding> proxyChainBindings,  List<ProxyNodeAsset> proxyNodeAssets,  List<ProxyGroupMember> proxyGroupMembers)?  $default,) {final _that = this;
 switch (_that) {
 case _MigrationData() when $default != null:
-return $default(_that.configMap,_that.rules,_that.scripts,_that.profiles,_that.links,_that.proxyGroups);case _:
+return $default(_that.configMap,_that.rules,_that.scripts,_that.profiles,_that.links,_that.proxyGroups,_that.proxyNodes,_that.proxyNodeBindings,_that.proxyChains,_that.proxyChainHops,_that.proxyChainBindings,_that.proxyNodeAssets,_that.proxyGroupMembers);case _:
   return null;
 
 }
@@ -9570,7 +9577,7 @@ return $default(_that.configMap,_that.rules,_that.scripts,_that.profiles,_that.l
 
 
 class _MigrationData implements MigrationData {
-  const _MigrationData({final  Map<String, Object?>? configMap, final  List<Rule> rules = const [], final  List<Script> scripts = const [], final  List<Profile> profiles = const [], final  List<ProfileRuleLink> links = const [], final  List<ProxyGroup> proxyGroups = const []}): _configMap = configMap,_rules = rules,_scripts = scripts,_profiles = profiles,_links = links,_proxyGroups = proxyGroups;
+  const _MigrationData({final  Map<String, Object?>? configMap, final  List<Rule> rules = const [], final  List<Script> scripts = const [], final  List<Profile> profiles = const [], final  List<ProfileRuleLink> links = const [], final  List<ProxyGroup> proxyGroups = const [], final  List<ProxyNode> proxyNodes = const [], final  List<ProxyNodeBinding> proxyNodeBindings = const [], final  List<ProxyChain> proxyChains = const [], final  List<ProxyChainHop> proxyChainHops = const [], final  List<ProxyChainBinding> proxyChainBindings = const [], final  List<ProxyNodeAsset> proxyNodeAssets = const [], final  List<ProxyGroupMember> proxyGroupMembers = const []}): _configMap = configMap,_rules = rules,_scripts = scripts,_profiles = profiles,_links = links,_proxyGroups = proxyGroups,_proxyNodes = proxyNodes,_proxyNodeBindings = proxyNodeBindings,_proxyChains = proxyChains,_proxyChainHops = proxyChainHops,_proxyChainBindings = proxyChainBindings,_proxyNodeAssets = proxyNodeAssets,_proxyGroupMembers = proxyGroupMembers;
   
 
  final  Map<String, Object?>? _configMap;
@@ -9617,6 +9624,55 @@ class _MigrationData implements MigrationData {
   return EqualUnmodifiableListView(_proxyGroups);
 }
 
+ final  List<ProxyNode> _proxyNodes;
+@override@JsonKey() List<ProxyNode> get proxyNodes {
+  if (_proxyNodes is EqualUnmodifiableListView) return _proxyNodes;
+  // ignore: implicit_dynamic_type
+  return EqualUnmodifiableListView(_proxyNodes);
+}
+
+ final  List<ProxyNodeBinding> _proxyNodeBindings;
+@override@JsonKey() List<ProxyNodeBinding> get proxyNodeBindings {
+  if (_proxyNodeBindings is EqualUnmodifiableListView) return _proxyNodeBindings;
+  // ignore: implicit_dynamic_type
+  return EqualUnmodifiableListView(_proxyNodeBindings);
+}
+
+ final  List<ProxyChain> _proxyChains;
+@override@JsonKey() List<ProxyChain> get proxyChains {
+  if (_proxyChains is EqualUnmodifiableListView) return _proxyChains;
+  // ignore: implicit_dynamic_type
+  return EqualUnmodifiableListView(_proxyChains);
+}
+
+ final  List<ProxyChainHop> _proxyChainHops;
+@override@JsonKey() List<ProxyChainHop> get proxyChainHops {
+  if (_proxyChainHops is EqualUnmodifiableListView) return _proxyChainHops;
+  // ignore: implicit_dynamic_type
+  return EqualUnmodifiableListView(_proxyChainHops);
+}
+
+ final  List<ProxyChainBinding> _proxyChainBindings;
+@override@JsonKey() List<ProxyChainBinding> get proxyChainBindings {
+  if (_proxyChainBindings is EqualUnmodifiableListView) return _proxyChainBindings;
+  // ignore: implicit_dynamic_type
+  return EqualUnmodifiableListView(_proxyChainBindings);
+}
+
+ final  List<ProxyNodeAsset> _proxyNodeAssets;
+@override@JsonKey() List<ProxyNodeAsset> get proxyNodeAssets {
+  if (_proxyNodeAssets is EqualUnmodifiableListView) return _proxyNodeAssets;
+  // ignore: implicit_dynamic_type
+  return EqualUnmodifiableListView(_proxyNodeAssets);
+}
+
+ final  List<ProxyGroupMember> _proxyGroupMembers;
+@override@JsonKey() List<ProxyGroupMember> get proxyGroupMembers {
+  if (_proxyGroupMembers is EqualUnmodifiableListView) return _proxyGroupMembers;
+  // ignore: implicit_dynamic_type
+  return EqualUnmodifiableListView(_proxyGroupMembers);
+}
+
 
 /// Create a copy of MigrationData
 /// with the given fields replaced by the non-null parameter values.
@@ -9628,16 +9684,16 @@ _$MigrationDataCopyWith<_MigrationData> get copyWith => __$MigrationDataCopyWith
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _MigrationData&&const DeepCollectionEquality().equals(other._configMap, _configMap)&&const DeepCollectionEquality().equals(other._rules, _rules)&&const DeepCollectionEquality().equals(other._scripts, _scripts)&&const DeepCollectionEquality().equals(other._profiles, _profiles)&&const DeepCollectionEquality().equals(other._links, _links)&&const DeepCollectionEquality().equals(other._proxyGroups, _proxyGroups));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _MigrationData&&const DeepCollectionEquality().equals(other._configMap, _configMap)&&const DeepCollectionEquality().equals(other._rules, _rules)&&const DeepCollectionEquality().equals(other._scripts, _scripts)&&const DeepCollectionEquality().equals(other._profiles, _profiles)&&const DeepCollectionEquality().equals(other._links, _links)&&const DeepCollectionEquality().equals(other._proxyGroups, _proxyGroups)&&const DeepCollectionEquality().equals(other._proxyNodes, _proxyNodes)&&const DeepCollectionEquality().equals(other._proxyNodeBindings, _proxyNodeBindings)&&const DeepCollectionEquality().equals(other._proxyChains, _proxyChains)&&const DeepCollectionEquality().equals(other._proxyChainHops, _proxyChainHops)&&const DeepCollectionEquality().equals(other._proxyChainBindings, _proxyChainBindings)&&const DeepCollectionEquality().equals(other._proxyNodeAssets, _proxyNodeAssets)&&const DeepCollectionEquality().equals(other._proxyGroupMembers, _proxyGroupMembers));
 }
 
 
 @override
-int get hashCode => Object.hash(runtimeType,const DeepCollectionEquality().hash(_configMap),const DeepCollectionEquality().hash(_rules),const DeepCollectionEquality().hash(_scripts),const DeepCollectionEquality().hash(_profiles),const DeepCollectionEquality().hash(_links),const DeepCollectionEquality().hash(_proxyGroups));
+int get hashCode => Object.hash(runtimeType,const DeepCollectionEquality().hash(_configMap),const DeepCollectionEquality().hash(_rules),const DeepCollectionEquality().hash(_scripts),const DeepCollectionEquality().hash(_profiles),const DeepCollectionEquality().hash(_links),const DeepCollectionEquality().hash(_proxyGroups),const DeepCollectionEquality().hash(_proxyNodes),const DeepCollectionEquality().hash(_proxyNodeBindings),const DeepCollectionEquality().hash(_proxyChains),const DeepCollectionEquality().hash(_proxyChainHops),const DeepCollectionEquality().hash(_proxyChainBindings),const DeepCollectionEquality().hash(_proxyNodeAssets),const DeepCollectionEquality().hash(_proxyGroupMembers));
 
 @override
 String toString() {
-  return 'MigrationData(configMap: $configMap, rules: $rules, scripts: $scripts, profiles: $profiles, links: $links, proxyGroups: $proxyGroups)';
+  return 'MigrationData(configMap: $configMap, rules: $rules, scripts: $scripts, profiles: $profiles, links: $links, proxyGroups: $proxyGroups, proxyNodes: $proxyNodes, proxyNodeBindings: $proxyNodeBindings, proxyChains: $proxyChains, proxyChainHops: $proxyChainHops, proxyChainBindings: $proxyChainBindings, proxyNodeAssets: $proxyNodeAssets, proxyGroupMembers: $proxyGroupMembers)';
 }
 
 
@@ -9648,7 +9704,7 @@ abstract mixin class _$MigrationDataCopyWith<$Res> implements $MigrationDataCopy
   factory _$MigrationDataCopyWith(_MigrationData value, $Res Function(_MigrationData) _then) = __$MigrationDataCopyWithImpl;
 @override @useResult
 $Res call({
- Map<String, Object?>? configMap, List<Rule> rules, List<Script> scripts, List<Profile> profiles, List<ProfileRuleLink> links, List<ProxyGroup> proxyGroups
+ Map<String, Object?>? configMap, List<Rule> rules, List<Script> scripts, List<Profile> profiles, List<ProfileRuleLink> links, List<ProxyGroup> proxyGroups, List<ProxyNode> proxyNodes, List<ProxyNodeBinding> proxyNodeBindings, List<ProxyChain> proxyChains, List<ProxyChainHop> proxyChainHops, List<ProxyChainBinding> proxyChainBindings, List<ProxyNodeAsset> proxyNodeAssets, List<ProxyGroupMember> proxyGroupMembers
 });
 
 
@@ -9665,7 +9721,7 @@ class __$MigrationDataCopyWithImpl<$Res>
 
 /// Create a copy of MigrationData
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? configMap = freezed,Object? rules = null,Object? scripts = null,Object? profiles = null,Object? links = null,Object? proxyGroups = null,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? configMap = freezed,Object? rules = null,Object? scripts = null,Object? profiles = null,Object? links = null,Object? proxyGroups = null,Object? proxyNodes = null,Object? proxyNodeBindings = null,Object? proxyChains = null,Object? proxyChainHops = null,Object? proxyChainBindings = null,Object? proxyNodeAssets = null,Object? proxyGroupMembers = null,}) {
   return _then(_MigrationData(
 configMap: freezed == configMap ? _self._configMap : configMap // ignore: cast_nullable_to_non_nullable
 as Map<String, Object?>?,rules: null == rules ? _self._rules : rules // ignore: cast_nullable_to_non_nullable
@@ -9673,7 +9729,14 @@ as List<Rule>,scripts: null == scripts ? _self._scripts : scripts // ignore: cas
 as List<Script>,profiles: null == profiles ? _self._profiles : profiles // ignore: cast_nullable_to_non_nullable
 as List<Profile>,links: null == links ? _self._links : links // ignore: cast_nullable_to_non_nullable
 as List<ProfileRuleLink>,proxyGroups: null == proxyGroups ? _self._proxyGroups : proxyGroups // ignore: cast_nullable_to_non_nullable
-as List<ProxyGroup>,
+as List<ProxyGroup>,proxyNodes: null == proxyNodes ? _self._proxyNodes : proxyNodes // ignore: cast_nullable_to_non_nullable
+as List<ProxyNode>,proxyNodeBindings: null == proxyNodeBindings ? _self._proxyNodeBindings : proxyNodeBindings // ignore: cast_nullable_to_non_nullable
+as List<ProxyNodeBinding>,proxyChains: null == proxyChains ? _self._proxyChains : proxyChains // ignore: cast_nullable_to_non_nullable
+as List<ProxyChain>,proxyChainHops: null == proxyChainHops ? _self._proxyChainHops : proxyChainHops // ignore: cast_nullable_to_non_nullable
+as List<ProxyChainHop>,proxyChainBindings: null == proxyChainBindings ? _self._proxyChainBindings : proxyChainBindings // ignore: cast_nullable_to_non_nullable
+as List<ProxyChainBinding>,proxyNodeAssets: null == proxyNodeAssets ? _self._proxyNodeAssets : proxyNodeAssets // ignore: cast_nullable_to_non_nullable
+as List<ProxyNodeAsset>,proxyGroupMembers: null == proxyGroupMembers ? _self._proxyGroupMembers : proxyGroupMembers // ignore: cast_nullable_to_non_nullable
+as List<ProxyGroupMember>,
   ));
 }
 

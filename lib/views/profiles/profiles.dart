@@ -10,7 +10,9 @@ import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'add.dart';
+import 'chains.dart';
 import 'edit.dart';
+import 'nodes.dart';
 import 'preview.dart';
 
 class ProfilesView extends StatefulWidget {
@@ -103,66 +105,94 @@ class _ProfilesViewState extends State<ProfilesView> {
 
   @override
   Widget build(BuildContext context) {
-    return Consumer(
-      builder: (_, ref, _) {
-        final appLocalizations = context.appLocalizations;
-        final isLoading = ref.watch(loadingProvider(LoadingTag.profiles));
-        final state = ref.watch(profilesStateProvider);
-        final spacing = 14.mAp;
-        return CommonScaffold(
-          isLoading: isLoading,
-          title: appLocalizations.profiles,
-          floatingActionButton: _buildFAB(),
-          actions: _buildActions(state.profiles),
-          body: state.profiles.isEmpty
-              ? NullStatus(
-                  label: appLocalizations.nullProfileDesc,
-                  illustration: const ProfileEmptyIllustration(),
-                )
-              : LayoutBuilder(
-                  builder: (_, constraints) {
-                    const horizontalPadding = 16.0;
-                    final columns = utils.getProfilesColumns(
-                      constraints.maxWidth - horizontalPadding * 2,
-                    );
-                    return Align(
-                      alignment: Alignment.topCenter,
-                      child: SingleChildScrollView(
-                        key: profilesStoreKey,
-                        padding: const EdgeInsets.only(
-                          left: horizontalPadding,
-                          right: horizontalPadding,
-                          top: 16,
-                          bottom: 88,
-                        ),
-                        child: Grid(
-                          mainAxisSpacing: spacing,
-                          crossAxisSpacing: spacing,
-                          crossAxisCount: columns,
-                          children: [
-                            for (int i = 0; i < state.profiles.length; i++)
-                              GridItem(
-                                child: ProfileItem(
-                                  profile: state.profiles[i],
-                                  groupValue: state.currentProfileId,
-                                  onChanged: (profileId) {
-                                    ref
-                                            .read(
-                                              currentProfileIdProvider.notifier,
-                                            )
-                                            .value =
-                                        profileId;
-                                  },
-                                ),
-                              ),
-                          ],
-                        ),
-                      ),
-                    );
-                  },
+    return DefaultTabController(
+      length: 3,
+      child: Consumer(
+        builder: (_, ref, _) {
+          final appLocalizations = context.appLocalizations;
+          final isLoading = ref.watch(loadingProvider(LoadingTag.profiles));
+          final state = ref.watch(profilesStateProvider);
+          final spacing = 14.mAp;
+          return CommonScaffold(
+            isLoading: isLoading,
+            title: appLocalizations.profiles,
+            floatingActionButton: _buildFAB(),
+            actions: _buildActions(state.profiles),
+            body: Column(
+              children: [
+                TabBar(
+                  tabs: [
+                    Tab(text: appLocalizations.profiles),
+                    Tab(text: appLocalizations.nodes),
+                    Tab(text: appLocalizations.chains),
+                  ],
                 ),
-        );
-      },
+                Expanded(
+                  child: TabBarView(
+                    children: [
+                      state.profiles.isEmpty
+                          ? NullStatus(
+                              label: appLocalizations.nullProfileDesc,
+                              illustration: const ProfileEmptyIllustration(),
+                            )
+                          : LayoutBuilder(
+                              builder: (_, constraints) {
+                                const horizontalPadding = 16.0;
+                                final columns = utils.getProfilesColumns(
+                                  constraints.maxWidth - horizontalPadding * 2,
+                                );
+                                return Align(
+                                  alignment: Alignment.topCenter,
+                                  child: SingleChildScrollView(
+                                    key: profilesStoreKey,
+                                    padding: const EdgeInsets.only(
+                                      left: horizontalPadding,
+                                      right: horizontalPadding,
+                                      top: 16,
+                                      bottom: 88,
+                                    ),
+                                    child: Grid(
+                                      mainAxisSpacing: spacing,
+                                      crossAxisSpacing: spacing,
+                                      crossAxisCount: columns,
+                                      children: [
+                                        for (
+                                          int i = 0;
+                                          i < state.profiles.length;
+                                          i++
+                                        )
+                                          GridItem(
+                                            child: ProfileItem(
+                                              profile: state.profiles[i],
+                                              groupValue:
+                                                  state.currentProfileId,
+                                              onChanged: (profileId) {
+                                                ref
+                                                        .read(
+                                                          currentProfileIdProvider
+                                                              .notifier,
+                                                        )
+                                                        .value =
+                                                    profileId;
+                                              },
+                                            ),
+                                          ),
+                                      ],
+                                    ),
+                                  ),
+                                );
+                              },
+                            ),
+                      const NodeLibraryView(),
+                      const ChainLibraryView(),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          );
+        },
+      ),
     );
   }
 }

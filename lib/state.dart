@@ -313,6 +313,7 @@ class GlobalState {
       });
     };
     container.read(systemActionProvider.notifier).updateTray();
+    await container.read(profilesActionProvider.notifier).backfillNodeSources();
     container.read(profilesActionProvider.notifier).autoUpdateProfiles();
     container.read(commonActionProvider.notifier).autoCheckUpdate();
     autoLaunch?.updateStatus(container.read(appSettingProvider).autoLaunch);

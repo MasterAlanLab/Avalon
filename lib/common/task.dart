@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:archive/archive_io.dart';
+import 'package:crypto/crypto.dart';
 import 'package:drift/drift.dart';
 import 'package:drift_flutter/drift_flutter.dart';
 import 'package:fl_clash/common/common.dart';
@@ -264,11 +265,32 @@ Future<VM2<String, String>> _makeRealProfileTask(
     rules = data.rules.map((item) => item.rawValue).toList();
   }
   if (data.proxyGroups.isNotEmpty) {
-    rawConfig['proxy-groups'] = data.proxyGroups;
+    final generatedGroups = rawConfig['proxy-groups'] is List
+        ? (rawConfig['proxy-groups'] as List)
+              .whereType<Map>()
+              .where(
+                (group) =>
+                    group['name']?.toString().startsWith('__flclash_') == true,
+              )
+              .map((group) => Map<String, dynamic>.from(group))
+              .toList()
+        : const <Map<String, dynamic>>[];
+    rawConfig['proxy-groups'] = [
+      ...data.proxyGroups.map(_proxyGroupConfig),
+      ...generatedGroups,
+    ];
   }
   rawConfig['rules'] = rules;
   final yaml = await _encodeYaml(Map<String, dynamic>.from(rawConfig));
   return VM2(yaml, yaml.toMd5());
+}
+
+Map<String, dynamic> _proxyGroupConfig(ProxyGroup group) {
+  final config = Map<String, dynamic>.from(group.toJson())
+    ..remove('id')
+    ..remove('profileId')
+    ..remove('order');
+  return config;
 }
 
 Future<List<String>> shakingProfileTask(
@@ -468,63 +490,83 @@ Future<MigrationData> _oldToNowTask(
 
 Future<String> backupTask(
   Map<String, dynamic> configMap,
-  Iterable<String> fileNames,
-) async {
+  Iterable<String> fileNames, {
+  String? databaseSnapshotPath,
+}) async {
   return compute<
-    VM3<Map<String, dynamic>, Iterable<String>, RootIsolateToken>,
+    VM4<Map<String, dynamic>, Iterable<String>, RootIsolateToken, String?>,
     String
-  >(_backupTask, VM3(configMap, fileNames, RootIsolateToken.instance!));
+  >(
+    _backupTask,
+    VM4(configMap, fileNames, RootIsolateToken.instance!, databaseSnapshotPath),
+  );
 }
 
 Future<String> _backupTask<T>(
-  VM3<Map<String, dynamic>, Iterable<String>, RootIsolateToken> args,
+  VM4<Map<String, dynamic>, Iterable<String>, RootIsolateToken, String?> args,
 ) async {
   final configMap = args.a;
   final fileNames = args.b;
   final token = args.c;
   BackgroundIsolateBinaryMessenger.ensureInitialized(token);
-  final dbPath = await appPath.databasePath;
+  final dbPath = args.d ?? await appPath.databasePath;
   final configStr = json.encode(configMap);
   final profilesDir = Directory(await appPath.profilesPath);
   final scriptsDir = Directory(await appPath.scriptsDirPath);
-  final tempZipFilePath = await appPath.tempFilePath;
-  final tempDBFile = File(await appPath.tempFilePath);
-  final tempConfigFile = File(await appPath.tempFilePath);
+  final nodesDir = Directory(await appPath.nodesDirPath);
+  final tempFilePath = await appPath.tempFilePath;
+  final tempBasePath = '$tempFilePath-${utils.id}';
+  final tempZipFilePath = '$tempBasePath.zip';
+  final tempDBFile = File('$tempBasePath.sqlite');
+  final tempConfigFile = File('$tempBasePath.json');
   final dbFile = File(dbPath);
-  if (await dbFile.exists()) {
-    await dbFile.copy(tempDBFile.path);
-  }
   final encoder = ZipFileEncoder();
-  encoder.create(tempZipFilePath);
-  await tempConfigFile.writeAsString(configStr);
-  await encoder.addFile(tempDBFile, backupDatabaseName);
-  await encoder.addFile(tempConfigFile, configJsonName);
-  if (await profilesDir.exists()) {
-    await encoder.addDirectory(
-      profilesDir,
-      filter: (file, _) {
-        if (!fileNames.contains(basename(file.path))) {
-          return ZipFileOperation.skip;
-        }
-        return ZipFileOperation.include;
-      },
-    );
+  var encoderClosed = false;
+  try {
+    if (await dbFile.exists()) {
+      await dbFile.copy(tempDBFile.path);
+    }
+    encoder.create(tempZipFilePath);
+    await tempConfigFile.writeAsString(configStr);
+    if (await tempDBFile.exists()) {
+      await encoder.addFile(tempDBFile, backupDatabaseName);
+    }
+    await encoder.addFile(tempConfigFile, configJsonName);
+    if (await profilesDir.exists()) {
+      await encoder.addDirectory(
+        profilesDir,
+        filter: (file, _) {
+          if (!fileNames.contains(basename(file.path))) {
+            return ZipFileOperation.skip;
+          }
+          return ZipFileOperation.include;
+        },
+      );
+    }
+    if (await scriptsDir.exists()) {
+      await encoder.addDirectory(
+        scriptsDir,
+        filter: (file, _) {
+          if (!fileNames.contains(basename(file.path))) {
+            return ZipFileOperation.skip;
+          }
+          return ZipFileOperation.include;
+        },
+      );
+    }
+    if (await nodesDir.exists()) {
+      await encoder.addDirectory(nodesDir, followLinks: false);
+    }
+    encoder.close();
+    encoderClosed = true;
+    return tempZipFilePath;
+  } finally {
+    if (!encoderClosed) {
+      encoder.close();
+    }
+    await tempConfigFile.safeDelete();
+    await tempDBFile.safeDelete();
   }
-  if (await scriptsDir.exists()) {
-    await encoder.addDirectory(
-      scriptsDir,
-      filter: (file, _) {
-        if (!fileNames.contains(basename(file.path))) {
-          return ZipFileOperation.skip;
-        }
-        return ZipFileOperation.include;
-      },
-    );
-  }
-  encoder.close();
-  await tempConfigFile.safeDelete();
-  await tempDBFile.safeDelete();
-  return tempZipFilePath;
 }
 
 Future<MigrationData> restoreTask() async {
@@ -541,16 +583,18 @@ Future<MigrationData> _restoreTask(RootIsolateToken token) async {
   final homeDirPath = await appPath.homeDirPath;
   final zipDecoder = ZipDecoder();
   final input = InputFileStream(backupFilePath);
-  final archive = zipDecoder.decodeStream(input);
-  final dir = Directory(restoreDirPath);
-  await dir.create(recursive: true);
-  for (final file in archive.files) {
-    final outPath = join(restoreDirPath, posix.normalize(file.name));
-    final outputStream = OutputFileStream(outPath);
-    file.writeContent(outputStream);
-    await outputStream.close();
+  late final Archive archive;
+  try {
+    archive = zipDecoder.decodeStream(input);
+  } catch (_) {
+    await input.close();
+    rethrow;
   }
-  await input.close();
+  try {
+    await _extractRestoreArchive(archive, restoreDirPath);
+  } finally {
+    await input.close();
+  }
   final restoreConfigFile = File(join(restoreDirPath, configJsonName));
   if (!await restoreConfigFile.exists()) {
     throw currentAppLocalizations.invalidBackupFile;
@@ -578,37 +622,178 @@ Future<MigrationData> _restoreTask(RootIsolateToken token) async {
       ),
     ),
   );
-  final results = await Future.wait([
-    database.profilesDao.query().get(),
-    database.scriptsDao.query().get(),
-    database.rules.all().map((item) => item.toRule()).get(),
-    database.profileRuleLinks.all().map((item) => item.toLink()).get(),
-    database.proxyGroups.all().map((item) => item.toProxyGroup()).get(),
-  ]);
-  final profiles = results[0].cast<Profile>();
-  final scripts = results[1].cast<Script>();
-  final profilesMigration = profiles.map(
-    (item) => VM2(
-      _getProfilePath(restoreDirPath, item.id.toString()),
-      _getProfilePath(homeDirPath, item.id.toString()),
-    ),
-  );
-  final scriptsMigration = scripts.map(
-    (item) => VM2(
-      _getScriptPath(restoreDirPath, item.id.toString()),
-      _getScriptPath(homeDirPath, item.id.toString()),
-    ),
-  );
-  await _copyWithMapList([...profilesMigration, ...scriptsMigration]);
-  migrationData = migrationData.copyWith(
-    profiles: profiles,
-    scripts: scripts,
-    rules: results[2].cast<Rule>(),
-    links: results[3].cast<ProfileRuleLink>(),
-    proxyGroups: results[4].cast<ProxyGroup>(),
-  );
-  await database.close();
-  return migrationData;
+  try {
+    final results = await Future.wait([
+      database.profilesDao.query().get(),
+      database.scriptsDao.query().get(),
+      database.rules.all().map((item) => item.toRule()).get(),
+      database.profileRuleLinks.all().map((item) => item.toLink()).get(),
+      database.proxyGroups.all().map((item) => item.toProxyGroup()).get(),
+      database.proxyNodesDao.query().get(),
+      database.proxyNodeBindings
+          .all()
+          .map((item) => item.toProxyNodeBinding())
+          .get(),
+      database.proxyChainsDao.query().get(),
+      database.proxyChainHops.all().map((item) => item.toProxyChainHop()).get(),
+      database.proxyChainBindings
+          .all()
+          .map((item) => item.toProxyChainBinding())
+          .get(),
+      database.proxyNodeAssets
+          .all()
+          .map((item) => item.toProxyNodeAsset())
+          .get(),
+      database.proxyGroupMembers
+          .all()
+          .map((item) => item.toProxyGroupMember())
+          .get(),
+    ]);
+    final profiles = results[0].cast<Profile>();
+    final scripts = results[1].cast<Script>();
+    final profilesMigration = profiles.map(
+      (item) => VM2(
+        _getProfilePath(restoreDirPath, item.id.toString()),
+        _getProfilePath(homeDirPath, item.id.toString()),
+      ),
+    );
+    final scriptsMigration = scripts.map(
+      (item) => VM2(
+        _getScriptPath(restoreDirPath, item.id.toString()),
+        _getScriptPath(homeDirPath, item.id.toString()),
+      ),
+    );
+    await _copyWithMapList([...profilesMigration, ...scriptsMigration]);
+    migrationData = migrationData.copyWith(
+      profiles: profiles,
+      scripts: scripts,
+      rules: results[2].cast<Rule>(),
+      links: results[3].cast<ProfileRuleLink>(),
+      proxyGroups: results[4].cast<ProxyGroup>(),
+      proxyNodes: results[5].cast<ProxyNode>(),
+      proxyNodeBindings: results[6].cast<ProxyNodeBinding>(),
+      proxyChains: results[7].cast<ProxyChain>(),
+      proxyChainHops: results[8].cast<ProxyChainHop>(),
+      proxyChainBindings: results[9].cast<ProxyChainBinding>(),
+      proxyNodeAssets: results[10].cast<ProxyNodeAsset>(),
+      proxyGroupMembers: results[11].cast<ProxyGroupMember>(),
+    );
+    final restoredAssets = migrationData.proxyNodeAssets;
+    for (final asset in restoredAssets) {
+      final relativePath = posix.normalize(asset.relativePath);
+      final restoreRoot = normalize(restoreDirPath);
+      final filePath = normalize(join(restoreDirPath, relativePath));
+      if (posix.isAbsolute(relativePath) ||
+          relativePath == '.' ||
+          relativePath == '..' ||
+          relativePath.startsWith('../') ||
+          !isWithin(restoreRoot, filePath) ||
+          !relativePath.startsWith('nodes/')) {
+        throw currentAppLocalizations.invalidBackupFile;
+      }
+      final file = File(filePath);
+      if (!await file.exists()) throw currentAppLocalizations.invalidBackupFile;
+      final digest = sha256.convert(await file.readAsBytes()).toString();
+      if (digest != asset.sha256.toLowerCase()) {
+        throw currentAppLocalizations.invalidBackupFile;
+      }
+    }
+    return migrationData;
+  } finally {
+    await database.close();
+  }
+}
+
+Future<void> installRestoredNodeAssets({required bool isOverride}) async {
+  final source = Directory(join(await appPath.restoreDirPath, 'nodes'));
+  final target = Directory(await appPath.nodesDirPath);
+  if (!await source.exists()) {
+    if (isOverride) await target.safeDelete(recursive: true);
+    return;
+  }
+  final stage = Directory('${target.path}.restore-${utils.id}');
+  await stage.safeDelete(recursive: true);
+  await _copyDirectory(source, stage);
+  if (!isOverride) {
+    try {
+      await _copyDirectory(stage, target);
+    } finally {
+      await stage.safeDelete(recursive: true);
+    }
+    return;
+  }
+  final previous = Directory('${target.path}.previous-${utils.id}');
+  await previous.safeDelete(recursive: true);
+  var movedPrevious = false;
+  try {
+    if (await target.exists()) {
+      await target.rename(previous.path);
+      movedPrevious = true;
+    }
+    await stage.rename(target.path);
+    await previous.safeDelete(recursive: true);
+  } catch (_) {
+    await target.safeDelete(recursive: true);
+    if (movedPrevious && await previous.exists()) {
+      await previous.rename(target.path);
+    }
+    rethrow;
+  } finally {
+    await stage.safeDelete(recursive: true);
+  }
+}
+
+Future<void> _copyDirectory(Directory source, Directory target) async {
+  await target.create(recursive: true);
+  await for (final entity in source.list(followLinks: false)) {
+    final destination = join(target.path, basename(entity.path));
+    if (entity is Directory) {
+      await _copyDirectory(entity, Directory(destination));
+    } else if (entity is File) {
+      await entity.copy(destination);
+    }
+  }
+}
+
+Future<void> _extractRestoreArchive(
+  Archive archive,
+  String restoreDirPath,
+) async {
+  final dir = Directory(restoreDirPath);
+  if (await dir.exists()) {
+    await dir.delete(recursive: true);
+  }
+  await dir.create(recursive: true);
+  final restoreRoot = normalize(restoreDirPath);
+  final extractedPaths = <String>{};
+  for (final file in archive.files) {
+    if (file.name.isEmpty || file.name.contains('\\')) {
+      throw currentAppLocalizations.invalidBackupFile;
+    }
+    final relativePath = posix.normalize(file.name);
+    if (posix.isAbsolute(relativePath) ||
+        relativePath == '.' ||
+        relativePath == '..' ||
+        relativePath.startsWith('../') ||
+        file.isSymbolicLink) {
+      throw currentAppLocalizations.invalidBackupFile;
+    }
+    final outPath = normalize(join(restoreDirPath, relativePath));
+    if (outPath != restoreRoot && !isWithin(restoreRoot, outPath)) {
+      throw currentAppLocalizations.invalidBackupFile;
+    }
+    if (!extractedPaths.add(outPath)) {
+      throw currentAppLocalizations.invalidBackupFile;
+    }
+    if (file.isDirectory) {
+      await Directory(outPath).create(recursive: true);
+      continue;
+    }
+    await Directory(dirname(outPath)).create(recursive: true);
+    final outputStream = OutputFileStream(outPath);
+    file.writeContent(outputStream);
+    await outputStream.close();
+  }
 }
 
 Future<void> _copyWithMapList(List<VM2<String, String>> copyMapList) async {

@@ -50,6 +50,19 @@ class ProfilesAction extends _$ProfilesAction {
     }
   }
 
+  Future<void> backfillNodeSources() async {
+    for (final profile in ref.read(profilesProvider)) {
+      try {
+        await _syncProfileNodes(profile, includeProviders: true);
+      } catch (error) {
+        commonPrint.log(
+          'node source backfill failed: $error',
+          logLevel: LogLevel.warning,
+        );
+      }
+    }
+  }
+
   void putProfile(Profile profile) {
     ref.read(profilesProvider.notifier).put(profile);
     if (ref.read(currentProfileIdProvider) != null) return;
@@ -74,6 +87,7 @@ class ProfilesAction extends _$ProfilesAction {
       ref.read(profilesProvider.notifier).put(profile);
       final newProfile = await profile.update();
       ref.read(profilesProvider.notifier).put(newProfile);
+      await _syncProfileNodes(newProfile);
       if (profile.id == ref.read(currentProfileIdProvider)) {
         ref
             .read(setupActionProvider.notifier)
@@ -88,6 +102,28 @@ class ProfilesAction extends _$ProfilesAction {
     final platformFile = await globalState.safeRun(picker.pickerFile);
     if (platformFile == null) return;
     final bytes = await platformFile.readBytes();
+    final text = utf8.decode(bytes, allowMalformed: true);
+    final nodeInput = NodeInputDispatcher().importText(
+      text,
+      source: platformFile.name,
+    );
+    final looksLikeFullProfile = _looksLikeFullProfile(text);
+    if (nodeInput.drafts.any(
+          (draft) => draft.issues.every((issue) => !issue.isError),
+        ) &&
+        !looksLikeFullProfile) {
+      globalState.navigatorKey.currentState?.popUntil((route) => route.isFirst);
+      ref.read(currentPageLabelProvider.notifier).toProfiles();
+      final result = await const NodeLibraryService().commit(nodeInput);
+      if (result.issues.isNotEmpty) {
+        globalState.showNotifier(
+          result.issues.map(_formatNodeIssue).join('\n'),
+        );
+      } else if (result.all.isNotEmpty) {
+        globalState.showNotifier(currentAppLocalizations.importSuccess);
+      }
+      return;
+    }
     globalState.navigatorKey.currentState?.popUntil((route) => route.isFirst);
     ref.read(currentPageLabelProvider.notifier).toProfiles();
     final profile = await globalState.loadingRun(
@@ -99,6 +135,7 @@ class ProfilesAction extends _$ProfilesAction {
     );
     if (profile != null) {
       putProfile(profile);
+      await _syncProfileNodes(profile);
     }
   }
 
@@ -116,7 +153,133 @@ class ProfilesAction extends _$ProfilesAction {
     );
     if (profile != null) {
       putProfile(profile);
+      await _syncProfileNodes(profile);
     }
+  }
+
+  Future<void> _syncProfileNodes(
+    Profile profile, {
+    bool includeProviders = false,
+  }) async {
+    try {
+      final file = await profile.file;
+      final sync = const NodeSourceSyncService();
+      await sync.syncProfileFile(profileId: profile.id, file: file);
+      if (!includeProviders || !await file.exists()) return;
+      final decoded = _nodeSourceYamlToDart(
+        loadYaml(await file.readAsString()),
+      );
+      if (decoded is! Map) return;
+      final providers = decoded['proxy-providers'];
+      if (providers is! Map) return;
+      for (final entry in providers.entries) {
+        final value = entry.value;
+        if (value is! Map) continue;
+        final provider = Map<String, dynamic>.from(value);
+        final pathValue = provider['path']?.toString();
+        final url = provider['url']?.toString();
+        final candidates = <String>[
+          if (pathValue != null && pathValue.isNotEmpty)
+            p.isAbsolute(pathValue)
+                ? pathValue
+                : p.join(p.dirname(file.path), pathValue),
+          if (url != null && url.isNotEmpty)
+            await appPath.getProvidersFilePath(
+              profile.id.toString(),
+              'proxies',
+              url,
+            ),
+        ];
+        for (final path in candidates.toSet()) {
+          final providerFile = File(path);
+          if (!await providerFile.exists()) continue;
+          await sync.syncProfileFile(
+            profileId: profile.id,
+            file: providerFile,
+            provider: entry.key.toString(),
+          );
+          break;
+        }
+      }
+    } catch (error) {
+      commonPrint.log(
+        'node source sync failed: $error',
+        logLevel: LogLevel.warning,
+      );
+    }
+  }
+
+  bool _looksLikeFullProfile(String text) {
+    dynamic decoded;
+    try {
+      decoded = jsonDecode(text);
+    } catch (_) {}
+    if (decoded is Map) {
+      const profileKeys = {
+        'proxy-groups',
+        'proxy-providers',
+        'rules',
+        'rule-providers',
+        'dns',
+        'tun',
+        'mixed-port',
+        'mode',
+        'external-controller',
+        'log-level',
+        'geodata-mode',
+        'profile',
+      };
+      if (decoded.keys.any((key) => profileKeys.contains(key.toString()))) {
+        return true;
+      }
+    }
+    return RegExp(
+      r'^\s*(proxy-groups|proxy-providers|rules|rule-providers|dns|tun|mixed-port|mode|external-controller|log-level|geodata-mode|profile)\s*:',
+      multiLine: true,
+    ).hasMatch(text);
+  }
+
+  Future<NodeImportCommitResult?> addProfileFormInput(String input) {
+    return importNodeText(
+      input,
+      profileId: ref.read(currentProfileIdProvider),
+      bind: ref.read(currentProfileIdProvider) != null,
+    );
+  }
+
+  Future<NodeImportCommitResult?> importNodeText(
+    String text, {
+    int? profileId,
+    bool bind = false,
+    bool createCopy = false,
+  }) async {
+    final dispatcher = NodeInputDispatcher();
+    final input = dispatcher.importText(text, source: 'manual');
+    final subscriptionUrl = input.subscriptionUrl;
+    if (subscriptionUrl != null) {
+      await addProfileFormURL(subscriptionUrl);
+      return null;
+    }
+    final result = await globalState.loadingRun(
+      tag: LoadingTag.profiles,
+      () => const NodeLibraryService().commit(
+        input,
+        profileId: profileId,
+        bind: bind,
+        createCopy: createCopy,
+      ),
+      title: currentAppLocalizations.addProfile,
+    );
+    if (result == null) return null;
+    if (result.issues.isNotEmpty) {
+      globalState.showNotifier(result.issues.map(_formatNodeIssue).join('\n'));
+    } else if (result.all.isNotEmpty) {
+      globalState.showNotifier(currentAppLocalizations.importSuccess);
+    }
+    if (bind && profileId == ref.read(currentProfileIdProvider)) {
+      ref.read(setupActionProvider.notifier).applyProfileDebounce();
+    }
+    return result;
   }
 
   void setProfileAndAutoApply(Profile profile) {
@@ -127,9 +290,13 @@ class ProfilesAction extends _$ProfilesAction {
   }
 
   Future<void> addProfileFormQrCode() async {
-    final url = await globalState.safeRun(picker.pickerConfigQRCode);
-    if (url == null) return;
-    addProfileFormURL(url);
+    final value = await globalState.safeRun(picker.pickerConfigQRCode);
+    if (value == null || value.trim().isEmpty) return;
+    await importNodeText(
+      value,
+      profileId: ref.read(currentProfileIdProvider),
+      bind: ref.read(currentProfileIdProvider) != null,
+    );
   }
 
   void reorder(List<Profile> profiles) {
@@ -148,4 +315,24 @@ class ProfilesAction extends _$ProfilesAction {
       commonPrint.log(error, logLevel: LogLevel.warning);
     }
   }
+}
+
+String _formatNodeIssue(NodeIssue issue) {
+  final location = issue.index == null ? '' : '[${issue.index! + 1}] ';
+  final code = issue.code == null ? '' : '${issue.code}: ';
+  return '$location$code${issue.message}';
+}
+
+dynamic _nodeSourceYamlToDart(dynamic value) {
+  if (value is YamlMap || value is Map) {
+    final map = value as Map;
+    return {
+      for (final entry in map.entries)
+        entry.key.toString(): _nodeSourceYamlToDart(entry.value),
+    };
+  }
+  if (value is YamlList || value is List) {
+    return (value as Iterable).map(_nodeSourceYamlToDart).toList();
+  }
+  return value;
 }
