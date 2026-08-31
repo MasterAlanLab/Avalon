@@ -251,10 +251,6 @@ class MessageLookup extends MessageLookupByLibrary {
       "Добавьте цепочку в выбранные группы, затем выберите её на странице прокси.",
     ),
     "chainHop": MessageLookupByLibrary.simpleMessage("Переходы цепочки"),
-    "chainHopHint": MessageLookupByLibrary.simpleMessage(
-      "Один переход в строке: node:ID, group:NAME или local:HOST:PORT",
-    ),
-    "chainLibrary": MessageLookupByLibrary.simpleMessage("Библиотека цепочек"),
     "chainPathCount": m0,
     "chainTarget": MessageLookupByLibrary.simpleMessage("Цель"),
     "chainWarningConfirm": MessageLookupByLibrary.simpleMessage(
@@ -328,10 +324,6 @@ class MessageLookup extends MessageLookupByLibrary {
       "Во время предыдущего запуска произошёл сбой приложения. Чтобы предотвратить повторный сбой, текущий профиль был сброшен, а автоматическая настройка конфигурации пропущена.",
     ),
     "crashTest": MessageLookupByLibrary.simpleMessage("Тест на сбои"),
-    "crashlytics": MessageLookupByLibrary.simpleMessage("Анализ сбоев"),
-    "crashlyticsTip": MessageLookupByLibrary.simpleMessage(
-      "При включении автоматически загружает журналы сбоев без конфиденциальной информации, когда приложение выходит из строя",
-    ),
     "create": MessageLookupByLibrary.simpleMessage("Создать"),
     "createChain": MessageLookupByLibrary.simpleMessage("Создать цепочку"),
     "createCopy": MessageLookupByLibrary.simpleMessage("Создать копию"),
@@ -356,12 +348,6 @@ class MessageLookup extends MessageLookupByLibrary {
     "dashboard": MessageLookupByLibrary.simpleMessage("Панель управления"),
     "dataChangedSave": MessageLookupByLibrary.simpleMessage(
       "Обнаружены изменения данных, хотите сохранить?",
-    ),
-    "dataCollectionContent": MessageLookupByLibrary.simpleMessage(
-      "Это приложение использует Firebase Crashlytics для сбора информации о сбоях nhằm улучшения стабильности приложения.\nСобираемые данные включают информацию об устройстве и подробности о сбоях, но не содержат персональных конфиденциальных данных.\nВы можете отключить эту функцию в настройках.",
-    ),
-    "dataCollectionTip": MessageLookupByLibrary.simpleMessage(
-      "Уведомление о сборе данных",
     ),
     "daysAgo": m1,
     "defaultNameserver": MessageLookupByLibrary.simpleMessage(
@@ -551,9 +537,6 @@ class MessageLookup extends MessageLookupByLibrary {
     "importFile": MessageLookupByLibrary.simpleMessage("Импорт из файла"),
     "importFromURL": MessageLookupByLibrary.simpleMessage("Импорт из URL"),
     "importNode": MessageLookupByLibrary.simpleMessage("Импорт узла"),
-    "importNodeDesc": MessageLookupByLibrary.simpleMessage(
-      "Добавьте URI, Base64, YAML или JSON узла",
-    ),
     "importPreview": MessageLookupByLibrary.simpleMessage(
       "Предпросмотр импорта",
     ),

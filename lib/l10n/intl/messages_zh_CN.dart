@@ -178,10 +178,6 @@ class MessageLookup extends MessageLookupByLibrary {
       "把链路加入所选策略组，然后在代理页选用。",
     ),
     "chainHop": MessageLookupByLibrary.simpleMessage("链路跳数"),
-    "chainHopHint": MessageLookupByLibrary.simpleMessage(
-      "每行一个跳点：node:ID、group:名称 或 local:主机:端口",
-    ),
-    "chainLibrary": MessageLookupByLibrary.simpleMessage("链路库"),
     "chainPathCount": m0,
     "chainTarget": MessageLookupByLibrary.simpleMessage("目标"),
     "chainWarningConfirm": MessageLookupByLibrary.simpleMessage(
@@ -229,10 +225,6 @@ class MessageLookup extends MessageLookupByLibrary {
       "检测到应用上次运行发生崩溃。为避免重复崩溃，已清除当前配置选择，并跳过本次自动配置。",
     ),
     "crashTest": MessageLookupByLibrary.simpleMessage("崩溃测试"),
-    "crashlytics": MessageLookupByLibrary.simpleMessage("崩溃分析"),
-    "crashlyticsTip": MessageLookupByLibrary.simpleMessage(
-      "开启后，应用崩溃时自动上传不包含敏感信息的崩溃日志",
-    ),
     "create": MessageLookupByLibrary.simpleMessage("创建"),
     "createChain": MessageLookupByLibrary.simpleMessage("创建链路"),
     "createCopy": MessageLookupByLibrary.simpleMessage("创建副本"),
@@ -254,10 +246,6 @@ class MessageLookup extends MessageLookupByLibrary {
     "dark": MessageLookupByLibrary.simpleMessage("深色"),
     "dashboard": MessageLookupByLibrary.simpleMessage("仪表盘"),
     "dataChangedSave": MessageLookupByLibrary.simpleMessage("检测到数据有更改，是否保存"),
-    "dataCollectionContent": MessageLookupByLibrary.simpleMessage(
-      "本应用使用 Firebase Crashlytics 收集崩溃信息以改进应用稳定性。\n收集的数据包括设备信息和崩溃详情，不包含个人敏感数据。\n您可以在设置中关闭此功能。",
-    ),
-    "dataCollectionTip": MessageLookupByLibrary.simpleMessage("数据收集说明"),
     "daysAgo": m1,
     "defaultNameserver": MessageLookupByLibrary.simpleMessage("默认域名服务器"),
     "defaultNameserverDesc": MessageLookupByLibrary.simpleMessage("用于解析DNS服务器"),
@@ -386,9 +374,6 @@ class MessageLookup extends MessageLookupByLibrary {
     "importFile": MessageLookupByLibrary.simpleMessage("通过文件导入"),
     "importFromURL": MessageLookupByLibrary.simpleMessage("从URL导入"),
     "importNode": MessageLookupByLibrary.simpleMessage("导入节点"),
-    "importNodeDesc": MessageLookupByLibrary.simpleMessage(
-      "添加单条节点 URI、Base64、YAML 或 JSON",
-    ),
     "importPreview": MessageLookupByLibrary.simpleMessage("导入预览"),
     "importSuccess": MessageLookupByLibrary.simpleMessage("节点已导入"),
     "importUrl": MessageLookupByLibrary.simpleMessage("通过URL导入"),

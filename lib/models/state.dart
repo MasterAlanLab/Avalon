@@ -307,7 +307,6 @@ abstract class SharedState with _$SharedState {
     required String currentProfileName,
     required String stopText,
     required bool onlyStatisticsProxy,
-    required bool crashlytics,
   }) = _SharedState;
 
   factory SharedState.fromJson(Map<String, Object?> json) =>

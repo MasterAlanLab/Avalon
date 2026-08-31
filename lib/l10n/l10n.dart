@@ -2874,46 +2874,6 @@ class AppLocalizations {
     return Intl.message('Core status', name: 'coreStatus', desc: '', args: []);
   }
 
-  /// `Data Collection Notice`
-  String get dataCollectionTip {
-    return Intl.message(
-      'Data Collection Notice',
-      name: 'dataCollectionTip',
-      desc: '',
-      args: [],
-    );
-  }
-
-  /// `This app uses Firebase Crashlytics to collect crash information to improve app stability.\nThe collected data includes device information and crash details, but does not contain personal sensitive data.\nYou can disable this feature in settings.`
-  String get dataCollectionContent {
-    return Intl.message(
-      'This app uses Firebase Crashlytics to collect crash information to improve app stability.\nThe collected data includes device information and crash details, but does not contain personal sensitive data.\nYou can disable this feature in settings.',
-      name: 'dataCollectionContent',
-      desc: '',
-      args: [],
-    );
-  }
-
-  /// `Crash Analysis`
-  String get crashlytics {
-    return Intl.message(
-      'Crash Analysis',
-      name: 'crashlytics',
-      desc: '',
-      args: [],
-    );
-  }
-
-  /// `When enabled, automatically uploads crash logs without sensitive information when the app crashes`
-  String get crashlyticsTip {
-    return Intl.message(
-      'When enabled, automatically uploads crash logs without sensitive information when the app crashes',
-      name: 'crashlyticsTip',
-      desc: '',
-      args: [],
-    );
-  }
-
   /// `Append System DNS`
   String get appendSystemDns {
     return Intl.message(
@@ -4554,29 +4514,9 @@ class AppLocalizations {
     );
   }
 
-  /// `Chain library`
-  String get chainLibrary {
-    return Intl.message(
-      'Chain library',
-      name: 'chainLibrary',
-      desc: '',
-      args: [],
-    );
-  }
-
   /// `Import node`
   String get importNode {
     return Intl.message('Import node', name: 'importNode', desc: '', args: []);
-  }
-
-  /// `Add a single node URI, Base64, YAML, or JSON`
-  String get importNodeDesc {
-    return Intl.message(
-      'Add a single node URI, Base64, YAML, or JSON',
-      name: 'importNodeDesc',
-      desc: '',
-      args: [],
-    );
   }
 
   /// `Create from chain`
@@ -4677,16 +4617,6 @@ class AppLocalizations {
   /// `Chain hops`
   String get chainHop {
     return Intl.message('Chain hops', name: 'chainHop', desc: '', args: []);
-  }
-
-  /// `One hop per line: node:ID, group:NAME, or local:HOST:PORT`
-  String get chainHopHint {
-    return Intl.message(
-      'One hop per line: node:ID, group:NAME, or local:HOST:PORT',
-      name: 'chainHopHint',
-      desc: '',
-      args: [],
-    );
   }
 
   /// `Branch limit`

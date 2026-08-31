@@ -190,10 +190,6 @@ class MessageLookup extends MessageLookupByLibrary {
       "選択したグループにチェーンを追加し、プロキシページで選択してください。",
     ),
     "chainHop": MessageLookupByLibrary.simpleMessage("チェーンホップ"),
-    "chainHopHint": MessageLookupByLibrary.simpleMessage(
-      "1 行 1 ホップ: node:ID、group:名前、local:HOST:PORT",
-    ),
-    "chainLibrary": MessageLookupByLibrary.simpleMessage("チェーンライブラリ"),
     "chainPathCount": m0,
     "chainTarget": MessageLookupByLibrary.simpleMessage("ターゲット"),
     "chainWarningConfirm": MessageLookupByLibrary.simpleMessage(
@@ -253,10 +249,6 @@ class MessageLookup extends MessageLookupByLibrary {
       "前回の実行中にアプリがクラッシュしました。クラッシュの繰り返しを防ぐため、現在のプロファイルを解除し、設定の自動セットアップをスキップしました。",
     ),
     "crashTest": MessageLookupByLibrary.simpleMessage("クラッシュテスト"),
-    "crashlytics": MessageLookupByLibrary.simpleMessage("クラッシュ分析"),
-    "crashlyticsTip": MessageLookupByLibrary.simpleMessage(
-      "有効にすると、アプリがクラッシュした際に機密情報を含まないクラッシュログを自動的にアップロードします",
-    ),
     "create": MessageLookupByLibrary.simpleMessage("作成"),
     "createChain": MessageLookupByLibrary.simpleMessage("チェーンを作成"),
     "createCopy": MessageLookupByLibrary.simpleMessage("コピーを作成"),
@@ -282,10 +274,6 @@ class MessageLookup extends MessageLookupByLibrary {
     "dataChangedSave": MessageLookupByLibrary.simpleMessage(
       "データの変更が検出されました。保存しますか？",
     ),
-    "dataCollectionContent": MessageLookupByLibrary.simpleMessage(
-      "本アプリはFirebase Crashlyticsを使用してクラッシュ情報を収集し、アプリの安定性を向上させます。\n収集されるデータにはデバイス情報とクラッシュ詳細が含まれますが、個人の機密データは含まれません。\n設定でこの機能を無効にすることができます。",
-    ),
-    "dataCollectionTip": MessageLookupByLibrary.simpleMessage("データ収集説明"),
     "daysAgo": m1,
     "defaultNameserver": MessageLookupByLibrary.simpleMessage("デフォルトネームサーバー"),
     "defaultNameserverDesc": MessageLookupByLibrary.simpleMessage(
@@ -432,9 +420,6 @@ class MessageLookup extends MessageLookupByLibrary {
     "importFile": MessageLookupByLibrary.simpleMessage("ファイルからインポート"),
     "importFromURL": MessageLookupByLibrary.simpleMessage("URLからインポート"),
     "importNode": MessageLookupByLibrary.simpleMessage("ノードをインポート"),
-    "importNodeDesc": MessageLookupByLibrary.simpleMessage(
-      "URI、Base64、YAML、JSON のノードを追加",
-    ),
     "importPreview": MessageLookupByLibrary.simpleMessage("インポートプレビュー"),
     "importSuccess": MessageLookupByLibrary.simpleMessage("ノードをインポートしました"),
     "importUrl": MessageLookupByLibrary.simpleMessage("URLからインポート"),

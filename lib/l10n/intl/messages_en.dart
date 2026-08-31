@@ -248,10 +248,6 @@ class MessageLookup extends MessageLookupByLibrary {
       "Add this chain to the selected groups, then select it on the proxies page.",
     ),
     "chainHop": MessageLookupByLibrary.simpleMessage("Chain hops"),
-    "chainHopHint": MessageLookupByLibrary.simpleMessage(
-      "One hop per line: node:ID, group:NAME, or local:HOST:PORT",
-    ),
-    "chainLibrary": MessageLookupByLibrary.simpleMessage("Chain library"),
     "chainPathCount": m0,
     "chainTarget": MessageLookupByLibrary.simpleMessage("Target"),
     "chainWarningConfirm": MessageLookupByLibrary.simpleMessage(
@@ -321,10 +317,6 @@ class MessageLookup extends MessageLookupByLibrary {
       "The app crashed during the previous run. To prevent repeated crashes, the current profile has been cleared and automatic configuration setup was skipped.",
     ),
     "crashTest": MessageLookupByLibrary.simpleMessage("Crash test"),
-    "crashlytics": MessageLookupByLibrary.simpleMessage("Crash Analysis"),
-    "crashlyticsTip": MessageLookupByLibrary.simpleMessage(
-      "When enabled, automatically uploads crash logs without sensitive information when the app crashes",
-    ),
     "create": MessageLookupByLibrary.simpleMessage("Create"),
     "createChain": MessageLookupByLibrary.simpleMessage("Create chain"),
     "createCopy": MessageLookupByLibrary.simpleMessage("Create copy"),
@@ -349,12 +341,6 @@ class MessageLookup extends MessageLookupByLibrary {
     "dashboard": MessageLookupByLibrary.simpleMessage("Dashboard"),
     "dataChangedSave": MessageLookupByLibrary.simpleMessage(
       "Data changes detected, do you want to save?",
-    ),
-    "dataCollectionContent": MessageLookupByLibrary.simpleMessage(
-      "This app uses Firebase Crashlytics to collect crash information to improve app stability.\nThe collected data includes device information and crash details, but does not contain personal sensitive data.\nYou can disable this feature in settings.",
-    ),
-    "dataCollectionTip": MessageLookupByLibrary.simpleMessage(
-      "Data Collection Notice",
     ),
     "daysAgo": m1,
     "defaultNameserver": MessageLookupByLibrary.simpleMessage(
@@ -534,9 +520,6 @@ class MessageLookup extends MessageLookupByLibrary {
     "importFile": MessageLookupByLibrary.simpleMessage("Import from file"),
     "importFromURL": MessageLookupByLibrary.simpleMessage("Import from URL"),
     "importNode": MessageLookupByLibrary.simpleMessage("Import node"),
-    "importNodeDesc": MessageLookupByLibrary.simpleMessage(
-      "Add a single node URI, Base64, YAML, or JSON",
-    ),
     "importPreview": MessageLookupByLibrary.simpleMessage("Import preview"),
     "importSuccess": MessageLookupByLibrary.simpleMessage("Node imported"),
     "importUrl": MessageLookupByLibrary.simpleMessage("Import from URL"),
