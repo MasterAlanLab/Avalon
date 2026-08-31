@@ -11,4 +11,4 @@ PRODUCT_NAME = Avalon
 PRODUCT_BUNDLE_IDENTIFIER = com.masteralanlab.avalon
 
 // The copyright displayed in application information
-PRODUCT_COPYRIGHT = Copyright © 2023-2026 FlClash and Avalon contributors. GPL-3.0.
+PRODUCT_COPYRIGHT = Copyright © 2023-2026 FlClash and Avalon contributors. AGPL-3.0 / GPL-3.0.

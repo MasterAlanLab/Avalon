@@ -9,7 +9,7 @@
 <p>
   <a href="https://github.com/MasterAlanLab/Avalon/releases/"><img alt="Downloads" src="https://img.shields.io/github/downloads/MasterAlanLab/Avalon/total?style=flat-square&logo=github"></a>
   <a href="https://github.com/MasterAlanLab/Avalon/releases/"><img alt="Last Version" src="https://img.shields.io/github/release/MasterAlanLab/Avalon/all.svg?style=flat-square"></a>
-  <a href="LICENSE"><img alt="License" src="https://img.shields.io/badge/License-GPL--3.0-blue?style=flat-square"></a>
+  <a href="LICENSE"><img alt="License" src="https://img.shields.io/badge/License-AGPL--3.0-blue?style=flat-square"></a>
   <img alt="Platforms" src="https://img.shields.io/badge/平台-Android%20·%20Windows%20·%20macOS%20·%20Linux-brightgreen?style=flat-square">
   <img alt="Purpose" src="https://img.shields.io/badge/用途-仅供学习研究-orange?style=flat-square">
 </p>
@@ -199,13 +199,13 @@ com.masteralanlab.avalon.action.TOGGLE
 
 ## 开源许可
 
-本项目以 **GPL-3.0** 授权，与上游项目保持一致，完整条款见 [LICENSE](LICENSE)。 分叉说明与第三方组件见 [NOTICE](NOTICE)。
+本项目由 Avalon 编写的新增和修改部分以 **AGPL-3.0** 授权；FlClash 上游代码、mihomo 和其他第三方组件继续遵循各自许可证。AGPL 条款见 [LICENSE](LICENSE)，上游 GPLv3 文本见 [LICENSE-GPL-3.0](LICENSE-GPL-3.0)，分叉说明与第三方组件见 [NOTICE](NOTICE)。
 
 Avalon 是 [FlClash](https://github.com/chen08209/FlClash) 的修改版本（fork）：
 
 - 原项目版权归 FlClash 作者及其贡献者所有，相关版权与许可声明均已保留。
 - 本项目在原项目基础上做了修改，主要包括独立节点库、多跳代理链、单内核链式编译，以及项目名称与应用标识的变更；变更概览见 [CHANGELOG.md](CHANGELOG.md)。
-- 依据 GPL-3.0，任何基于本项目的再分发同样必须以 GPL-3.0 开源并保留上述声明。
+- Avalon 新增和修改部分依据 AGPL-3.0 提供；再分发时应遵循 AGPL 的源码与网络交互条款，并保留上述声明。
 - Avalon 与 FlClash 上游项目**没有隶属关系**，请不要就本项目的问题向上游提交 issue。
 
 ## 致谢

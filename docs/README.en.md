@@ -9,7 +9,7 @@
 <p>
   <a href="https://github.com/MasterAlanLab/Avalon/releases/"><img alt="Downloads" src="https://img.shields.io/github/downloads/MasterAlanLab/Avalon/total?style=flat-square&logo=github"></a>
   <a href="https://github.com/MasterAlanLab/Avalon/releases/"><img alt="Last Version" src="https://img.shields.io/github/release/MasterAlanLab/Avalon/all.svg?style=flat-square"></a>
-  <a href="../LICENSE"><img alt="License" src="https://img.shields.io/badge/License-GPL--3.0-blue?style=flat-square"></a>
+  <a href="../LICENSE"><img alt="License" src="https://img.shields.io/badge/License-AGPL--3.0-blue?style=flat-square"></a>
   <img alt="Platforms" src="https://img.shields.io/badge/Platforms-Android%20·%20Windows%20·%20macOS%20·%20Linux-brightgreen?style=flat-square">
   <img alt="Purpose" src="https://img.shields.io/badge/Purpose-Study%20%26%20Research%20Only-orange?style=flat-square">
 </p>
@@ -199,13 +199,13 @@ Services I use myself or that pair well with this project. Some links are promot
 
 ## License
 
-This project is licensed under **GPL-3.0**, the same license as the upstream project. See [LICENSE](../LICENSE) for the full terms. The fork notice and third-party components are listed in [NOTICE](../NOTICE).
+Avalon-authored additions and modifications are licensed under **AGPL-3.0**. FlClash upstream code, mihomo, and other third-party components remain under their respective licenses. See [LICENSE](../LICENSE) for the AGPL terms, [LICENSE-GPL-3.0](../LICENSE-GPL-3.0) for the upstream GPLv3 text, and [NOTICE](../NOTICE) for the fork notice and third-party components.
 
 Avalon is a modified version (fork) of [FlClash](https://github.com/chen08209/FlClash):
 
 - Copyright of the original work belongs to the FlClash authors and contributors; all original copyright and license notices are retained.
 - This project modifies the original work, mainly by adding the standalone node library, multi-hop proxy chains and single-core chain compilation, and by changing the project name and application identifiers. See [CHANGELOG.md](../CHANGELOG.md) for an overview.
-- Under GPL-3.0, any redistribution based on this project must also be released under GPL-3.0 and keep the notices above.
+- Avalon-authored additions and modifications are released under AGPL-3.0; redistributions must follow its source and network-interaction requirements and keep the notices above.
 - Avalon is **not affiliated** with the upstream FlClash project — please do not file issues about this fork there.
 
 ## Acknowledgements

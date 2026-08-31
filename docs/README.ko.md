@@ -9,7 +9,7 @@
 <p>
   <a href="https://github.com/MasterAlanLab/Avalon/releases/"><img alt="Downloads" src="https://img.shields.io/github/downloads/MasterAlanLab/Avalon/total?style=flat-square&logo=github"></a>
   <a href="https://github.com/MasterAlanLab/Avalon/releases/"><img alt="Last Version" src="https://img.shields.io/github/release/MasterAlanLab/Avalon/all.svg?style=flat-square"></a>
-  <a href="../LICENSE"><img alt="License" src="https://img.shields.io/badge/License-GPL--3.0-blue?style=flat-square"></a>
+  <a href="../LICENSE"><img alt="License" src="https://img.shields.io/badge/License-AGPL--3.0-blue?style=flat-square"></a>
   <img alt="Platforms" src="https://img.shields.io/badge/지원-Android%20·%20Windows%20·%20macOS%20·%20Linux-brightgreen?style=flat-square">
   <img alt="Purpose" src="https://img.shields.io/badge/용도-학습·연구용-orange?style=flat-square">
 </p>
@@ -199,13 +199,13 @@ com.masteralanlab.avalon.action.TOGGLE
 
 ## 라이선스
 
-본 프로젝트는 상위 프로젝트와 동일하게 **GPL-3.0** 으로 배포됩니다. 전체 조항은 [LICENSE](../LICENSE) 를 참고하세요. 포크 고지와 서드파티 구성 요소는 [NOTICE](../NOTICE) 에 정리되어 있습니다.
+Avalon이 작성한 추가 및 수정 부분은 **AGPL-3.0**으로 배포됩니다. FlClash 원본 코드, mihomo 및 기타 서드파티 구성 요소는 각자의 라이선스를 유지합니다. AGPL 조항은 [LICENSE](../LICENSE), upstream GPLv3 전문은 [LICENSE-GPL-3.0](../LICENSE-GPL-3.0), 포크 고지와 서드파티 구성 요소는 [NOTICE](../NOTICE)를 참고하세요.
 
 Avalon 은 [FlClash](https://github.com/chen08209/FlClash) 의 수정 버전(fork)입니다:
 
 - 원저작물의 저작권은 FlClash 작성자와 기여자에게 있으며, 모든 저작권 및 라이선스 고지를 그대로 유지하고 있습니다.
 - 본 프로젝트는 원저작물을 수정했습니다. 주요 변경 사항은 독립 노드 라이브러리, 멀티홉 프록시 체인, 단일 코어 체인 컴파일, 그리고 프로젝트 이름과 애플리케이션 식별자 변경입니다. 개요는 [CHANGELOG.md](../CHANGELOG.md) 를 참고하세요.
-- GPL-3.0 에 따라 본 프로젝트를 기반으로 한 재배포 역시 GPL-3.0 으로 공개하고 위 고지를 유지해야 합니다.
+- Avalon이 작성한 추가 및 수정 부분은 AGPL-3.0으로 배포됩니다. 재배포 시 소스 코드 및 네트워크 상호작용 요구 사항을 따르고 위 고지를 유지해야 합니다.
 - Avalon 은 상위 FlClash 프로젝트와 **제휴 관계가 없습니다**. 이 포크에 대한 이슈를 상위 저장소에 제출하지 마세요.
 
 ## 감사의 말

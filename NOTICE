@@ -1,8 +1,10 @@
 Avalon
 Copyright (C) 2026 MasterAlanLab and Avalon contributors
 
-This program is distributed under the GNU General Public License version 3.
-The complete license text is in the LICENSE file at the root of this repository.
+Avalon-authored additions and modifications are distributed under the GNU Affero
+General Public License version 3. The complete license text is in the LICENSE
+file at the root of this repository. Upstream FlClash-derived code remains under
+the GNU General Public License version 3; see LICENSE-GPL-3.0 for its terms.
 
 --------------------------------------------------------------------------------
 Upstream project
