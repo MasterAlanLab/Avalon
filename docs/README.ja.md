@@ -1,4 +1,4 @@
-**🌐 Languages:** [中文](README.md) · [English](README.en.md) · [Deutsch](README.de.md) · [Español](README.es.md) · [العربية](README.ar.md) · [Italiano](README.it.md) · [日本語](README.ja.md) · [한국어](README.ko.md)
+**🌐 Languages:** [中文](../README.md) · [English](README.en.md) · [Deutsch](README.de.md) · [Español](README.es.md) · [العربية](README.ar.md) · [Italiano](README.it.md) · [日本語](README.ja.md) · [한국어](README.ko.md)
 
 # Avalon — 単体ノードとプロキシチェーンに対応したマルチプラットフォームプロキシクライアント
 
@@ -9,7 +9,7 @@
 <p>
   <a href="https://github.com/MasterAlanLab/Avalon/releases/"><img alt="Downloads" src="https://img.shields.io/github/downloads/MasterAlanLab/Avalon/total?style=flat-square&logo=github"></a>
   <a href="https://github.com/MasterAlanLab/Avalon/releases/"><img alt="Last Version" src="https://img.shields.io/github/release/MasterAlanLab/Avalon/all.svg?style=flat-square"></a>
-  <a href="LICENSE"><img alt="License" src="https://img.shields.io/badge/License-GPL--3.0-blue?style=flat-square"></a>
+  <a href="../LICENSE"><img alt="License" src="https://img.shields.io/badge/License-GPL--3.0-blue?style=flat-square"></a>
   <img alt="Platforms" src="https://img.shields.io/badge/対応-Android%20·%20Windows%20·%20macOS%20·%20Linux-brightgreen?style=flat-square">
   <img alt="Purpose" src="https://img.shields.io/badge/用途-学習・研究目的のみ-orange?style=flat-square">
 </p>
@@ -23,13 +23,13 @@
 デスクトップ:
 
 <p style="text-align: center;">
-    <img alt="desktop" src="snapshots/desktop.gif">
+    <img alt="desktop" src="../snapshots/desktop.gif">
 </p>
 
 モバイル:
 
 <p style="text-align: center;">
-    <img alt="mobile" src="snapshots/mobile.gif">
+    <img alt="mobile" src="../snapshots/mobile.gif">
 </p>
 
 ---
@@ -73,7 +73,7 @@
 
 ### ダウンロード
 
-<a href="https://github.com/MasterAlanLab/Avalon/releases"><img alt="Get it on GitHub" src="snapshots/get-it-on-github.svg" width="200px"/></a>
+<a href="https://github.com/MasterAlanLab/Avalon/releases"><img alt="Get it on GitHub" src="../snapshots/get-it-on-github.svg" width="200px"/></a>
 
 ### Linux の依存パッケージ
 
@@ -199,12 +199,12 @@ com.masteralanlab.avalon.action.TOGGLE
 
 ## ライセンス
 
-本プロジェクトは上流プロジェクトと同じ **GPL-3.0** で提供されます。全文は [LICENSE](LICENSE) を参照してください。 フォークに関する告知と第三者コンポーネントは [NOTICE](NOTICE) に記載しています。
+本プロジェクトは上流プロジェクトと同じ **GPL-3.0** で提供されます。全文は [LICENSE](../LICENSE) を参照してください。 フォークに関する告知と第三者コンポーネントは [NOTICE](../NOTICE) に記載しています。
 
 Avalon は [FlClash](https://github.com/chen08209/FlClash) の改変版（フォーク）です:
 
 - 原著作物の著作権は FlClash の作者およびコントリビューターに帰属し、著作権表示とライセンス表示はすべて保持しています。
-- 本プロジェクトは原著作物に改変を加えています。主な変更点は、独立したノードライブラリ、マルチホップのプロキシチェーン、単一コアでのチェーンコンパイル、およびプロジェクト名とアプリ識別子の変更です。概要は [CHANGELOG.md](CHANGELOG.md) を参照してください。
+- 本プロジェクトは原著作物に改変を加えています。主な変更点は、独立したノードライブラリ、マルチホップのプロキシチェーン、単一コアでのチェーンコンパイル、およびプロジェクト名とアプリ識別子の変更です。概要は [CHANGELOG.md](../CHANGELOG.md) を参照してください。
 - GPL-3.0 に従い、本プロジェクトを元にした再配布も GPL-3.0 で公開し、上記の表示を保持する必要があります。
 - Avalon は上流の FlClash プロジェクトとは**関係がありません**。本フォークに関する issue を上流に提出しないでください。
 

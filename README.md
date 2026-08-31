@@ -1,4 +1,4 @@
-**🌐 Languages:** [中文](README.md) · [English](README.en.md) · [Deutsch](README.de.md) · [Español](README.es.md) · [العربية](README.ar.md) · [Italiano](README.it.md) · [日本語](README.ja.md) · [한국어](README.ko.md)
+**🌐 Languages:** [中文](README.md) · [English](docs/README.en.md) · [Deutsch](docs/README.de.md) · [Español](docs/README.es.md) · [العربية](docs/README.ar.md) · [Italiano](docs/README.it.md) · [日本語](docs/README.ja.md) · [한국어](docs/README.ko.md)
 
 # Avalon — 支持单节点与代理链的多平台代理客户端
 

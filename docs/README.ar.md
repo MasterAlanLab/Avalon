@@ -1,4 +1,4 @@
-**🌐 Languages:** [中文](README.md) · [English](README.en.md) · [Deutsch](README.de.md) · [Español](README.es.md) · [العربية](README.ar.md) · [Italiano](README.it.md) · [日本語](README.ja.md) · [한국어](README.ko.md)
+**🌐 Languages:** [中文](../README.md) · [English](README.en.md) · [Deutsch](README.de.md) · [Español](README.es.md) · [العربية](README.ar.md) · [Italiano](README.it.md) · [日本語](README.ja.md) · [한국어](README.ko.md)
 
 # Avalon — عميل بروكسي متعدد المنصات يدعم العقد المفردة وسلاسل البروكسي
 
@@ -9,7 +9,7 @@
 <p>
   <a href="https://github.com/MasterAlanLab/Avalon/releases/"><img alt="Downloads" src="https://img.shields.io/github/downloads/MasterAlanLab/Avalon/total?style=flat-square&logo=github"></a>
   <a href="https://github.com/MasterAlanLab/Avalon/releases/"><img alt="Last Version" src="https://img.shields.io/github/release/MasterAlanLab/Avalon/all.svg?style=flat-square"></a>
-  <a href="LICENSE"><img alt="License" src="https://img.shields.io/badge/License-GPL--3.0-blue?style=flat-square"></a>
+  <a href="../LICENSE"><img alt="License" src="https://img.shields.io/badge/License-GPL--3.0-blue?style=flat-square"></a>
   <img alt="Platforms" src="https://img.shields.io/badge/Platforms-Android%20·%20Windows%20·%20macOS%20·%20Linux-brightgreen?style=flat-square">
   <img alt="Purpose" src="https://img.shields.io/badge/%D8%A7%D9%84%D8%A7%D8%B3%D8%AA%D8%AE%D8%AF%D8%A7%D9%85-%D9%84%D9%84%D8%AA%D8%B9%D9%84%D9%85%20%D9%88%D8%A7%D9%84%D8%A8%D8%AD%D8%AB%20%D9%81%D9%82%D8%B7-orange?style=flat-square">
 </p>
@@ -23,13 +23,13 @@
 على سطح المكتب:
 
 <p style="text-align: center;">
-    <img alt="desktop" src="snapshots/desktop.gif">
+    <img alt="desktop" src="../snapshots/desktop.gif">
 </p>
 
 على الهاتف:
 
 <p style="text-align: center;">
-    <img alt="mobile" src="snapshots/mobile.gif">
+    <img alt="mobile" src="../snapshots/mobile.gif">
 </p>
 
 ---
@@ -73,7 +73,7 @@
 
 ### التنزيل
 
-<a href="https://github.com/MasterAlanLab/Avalon/releases"><img alt="Get it on GitHub" src="snapshots/get-it-on-github.svg" width="200px"/></a>
+<a href="https://github.com/MasterAlanLab/Avalon/releases"><img alt="Get it on GitHub" src="../snapshots/get-it-on-github.svg" width="200px"/></a>
 
 ### متطلبات Linux
 
@@ -199,12 +199,12 @@ com.masteralanlab.avalon.action.TOGGLE
 
 ## الرخصة
 
-يصدر هذا المشروع برخصة **GPL-3.0**، وهي نفس رخصة المشروع الأصلي. النص الكامل في ملف [LICENSE](LICENSE). وإشعار الاشتقاق ومكوّنات الأطراف الثالثة مذكورة في ملف [NOTICE](NOTICE).
+يصدر هذا المشروع برخصة **GPL-3.0**، وهي نفس رخصة المشروع الأصلي. النص الكامل في ملف [LICENSE](../LICENSE). وإشعار الاشتقاق ومكوّنات الأطراف الثالثة مذكورة في ملف [NOTICE](../NOTICE).
 
 ‏Avalon نسخة معدَّلة (fork) من [FlClash](https://github.com/chen08209/FlClash):
 
 - حقوق العمل الأصلي مملوكة لمؤلفي FlClash والمساهمين فيه، وقد جرى الإبقاء على جميع إشعارات حقوق النشر والرخصة الأصلية.
-- يعدّل هذا المشروع العمل الأصلي، وأبرز التعديلات: مكتبة العقد المستقلة، وسلاسل البروكسي متعددة القفزات، وتجميع السلاسل داخل نواة واحدة، إضافةً إلى تغيير اسم المشروع ومعرّفات التطبيق. راجع [CHANGELOG.md](CHANGELOG.md) للاطلاع على ملخّص.
+- يعدّل هذا المشروع العمل الأصلي، وأبرز التعديلات: مكتبة العقد المستقلة، وسلاسل البروكسي متعددة القفزات، وتجميع السلاسل داخل نواة واحدة، إضافةً إلى تغيير اسم المشروع ومعرّفات التطبيق. راجع [CHANGELOG.md](../CHANGELOG.md) للاطلاع على ملخّص.
 - وفقًا لرخصة GPL-3.0، يجب أن يصدر أي توزيع لاحق مبني على هذا المشروع تحت رخصة GPL-3.0 أيضًا مع الإبقاء على الإشعارات المذكورة أعلاه.
 - ‏Avalon **غير تابع** لمشروع FlClash الأصلي، فالرجاء عدم فتح تذاكر تخص هذا المشروع في مستودعهم.
 

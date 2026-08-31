@@ -1,4 +1,4 @@
-**🌐 Languages:** [中文](README.md) · [English](README.en.md) · [Deutsch](README.de.md) · [Español](README.es.md) · [العربية](README.ar.md) · [Italiano](README.it.md) · [日本語](README.ja.md) · [한국어](README.ko.md)
+**🌐 Languages:** [中文](../README.md) · [English](README.en.md) · [Deutsch](README.de.md) · [Español](README.es.md) · [العربية](README.ar.md) · [Italiano](README.it.md) · [日本語](README.ja.md) · [한국어](README.ko.md)
 
 # Avalon — Client proxy multipiattaforma con nodi singoli e catene di proxy
 
@@ -9,7 +9,7 @@
 <p>
   <a href="https://github.com/MasterAlanLab/Avalon/releases/"><img alt="Downloads" src="https://img.shields.io/github/downloads/MasterAlanLab/Avalon/total?style=flat-square&logo=github"></a>
   <a href="https://github.com/MasterAlanLab/Avalon/releases/"><img alt="Last Version" src="https://img.shields.io/github/release/MasterAlanLab/Avalon/all.svg?style=flat-square"></a>
-  <a href="LICENSE"><img alt="License" src="https://img.shields.io/badge/License-GPL--3.0-blue?style=flat-square"></a>
+  <a href="../LICENSE"><img alt="License" src="https://img.shields.io/badge/License-GPL--3.0-blue?style=flat-square"></a>
   <img alt="Platforms" src="https://img.shields.io/badge/Piattaforme-Android%20·%20Windows%20·%20macOS%20·%20Linux-brightgreen?style=flat-square">
   <img alt="Purpose" src="https://img.shields.io/badge/Uso-Solo%20studio%20e%20ricerca-orange?style=flat-square">
 </p>
@@ -23,13 +23,13 @@ Condivido principi tecnici, esperienze d'uso e aggiornamenti sui canali:
 Desktop:
 
 <p style="text-align: center;">
-    <img alt="desktop" src="snapshots/desktop.gif">
+    <img alt="desktop" src="../snapshots/desktop.gif">
 </p>
 
 Mobile:
 
 <p style="text-align: center;">
-    <img alt="mobile" src="snapshots/mobile.gif">
+    <img alt="mobile" src="../snapshots/mobile.gif">
 </p>
 
 ---
@@ -73,7 +73,7 @@ Non serve più un abbonamento per usare un nodo. I nodi sono oggetti globali che
 
 ### Download
 
-<a href="https://github.com/MasterAlanLab/Avalon/releases"><img alt="Get it on GitHub" src="snapshots/get-it-on-github.svg" width="200px"/></a>
+<a href="https://github.com/MasterAlanLab/Avalon/releases"><img alt="Get it on GitHub" src="../snapshots/get-it-on-github.svg" width="200px"/></a>
 
 ### Dipendenze su Linux
 
@@ -199,12 +199,12 @@ Servizi che uso personalmente o che si abbinano bene a questo progetto. Alcuni l
 
 ## Licenza
 
-Questo progetto è distribuito con licenza **GPL-3.0**, la stessa del progetto originale. Il testo completo è in [LICENSE](LICENSE). L'avviso di fork e i componenti di terze parti sono in [NOTICE](NOTICE).
+Questo progetto è distribuito con licenza **GPL-3.0**, la stessa del progetto originale. Il testo completo è in [LICENSE](../LICENSE). L'avviso di fork e i componenti di terze parti sono in [NOTICE](../NOTICE).
 
 Avalon è una versione modificata (fork) di [FlClash](https://github.com/chen08209/FlClash):
 
 - Il copyright dell'opera originale appartiene agli autori e ai contributori di FlClash; tutti gli avvisi originali di copyright e licenza sono conservati.
-- Questo progetto modifica l'opera originale, principalmente aggiungendo la libreria di nodi indipendente, le catene di proxy multi-hop e la compilazione delle catene in un unico core, oltre a cambiare il nome del progetto e gli identificatori dell'applicazione. Una panoramica è in [CHANGELOG.md](CHANGELOG.md).
+- Questo progetto modifica l'opera originale, principalmente aggiungendo la libreria di nodi indipendente, le catene di proxy multi-hop e la compilazione delle catene in un unico core, oltre a cambiare il nome del progetto e gli identificatori dell'applicazione. Una panoramica è in [CHANGELOG.md](../CHANGELOG.md).
 - Ai sensi della GPL-3.0, ogni ridistribuzione basata su questo progetto deve essere anch'essa rilasciata sotto GPL-3.0 e conservare gli avvisi sopra indicati.
 - Avalon **non è affiliato** al progetto originale FlClash: non aprire issue su questo fork nel loro repository.
 
