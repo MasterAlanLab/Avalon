@@ -3,10 +3,10 @@ import 'dart:io';
 
 import 'package:crypto/crypto.dart';
 import 'package:drift/native.dart';
-import 'package:fl_clash/common/common.dart';
-import 'package:fl_clash/database/database.dart';
-import 'package:fl_clash/l10n/l10n.dart';
-import 'package:fl_clash/models/models.dart';
+import 'package:avalon/common/common.dart';
+import 'package:avalon/database/database.dart';
+import 'package:avalon/l10n/l10n.dart';
+import 'package:avalon/models/models.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:path/path.dart';

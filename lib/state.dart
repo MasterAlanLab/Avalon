@@ -3,9 +3,9 @@ import 'dart:io';
 
 import 'package:animations/animations.dart';
 import 'package:dynamic_color/dynamic_color.dart';
-import 'package:fl_clash/common/theme.dart';
-import 'package:fl_clash/widgets/dialog.dart';
-import 'package:fl_clash/widgets/list.dart';
+import 'package:avalon/common/theme.dart';
+import 'package:avalon/widgets/dialog.dart';
+import 'package:avalon/widgets/list.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -325,7 +325,6 @@ class GlobalState {
     await _handleFailedPreference();
     await _handlerDisclaimer();
     await _showCrashRecoveryTip();
-    await _showCrashlyticsTip();
     await container.read(coreActionProvider.notifier).startCore();
     if (!_didCrashOnPreviousExecution) {
       await container.read(setupActionProvider.notifier).initStatus();
@@ -380,23 +379,6 @@ class GlobalState {
           ),
         ) ??
         false;
-  }
-
-  Future<void> _showCrashlyticsTip() async {
-    if (!system.isAndroid) return;
-    if (container.read(
-      appSettingProvider.select((state) => state.crashlyticsTip),
-    )) {
-      return;
-    }
-    await showMessage(
-      title: currentAppLocalizations.dataCollectionTip,
-      cancelable: false,
-      message: TextSpan(text: currentAppLocalizations.dataCollectionContent),
-    );
-    container
-        .read(appSettingProvider.notifier)
-        .update((state) => state.copyWith(crashlyticsTip: true));
   }
 
   Future<void> _handlerDisclaimer() async {

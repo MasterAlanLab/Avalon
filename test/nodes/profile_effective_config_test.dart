@@ -1,10 +1,10 @@
 import 'dart:io';
 
 import 'package:drift/native.dart';
-import 'package:fl_clash/database/database.dart';
-import 'package:fl_clash/features/chains/chains.dart';
-import 'package:fl_clash/features/chains/runtime.dart';
-import 'package:fl_clash/models/models.dart';
+import 'package:avalon/database/database.dart';
+import 'package:avalon/features/chains/chains.dart';
+import 'package:avalon/features/chains/runtime.dart';
+import 'package:avalon/models/models.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {

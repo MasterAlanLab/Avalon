@@ -1,0 +1,59 @@
+Avalon
+Copyright (C) 2026 MasterAlanLab and Avalon contributors
+
+This program is distributed under the GNU General Public License version 3.
+The complete license text is in the LICENSE file at the root of this repository.
+
+--------------------------------------------------------------------------------
+Upstream project
+--------------------------------------------------------------------------------
+
+Avalon is a modified version (fork) of FlClash:
+
+    FlClash — https://github.com/chen08209/FlClash
+    Copyright (C) FlClash authors and contributors
+    Licensed under the GNU General Public License version 3
+
+The original copyright and license notices of FlClash are retained. Avalon is not
+affiliated with, endorsed by, or supported by the FlClash project; please do not
+report issues about this fork to the upstream repository.
+
+--------------------------------------------------------------------------------
+Modifications made in Avalon
+--------------------------------------------------------------------------------
+
+Branched from FlClash v0.8.96 in 2026. The significant changes are:
+
+  * A standalone node library. Single nodes (VLESS, VMess, Shadowsocks, Trojan,
+    Hysteria2, TUIC, AnyTLS, SOCKS4/4a/5, HTTP(S), and Raw YAML/JSON records that
+    cover every mihomo proxy type) can be created, edited and used without a
+    subscription.
+
+  * Multi-hop proxy chains. Nodes, proxy groups and existing local SOCKS/HTTP/HTTPS
+    endpoints can be arranged as client -> prepend -> main -> append -> target and
+    are compiled through `dialer-proxy` inside a single core instance.
+
+  * Chain-to-profile binding, entry-group selection, compile diagnostics and path
+    preview; export of nodes and chains as Clash config or JSON.
+
+  * Renaming of the project and its identifiers: application name (FlClash ->
+    Avalon), Dart package (fl_clash -> avalon), application identifiers
+    (com.follow.clash -> com.masteralanlab.avalon), core and helper executables
+    (FlClashCore / FlClashHelperService -> AvalonCore / AvalonHelperService), and
+    the custom URL scheme (flclash:// -> avalon://).
+
+A per-release summary of changes is kept in CHANGELOG.md.
+
+--------------------------------------------------------------------------------
+Third-party components
+--------------------------------------------------------------------------------
+
+  * mihomo (Clash.Meta) — https://github.com/MetaCubeX/mihomo
+    The proxy core, licensed under the GNU General Public License version 3.
+    Bundled as the `core/Clash.Meta` submodule.
+
+  * plugins/wifi_ssid — MIT License, Copyright (c) 2025 FlClash.
+    See plugins/wifi_ssid/LICENSE.
+
+  * Other Flutter, Dart, Go and Rust dependencies are fetched by their respective
+    package managers and remain under their own licenses.

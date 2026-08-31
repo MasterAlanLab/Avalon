@@ -1,5 +1,5 @@
-import 'package:fl_clash/database/database.dart';
-import 'package:fl_clash/models/models.dart';
+import 'package:avalon/database/database.dart';
+import 'package:avalon/models/models.dart';
 
 import 'preferences.dart';
 import 'task.dart';

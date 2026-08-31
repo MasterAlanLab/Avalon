@@ -1,7 +1,7 @@
 import 'dart:async';
 
-import 'package:fl_clash/core/method.dart';
-import 'package:fl_clash/enum/enum.dart';
+import 'package:avalon/core/method.dart';
+import 'package:avalon/enum/enum.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {

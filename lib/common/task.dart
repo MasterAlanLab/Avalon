@@ -6,10 +6,10 @@ import 'package:archive/archive_io.dart';
 import 'package:crypto/crypto.dart';
 import 'package:drift/drift.dart';
 import 'package:drift_flutter/drift_flutter.dart';
-import 'package:fl_clash/common/common.dart';
-import 'package:fl_clash/database/database.dart';
-import 'package:fl_clash/enum/enum.dart';
-import 'package:fl_clash/models/models.dart';
+import 'package:avalon/common/common.dart';
+import 'package:avalon/database/database.dart';
+import 'package:avalon/enum/enum.dart';
+import 'package:avalon/models/models.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 import 'package:path/path.dart';
@@ -270,7 +270,7 @@ Future<VM2<String, String>> _makeRealProfileTask(
               .whereType<Map>()
               .where(
                 (group) =>
-                    group['name']?.toString().startsWith('__flclash_') == true,
+                    group['name']?.toString().startsWith('__avalon_') == true,
               )
               .map((group) => Map<String, dynamic>.from(group))
               .toList()

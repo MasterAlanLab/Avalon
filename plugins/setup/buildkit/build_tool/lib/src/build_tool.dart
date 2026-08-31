@@ -286,7 +286,7 @@ Future<void> runMain(List<String> args) async {
   try {
     initLogging();
 
-    final runner = CommandRunner('build_tool', 'FlClash build tool')
+    final runner = CommandRunner('build_tool', 'Avalon build tool')
       ..argParser.addOption(
         'root-dir',
         valueHelp: '<path>',

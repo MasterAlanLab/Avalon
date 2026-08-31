@@ -1,7 +1,7 @@
-display_name: FlClash
+display_name: Avalon
 
-packager: chen08209
-packagerEmail: chen08209@gmail.com
+packager: MasterAlanLab
+packagerEmail: masteralanlab@gmail.com
 license: Other
 
 priority: optional
@@ -14,17 +14,17 @@ requires:
   - libsecret
 
 keywords:
-  - FlClash
+  - Avalon
   - Clash
   - ClashMeta
   - Proxy
 
-generic_name: FlClash
+generic_name: Avalon
 
 supported_mime_type:
   - x-scheme-handler/clash
   - x-scheme-handler/clashmeta
-  - x-scheme-handler/flclash
+  - x-scheme-handler/avalon
   - x-scheme-handler/vless
   - x-scheme-handler/vmess
   - x-scheme-handler/ss

@@ -25,7 +25,7 @@ var
   i: Integer;
   ResultCode: Integer;
 begin
-  Processes := ['FlClash.exe', 'FlClashCore.exe', 'FlClashHelperService.exe'];
+  Processes := ['Avalon.exe', 'AvalonCore.exe', 'AvalonHelperService.exe'];
 
   for i := 0 to GetArrayLength(Processes)-1 do
   begin
@@ -38,7 +38,7 @@ var
   HelperPath: String;
   ResultCode: Integer;
 begin
-  HelperPath := ExpandConstant('{app}\\FlClashHelperService.exe');
+  HelperPath := ExpandConstant('{app}\\AvalonHelperService.exe');
   if FileExists(HelperPath) then
   begin
     Exec(HelperPath, 'uninstall', '', SW_HIDE, ewWaitUntilTerminated, ResultCode);
@@ -108,10 +108,10 @@ Root: HKA; Subkey: "Software\Classes\clashmeta"; ValueType: string; ValueName: "
 Root: HKA; Subkey: "Software\Classes\clashmeta"; ValueType: string; ValueName: "URL Protocol"; ValueData: ""
 Root: HKA; Subkey: "Software\Classes\clashmeta\DefaultIcon"; ValueType: string; ValueName: ""; ValueData: "{app}\{{EXECUTABLE_NAME}},0"
 Root: HKA; Subkey: "Software\Classes\clashmeta\shell\open\command"; ValueType: string; ValueName: ""; ValueData: """{app}\{{EXECUTABLE_NAME}}"" ""%1"""
-Root: HKA; Subkey: "Software\Classes\flclash"; ValueType: string; ValueName: ""; ValueData: "URL:flclash Protocol"; Flags: uninsdeletekey
-Root: HKA; Subkey: "Software\Classes\flclash"; ValueType: string; ValueName: "URL Protocol"; ValueData: ""
-Root: HKA; Subkey: "Software\Classes\flclash\DefaultIcon"; ValueType: string; ValueName: ""; ValueData: "{app}\{{EXECUTABLE_NAME}},0"
-Root: HKA; Subkey: "Software\Classes\flclash\shell\open\command"; ValueType: string; ValueName: ""; ValueData: """{app}\{{EXECUTABLE_NAME}}"" ""%1"""
+Root: HKA; Subkey: "Software\Classes\avalon"; ValueType: string; ValueName: ""; ValueData: "URL:avalon Protocol"; Flags: uninsdeletekey
+Root: HKA; Subkey: "Software\Classes\avalon"; ValueType: string; ValueName: "URL Protocol"; ValueData: ""
+Root: HKA; Subkey: "Software\Classes\avalon\DefaultIcon"; ValueType: string; ValueName: ""; ValueData: "{app}\{{EXECUTABLE_NAME}},0"
+Root: HKA; Subkey: "Software\Classes\avalon\shell\open\command"; ValueType: string; ValueName: ""; ValueData: """{app}\{{EXECUTABLE_NAME}}"" ""%1"""
 Root: HKA; Subkey: "Software\Classes\vless"; ValueType: string; ValueName: ""; ValueData: "URL:vless Protocol"; Flags: uninsdeletekey
 Root: HKA; Subkey: "Software\Classes\vless"; ValueType: string; ValueName: "URL Protocol"; ValueData: ""
 Root: HKA; Subkey: "Software\Classes\vless\DefaultIcon"; ValueType: string; ValueName: ""; ValueData: "{app}\{{EXECUTABLE_NAME}},0"

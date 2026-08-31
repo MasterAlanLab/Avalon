@@ -1,8 +1,8 @@
-import 'package:fl_clash/common/common.dart';
-import 'package:fl_clash/models/common.dart';
-import 'package:fl_clash/providers/app.dart';
-import 'package:fl_clash/state.dart';
-import 'package:fl_clash/widgets/inherited.dart';
+import 'package:avalon/common/common.dart';
+import 'package:avalon/models/common.dart';
+import 'package:avalon/providers/app.dart';
+import 'package:avalon/state.dart';
+import 'package:avalon/widgets/inherited.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 

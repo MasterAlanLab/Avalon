@@ -1,11 +1,11 @@
 import 'dart:async';
 
-import 'package:fl_clash/common/common.dart';
-import 'package:fl_clash/common/theme.dart';
-import 'package:fl_clash/l10n/l10n.dart';
-import 'package:fl_clash/state.dart';
-import 'package:fl_clash/views/dashboard/widgets/memory_info.dart';
-import 'package:fl_clash/widgets/inherited.dart';
+import 'package:avalon/common/common.dart';
+import 'package:avalon/common/theme.dart';
+import 'package:avalon/l10n/l10n.dart';
+import 'package:avalon/state.dart';
+import 'package:avalon/views/dashboard/widgets/memory_info.dart';
+import 'package:avalon/widgets/inherited.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_test/flutter_test.dart';

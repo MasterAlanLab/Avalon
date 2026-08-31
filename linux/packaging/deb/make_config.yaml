@@ -1,8 +1,8 @@
-display_name: FlClash
-package_name: FlClash
+display_name: Avalon
+package_name: Avalon
 maintainer:
-  name: chen08209
-  email: chen08209@gmail.com
+  name: MasterAlanLab
+  email: masteralanlab@gmail.com
 
 priority: optional
 section: x11
@@ -16,17 +16,17 @@ dependencies:
   - libsecret-1-0
 
 keywords:
-  - FlClash
+  - Avalon
   - Clash
   - ClashMeta
   - Proxy
 
-generic_name: FlClash
+generic_name: Avalon
 
 supported_mime_type:
   - x-scheme-handler/clash
   - x-scheme-handler/clashmeta
-  - x-scheme-handler/flclash
+  - x-scheme-handler/avalon
   - x-scheme-handler/vless
   - x-scheme-handler/vmess
   - x-scheme-handler/ss

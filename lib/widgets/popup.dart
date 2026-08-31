@@ -1,5 +1,5 @@
-import 'package:fl_clash/common/common.dart';
-import 'package:fl_clash/models/common.dart';
+import 'package:avalon/common/common.dart';
+import 'package:avalon/models/common.dart';
 import 'package:flutter/material.dart';
 
 import 'animated_cross_slide.dart';

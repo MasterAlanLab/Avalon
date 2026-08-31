@@ -1,4 +1,4 @@
-import 'package:fl_clash/state.dart';
+import 'package:avalon/state.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {

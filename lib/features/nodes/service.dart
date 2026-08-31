@@ -2,11 +2,11 @@ import 'dart:async';
 import 'dart:io';
 
 import 'package:collection/collection.dart';
-import 'package:fl_clash/common/file.dart';
-import 'package:fl_clash/common/path.dart';
-import 'package:fl_clash/database/database.dart';
-import 'package:fl_clash/common/snowflake.dart';
-import 'package:fl_clash/models/models.dart';
+import 'package:avalon/common/file.dart';
+import 'package:avalon/common/path.dart';
+import 'package:avalon/database/database.dart';
+import 'package:avalon/common/snowflake.dart';
+import 'package:avalon/models/models.dart';
 import 'package:path/path.dart' as p;
 import 'package:yaml/yaml.dart';
 

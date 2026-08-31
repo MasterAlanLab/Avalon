@@ -1,4 +1,4 @@
-import 'package:fl_clash/common/snowflake.dart';
+import 'package:avalon/common/snowflake.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
 part 'generated/chain.freezed.dart';

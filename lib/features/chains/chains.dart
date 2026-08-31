@@ -52,7 +52,7 @@ class ChainCompileRequest {
     required this.nodes,
     this.groups = const {},
     this.branchLimit = 64,
-    this.generatedPrefix = '__flclash_chain',
+    this.generatedPrefix = '__avalon_chain',
     this.reservedNames = const {},
   });
 

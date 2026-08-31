@@ -1,6 +1,6 @@
 import 'dart:typed_data';
 
-import 'package:fl_clash/common/converter.dart';
+import 'package:avalon/common/converter.dart';
 import 'package:test/test.dart';
 
 void main() {

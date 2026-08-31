@@ -1,5 +1,5 @@
-import 'package:fl_clash/common/constant.dart';
-import 'package:fl_clash/state.dart';
+import 'package:avalon/common/constant.dart';
+import 'package:avalon/state.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 

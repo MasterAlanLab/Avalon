@@ -1,6 +1,6 @@
 import 'dart:async';
 
-import 'package:fl_clash/providers/actions/system_exit.dart';
+import 'package:avalon/providers/actions/system_exit.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {

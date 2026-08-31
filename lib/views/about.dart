@@ -1,11 +1,11 @@
 import 'dart:async';
 
-import 'package:fl_clash/common/common.dart';
-import 'package:fl_clash/l10n/l10n.dart';
-import 'package:fl_clash/providers/providers.dart';
-import 'package:fl_clash/state.dart';
-import 'package:fl_clash/widgets/list.dart';
-import 'package:fl_clash/widgets/scaffold.dart';
+import 'package:avalon/common/common.dart';
+import 'package:avalon/l10n/l10n.dart';
+import 'package:avalon/providers/providers.dart';
+import 'package:avalon/state.dart';
+import 'package:avalon/widgets/list.dart';
+import 'package:avalon/widgets/scaffold.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -50,7 +50,7 @@ class AboutView extends StatelessWidget {
         ListItem(
           title: const Text('Telegram'),
           onTap: () {
-            globalState.openUrl('https://t.me/FlClash');
+            globalState.openUrl('https://t.me/MasterAlanLab_Channel');
           },
           trailing: const Icon(Icons.launch),
         ),

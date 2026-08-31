@@ -1,6 +1,6 @@
 ---
 name: ui-work
-description: Use when changing FlClash Flutter UI, widgets, screens, Material You styling, navigation surfaces, async feedback, or user-facing interactions.
+description: Use when changing Avalon Flutter UI, widgets, screens, Material You styling, navigation surfaces, async feedback, or user-facing interactions.
 ---
 
 # UI Work

@@ -33,11 +33,11 @@ class BuildConfig {
     tags: 'with_gvisor',
     goLdflags: '-w -s',
     coreDir: 'core',
-    coreName: 'FlClashCore',
+    coreName: 'AvalonCore',
     libName: 'libclash',
     outputDir: 'libclash',
     helperDir: 'services/helper',
-    helperName: 'FlClashHelperService',
+    helperName: 'AvalonHelperService',
     distDir: 'dist',
   );
 

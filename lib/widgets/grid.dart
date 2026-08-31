@@ -1,6 +1,6 @@
 import 'dart:math' as math;
 
-import 'package:fl_clash/common/common.dart';
+import 'package:avalon/common/common.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 

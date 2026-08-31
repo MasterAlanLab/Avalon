@@ -1,4 +1,4 @@
-import 'package:fl_clash/common/indexing.dart';
+import 'package:avalon/common/indexing.dart';
 import 'package:test/test.dart';
 
 void main() {

@@ -1,4 +1,4 @@
-import 'package:fl_clash/common/datetime.dart';
+import 'package:avalon/common/datetime.dart';
 import 'package:test/test.dart';
 
 void main() {

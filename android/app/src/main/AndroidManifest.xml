@@ -28,7 +28,7 @@
     <uses-permission android:name="android.permission.REQUEST_IGNORE_BATTERY_OPTIMIZATIONS" />
 
     <application
-        android:name=".FlClashApplication"
+        android:name=".AvalonApplication"
         android:banner="@mipmap/ic_banner"
         android:hardwareAccelerated="true"
         android:icon="@mipmap/ic_launcher"
@@ -62,7 +62,7 @@
 
                 <data android:scheme="clash" />
                 <data android:scheme="clashmeta" />
-                <data android:scheme="flclash" />
+                <data android:scheme="avalon" />
 
                 <data android:host="install-config" />
             </intent-filter>
@@ -72,7 +72,7 @@
                 <category android:name="android.intent.category.DEFAULT" />
                 <category android:name="android.intent.category.BROWSABLE" />
 
-                <data android:scheme="flclash" android:host="import-node" />
+                <data android:scheme="avalon" android:host="import-node" />
             </intent-filter>
             <intent-filter>
                 <action android:name="android.intent.action.VIEW" />

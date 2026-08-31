@@ -1,6 +1,6 @@
-import 'package:fl_clash/common/common.dart';
-import 'package:fl_clash/database/database.dart';
-import 'package:fl_clash/models/models.dart';
+import 'package:avalon/common/common.dart';
+import 'package:avalon/database/database.dart';
+import 'package:avalon/models/models.dart';
 
 import 'chains.dart';
 import '../nodes/assets.dart' as runtime_asset;
@@ -372,7 +372,7 @@ class ProfileEffectiveConfigService {
           nodes: nodeConfigs,
           groups: groups,
           branchLimit: chain.branchLimit,
-          generatedPrefix: '__flclash_chain_${chain.id}',
+          generatedPrefix: '__avalon_chain_${chain.id}',
         ),
       );
     }
@@ -411,7 +411,7 @@ class ProfileEffectiveConfigService {
         for (final group in groups)
           if (group is Map && group['name'] != null) group['name'].toString(),
       };
-      final aggregateName = _allocateName('__flclash_chains', usedNames);
+      final aggregateName = _allocateName('__avalon_chains', usedNames);
       groups.add({
         'name': aggregateName,
         'type': 'select',

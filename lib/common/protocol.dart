@@ -5,7 +5,7 @@ import 'package:win32_registry/win32_registry.dart';
 const protocolSchemes = [
   'clash',
   'clashmeta',
-  'flclash',
+  'avalon',
   'vless',
   'vmess',
   'ss',

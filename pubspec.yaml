@@ -1,5 +1,5 @@
-name: fl_clash
-description: A multi-platform proxy client based on ClashMeta, simple and easy to use, open-source and ad-free.
+name: avalon
+description: A multi-platform proxy client based on ClashMeta, with a standalone node library and multi-hop proxy chains.
 publish_to: 'none'
 version: 0.8.96+2026081701
 environment:

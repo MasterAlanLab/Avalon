@@ -1,5 +1,5 @@
-import 'package:fl_clash/widgets/builder.dart';
-import 'package:fl_clash/widgets/inherited.dart';
+import 'package:avalon/widgets/builder.dart';
+import 'package:avalon/widgets/inherited.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 

@@ -1,4 +1,4 @@
-group 'com.follow.clash.setup'
+group 'com.masteralanlab.avalon.setup'
 version '1.0'
 
 buildscript {
@@ -22,7 +22,7 @@ apply plugin: 'com.android.library'
 
 android {
     if (project.android.hasProperty("namespace")) {
-        namespace 'com.follow.clash.setup'
+        namespace 'com.masteralanlab.avalon.setup'
     }
     compileSdkVersion 36
     ndkVersion android.ndkVersion

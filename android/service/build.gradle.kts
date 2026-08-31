@@ -5,7 +5,7 @@ plugins {
 }
 
 android {
-    namespace = "com.follow.clash.service"
+    namespace = "com.masteralanlab.avalon.service"
     compileSdk = libs.versions.compileSdk.get().toInt()
 
     defaultConfig {

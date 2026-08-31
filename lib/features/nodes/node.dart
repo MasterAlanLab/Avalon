@@ -1,7 +1,7 @@
 import 'dart:convert';
 
 import 'package:crypto/crypto.dart';
-import 'package:fl_clash/models/node.dart' as stored;
+import 'package:avalon/models/node.dart' as stored;
 
 enum NodeIssueSeverity { warning, error }
 

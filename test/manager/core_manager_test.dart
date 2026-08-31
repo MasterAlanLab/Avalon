@@ -1,9 +1,9 @@
-import 'package:fl_clash/core/core.dart';
-import 'package:fl_clash/core/interface.dart';
-import 'package:fl_clash/enum/enum.dart';
-import 'package:fl_clash/manager/core_manager.dart';
-import 'package:fl_clash/models/models.dart';
-import 'package:fl_clash/providers/app.dart';
+import 'package:avalon/core/core.dart';
+import 'package:avalon/core/interface.dart';
+import 'package:avalon/enum/enum.dart';
+import 'package:avalon/manager/core_manager.dart';
+import 'package:avalon/models/models.dart';
+import 'package:avalon/providers/app.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';

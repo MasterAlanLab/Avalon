@@ -1,13 +1,13 @@
 import 'dart:io';
 
-import 'package:fl_clash/core/desktop/core_manifest.dart';
+import 'package:avalon/core/desktop/core_manifest.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
   late Directory directory;
 
   setUp(() {
-    directory = Directory.systemTemp.createTempSync('flclash_manifest_test_');
+    directory = Directory.systemTemp.createTempSync('avalon_manifest_test_');
   });
 
   tearDown(() {

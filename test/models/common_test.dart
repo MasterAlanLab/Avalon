@@ -1,8 +1,8 @@
 import 'dart:io';
 
-import 'package:fl_clash/enum/enum.dart';
-import 'package:fl_clash/l10n/l10n.dart';
-import 'package:fl_clash/models/models.dart';
+import 'package:avalon/enum/enum.dart';
+import 'package:avalon/l10n/l10n.dart';
+import 'package:avalon/models/models.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_test/flutter_test.dart';

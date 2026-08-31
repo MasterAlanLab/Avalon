@@ -1,3 +1,24 @@
+## Unreleased (Avalon)
+
+Avalon is a fork of [FlClash](https://github.com/chen08209/FlClash) (GPL-3.0), branched at `v0.8.96`.
+The entries in this section describe the changes made in this fork; everything from `v0.8.96` down is
+upstream FlClash history, kept for traceability.
+
+- Rename the project to Avalon: application name, Dart package (`fl_clash` → `avalon`), application
+  identifiers (`com.follow.clash` → `com.masteralanlab.avalon`), core and helper executables
+  (`FlClashCore` / `FlClashHelperService` → `AvalonCore` / `AvalonHelperService`) and the custom URL
+  scheme (`flclash://` → `avalon://`)
+
+- Add a standalone node library: VLESS, VMess, Shadowsocks, Trojan, Hysteria2, TUIC, AnyTLS,
+  SOCKS4/4a/5 and HTTP(S), plus Raw YAML/JSON nodes covering every mihomo proxy type
+
+- Add multi-hop proxy chains: client → prepend → main → append → target, with proxy groups and existing
+  local SOCKS/HTTP/HTTPS endpoints as hops, compiled through `dialer-proxy` inside a single core
+
+- Add chain-to-profile binding with explicit entry groups, compile diagnostics and path preview
+
+- Export nodes and chains as Clash config or JSON
+
 ## v0.8.96
 
 - Optimize commented policy

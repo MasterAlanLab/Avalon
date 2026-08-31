@@ -1,4 +1,4 @@
-import 'package:fl_clash/features/chains/chains.dart';
+import 'package:avalon/features/chains/chains.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 Map<String, dynamic> _node(String name, {String type = 'socks'}) => {
@@ -80,7 +80,7 @@ void main() {
         name: 'route',
         hops: const [ChainHop(target: ChainTarget.node('node'))],
         nodes: {'node': _node('NODE')},
-        reservedNames: const {'__flclash_chain_route_1_1_NODE'},
+        reservedNames: const {'__avalon_chain_route_1_1_NODE'},
       ),
     );
     expect(reserved.generatedProxies.keys.single, contains('(2)'));

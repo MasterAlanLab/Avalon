@@ -1,9 +1,9 @@
-import 'package:fl_clash/common/common.dart';
-import 'package:fl_clash/database/database.dart';
-import 'package:fl_clash/models/models.dart';
-import 'package:fl_clash/providers/providers.dart';
-import 'package:fl_clash/state.dart';
-import 'package:fl_clash/widgets/widgets.dart';
+import 'package:avalon/common/common.dart';
+import 'package:avalon/database/database.dart';
+import 'package:avalon/models/models.dart';
+import 'package:avalon/providers/providers.dart';
+import 'package:avalon/state.dart';
+import 'package:avalon/widgets/widgets.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';

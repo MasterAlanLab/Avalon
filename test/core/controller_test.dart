@@ -1,10 +1,10 @@
 import 'dart:async';
 
-import 'package:fl_clash/core/controller.dart';
-import 'package:fl_clash/core/desktop/model.dart';
-import 'package:fl_clash/core/interface.dart';
-import 'package:fl_clash/enum/enum.dart';
-import 'package:fl_clash/models/models.dart';
+import 'package:avalon/core/controller.dart';
+import 'package:avalon/core/desktop/model.dart';
+import 'package:avalon/core/interface.dart';
+import 'package:avalon/enum/enum.dart';
+import 'package:avalon/models/models.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:test/test.dart';
 

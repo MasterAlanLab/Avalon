@@ -3,7 +3,7 @@ import 'dart:io';
 
 import 'package:archive/archive.dart';
 import 'package:crypto/crypto.dart';
-import 'package:fl_clash/features/nodes/nodes.dart';
+import 'package:avalon/features/nodes/nodes.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {

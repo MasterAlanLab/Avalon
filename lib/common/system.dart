@@ -3,12 +3,12 @@ import 'dart:io';
 
 import 'package:device_info_plus/device_info_plus.dart';
 import 'package:ffi/ffi.dart';
-import 'package:fl_clash/common/common.dart';
-import 'package:fl_clash/core/desktop/helper_client.dart';
-import 'package:fl_clash/enum/enum.dart';
-import 'package:fl_clash/plugins/app.dart';
-import 'package:fl_clash/state.dart';
-import 'package:fl_clash/widgets/input.dart';
+import 'package:avalon/common/common.dart';
+import 'package:avalon/core/desktop/helper_client.dart';
+import 'package:avalon/enum/enum.dart';
+import 'package:avalon/plugins/app.dart';
+import 'package:avalon/state.dart';
+import 'package:avalon/widgets/input.dart';
 import 'package:flutter/services.dart';
 import 'package:path/path.dart';
 

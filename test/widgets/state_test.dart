@@ -1,7 +1,7 @@
-import 'package:fl_clash/widgets/activate_box.dart';
-import 'package:fl_clash/widgets/builder.dart';
-import 'package:fl_clash/widgets/disabled_mask.dart';
-import 'package:fl_clash/widgets/inherited.dart';
+import 'package:avalon/widgets/activate_box.dart';
+import 'package:avalon/widgets/builder.dart';
+import 'package:avalon/widgets/disabled_mask.dart';
+import 'package:avalon/widgets/inherited.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 

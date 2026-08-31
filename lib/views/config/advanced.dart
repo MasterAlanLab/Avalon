@@ -1,13 +1,13 @@
-import 'package:fl_clash/common/common.dart';
-import 'package:fl_clash/models/clash_config.dart';
-import 'package:fl_clash/providers/config.dart';
-import 'package:fl_clash/state.dart';
-import 'package:fl_clash/views/config/dns.dart';
-import 'package:fl_clash/views/config/network.dart';
-import 'package:fl_clash/views/config/on_demand.dart';
-import 'package:fl_clash/views/config/scripts.dart';
-import 'package:fl_clash/widgets/list.dart';
-import 'package:fl_clash/widgets/scaffold.dart';
+import 'package:avalon/common/common.dart';
+import 'package:avalon/models/clash_config.dart';
+import 'package:avalon/providers/config.dart';
+import 'package:avalon/state.dart';
+import 'package:avalon/views/config/dns.dart';
+import 'package:avalon/views/config/network.dart';
+import 'package:avalon/views/config/on_demand.dart';
+import 'package:avalon/views/config/scripts.dart';
+import 'package:avalon/widgets/list.dart';
+import 'package:avalon/widgets/scaffold.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 

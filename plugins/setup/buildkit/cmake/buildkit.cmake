@@ -22,12 +22,12 @@ function(apply_buildkit)
   # The output files the build_tool produces
   if(WIN32)
     set(_outputs
-      "${PROJECT_ROOT}/libclash/windows/FlClashCore.exe"
+      "${PROJECT_ROOT}/libclash/windows/AvalonCore.exe"
       "${PROJECT_ROOT}/libclash/windows/manifest.json"
     )
     set(_platform_args "windows")
   else()
-    set(_outputs "${PROJECT_ROOT}/libclash/linux/FlClashCore")
+    set(_outputs "${PROJECT_ROOT}/libclash/linux/AvalonCore")
     set(_platform_args "linux")
   endif()
   set(_phony "${CMAKE_CURRENT_BINARY_DIR}/buildkit_phony")

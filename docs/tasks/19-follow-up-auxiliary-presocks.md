@@ -12,7 +12,7 @@
 
 - 本轮单 Core local endpoint 模型。
 - v2rayN `GetPreSocksItem` 和双 Core 启停顺序。
-- FlClash Desktop lifecycle、Windows Helper、Android ServiceState 与 TUN hook。
+- Avalon Desktop lifecycle、Windows Helper、Android ServiceState 与 TUN hook。
 
 ## 原输出（归档）
 

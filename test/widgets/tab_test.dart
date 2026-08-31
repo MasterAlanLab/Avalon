@@ -1,4 +1,4 @@
-import 'package:fl_clash/widgets/tab.dart';
+import 'package:avalon/widgets/tab.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 

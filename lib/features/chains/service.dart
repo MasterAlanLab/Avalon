@@ -1,6 +1,6 @@
-import 'package:fl_clash/common/snowflake.dart';
-import 'package:fl_clash/database/database.dart';
-import 'package:fl_clash/models/models.dart';
+import 'package:avalon/common/snowflake.dart';
+import 'package:avalon/database/database.dart';
+import 'package:avalon/models/models.dart';
 
 class ChainLibraryService {
   const ChainLibraryService({Database? store}) : _store = store;

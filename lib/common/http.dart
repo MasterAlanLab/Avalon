@@ -1,11 +1,11 @@
 import 'dart:io';
 
-import 'package:fl_clash/common/common.dart';
-import 'package:fl_clash/providers/providers.dart';
-import 'package:fl_clash/state.dart';
+import 'package:avalon/common/common.dart';
+import 'package:avalon/providers/providers.dart';
+import 'package:avalon/state.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-class FlClashHttpOverrides extends HttpOverrides {
+class AvalonHttpOverrides extends HttpOverrides {
   static String handleFindProxy(Uri url) {
     if ([localhost].contains(url.host)) {
       return 'DIRECT';

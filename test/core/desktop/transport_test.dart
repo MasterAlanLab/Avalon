@@ -2,7 +2,7 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:typed_data';
 
-import 'package:fl_clash/core/desktop/transport.dart';
+import 'package:avalon/core/desktop/transport.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import 'fakes.dart';

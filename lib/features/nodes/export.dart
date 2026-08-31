@@ -3,7 +3,7 @@ import 'dart:io';
 
 import 'package:archive/archive.dart';
 import 'package:crypto/crypto.dart';
-import 'package:fl_clash/common/yaml.dart';
+import 'package:avalon/common/yaml.dart';
 import 'package:path/path.dart' as p;
 
 import 'assets.dart';

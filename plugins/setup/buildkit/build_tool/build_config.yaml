@@ -1,9 +1,9 @@
 tags: with_gvisor
 go_ldflags: "-w -s"
 core_dir: core
-core_name: FlClashCore
+core_name: AvalonCore
 lib_name: libclash
 output_dir: libclash
 helper_dir: services/helper
-helper_name: FlClashHelperService
+helper_name: AvalonHelperService
 dist_dir: dist

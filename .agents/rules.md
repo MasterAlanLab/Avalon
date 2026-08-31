@@ -72,7 +72,7 @@ the invariant hard to break beats prose that asks the next reader not to break i
 
 ## Lifecycle Rules
 
-- Desktop process ownership belongs to `DesktopCoreLifecycle`; do not start/kill `FlClashCore` from providers, widgets,
+- Desktop process ownership belongs to `DesktopCoreLifecycle`; do not start/kill `AvalonCore` from providers, widgets,
   managers, or ad hoc exit callbacks. Acquire and release it through a `CoreProcessLease`.
 - `CoreController.close()` and platform `close()` implementations are terminal and idempotent. Application shutdown must
   stay centralized in `SystemAction`/`SystemExitCoordinator`.

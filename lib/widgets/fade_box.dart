@@ -1,5 +1,5 @@
 import 'package:animations/animations.dart';
-import 'package:fl_clash/common/common.dart';
+import 'package:avalon/common/common.dart';
 import 'package:flutter/material.dart';
 
 class FadeBox extends StatelessWidget {

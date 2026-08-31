@@ -1,5 +1,5 @@
 name: setup
-description: FlClash Go core build harness (FFI plugin).
+description: Avalon Go core build harness (FFI plugin).
 version: 0.0.1
 publish_to: none
 

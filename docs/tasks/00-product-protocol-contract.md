@@ -6,7 +6,7 @@
 
 ## 输入
 
-- 当前 FlClash Profile、二维码、App Link 和运行配置流程。
+- 当前 Avalon Profile、二维码、App Link 和运行配置流程。
 - 当前项目锁定的 Mihomo 版本及其 `proxies` 配置字段。
 - v2rayN 的节点编解码和前置/主节点/后置链路展示语义。
 - 已确认的全局节点库、全局链库、单 Core 和最小测试决策。
@@ -29,7 +29,7 @@
 - 首期专用表单只覆盖上列常用协议；其他 Mihomo 类型通过 Raw 记录保存和运行。
 - Raw 节点参与保存、绑定、链路、运行校验和 Clash/JSON 导出。
 - 每条链路都在最终 Profile 中展开为生成代理，后一个 hop 的 `dialer-proxy` 指向前一个 hop；不启动第二个 Core。
-- 本地 SOCKS/HTTP/HTTPS hop 表示已经存在的本地监听端点，FlClash 只把它作为 Mihomo proxy 使用，不负责启动、停止或接管该进程。
+- 本地 SOCKS/HTTP/HTTPS hop 表示已经存在的本地监听端点，Avalon 只把它作为 Mihomo proxy 使用，不负责启动、停止或接管该进程。
 - 单节点未绑定链路时保持原始节点配置和直连行为；链路绑定只改变 Profile 的入口组。
 
 ## 验收标准

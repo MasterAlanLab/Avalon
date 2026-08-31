@@ -1,7 +1,7 @@
-import 'package:fl_clash/common/common.dart';
-import 'package:fl_clash/providers/config.dart';
-import 'package:fl_clash/views/config/network.dart';
-import 'package:fl_clash/widgets/widgets.dart';
+import 'package:avalon/common/common.dart';
+import 'package:avalon/providers/config.dart';
+import 'package:avalon/views/config/network.dart';
+import 'package:avalon/widgets/widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 

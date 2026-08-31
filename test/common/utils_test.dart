@@ -1,5 +1,5 @@
-import 'package:fl_clash/common/utils.dart';
-import 'package:fl_clash/enum/enum.dart';
+import 'package:avalon/common/utils.dart';
+import 'package:avalon/enum/enum.dart';
 import 'package:test/test.dart';
 
 void main() {

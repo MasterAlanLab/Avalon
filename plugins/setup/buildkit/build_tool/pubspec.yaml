@@ -1,5 +1,5 @@
 name: build_tool
-description: FlClash build tool — compiles Go core and Rust helper for all platforms.
+description: Avalon build tool — compiles Go core and Rust helper for all platforms.
 publish_to: none
 version: 1.0.0
 

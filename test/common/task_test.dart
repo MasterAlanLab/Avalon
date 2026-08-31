@@ -1,6 +1,6 @@
-import 'package:fl_clash/common/task.dart';
-import 'package:fl_clash/enum/enum.dart';
-import 'package:fl_clash/models/models.dart';
+import 'package:avalon/common/task.dart';
+import 'package:avalon/enum/enum.dart';
+import 'package:avalon/models/models.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:yaml/yaml.dart';
 
@@ -9,12 +9,12 @@ int _double(int value) => value * 2;
 void main() {
   test('encoding helpers round-trip structured data', () async {
     final encoded = await encodeJSONTask({
-      'name': 'FlClash',
+      'name': 'Avalon',
       'values': [1, true, null],
     });
     final decoded = await decodeJSONTask<Map<String, dynamic>>(encoded);
 
-    expect(decoded['name'], 'FlClash');
+    expect(decoded['name'], 'Avalon');
     expect(decoded['values'], [1, true, null]);
     expect(await encodeYamlTask({'enabled': true}), contains('enabled: true'));
     expect(await encodeMD5Task('abc'), '900150983cd24fb0d6963f7d28e17f72');
@@ -116,7 +116,7 @@ void main() {
               ruleTarget: 'MATCH',
             ),
           ],
-          defaultUA: 'FlClash-Test',
+          defaultUA: 'Avalon-Test',
         ),
       );
       final config = loadYaml(result.a) as YamlMap;
@@ -124,7 +124,7 @@ void main() {
       expect(result.b, hasLength(32));
       expect(config['mixed-port'], 7893);
       expect(config['allow-lan'], true);
-      expect(config['global-ua'], 'FlClash-Test');
+      expect(config['global-ua'], 'Avalon-Test');
       expect(config['profile']['store-selected'], false);
       expect(
         config['dns']['nameserver'],
@@ -195,7 +195,7 @@ void main() {
           rawConfig: {
             'proxy-groups': [
               {
-                'name': '__flclash_chain_1_selector',
+                'name': '__avalon_chain_1_selector',
                 'type': 'select',
                 'proxies': ['CHAIN'],
               },
@@ -221,7 +221,7 @@ void main() {
       expect(config['proxy-groups'], hasLength(2));
       expect(
         (config['proxy-groups'] as YamlList).map((item) => item['name']),
-        contains('__flclash_chain_1_selector'),
+        contains('__avalon_chain_1_selector'),
       );
     },
   );

@@ -1,7 +1,7 @@
 import 'dart:math';
 
-import 'package:fl_clash/common/common.dart';
-import 'package:fl_clash/widgets/card.dart';
+import 'package:avalon/common/common.dart';
+import 'package:avalon/widgets/card.dart';
 import 'package:flutter/material.dart';
 import 'package:material_color_utilities/hct/hct.dart';
 

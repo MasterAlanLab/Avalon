@@ -1,8 +1,8 @@
-import 'package:fl_clash/common/task.dart';
-import 'package:fl_clash/models/profile.dart';
-import 'package:fl_clash/pages/editor.dart';
-import 'package:fl_clash/providers/action.dart';
-import 'package:fl_clash/state.dart';
+import 'package:avalon/common/task.dart';
+import 'package:avalon/models/profile.dart';
+import 'package:avalon/pages/editor.dart';
+import 'package:avalon/providers/action.dart';
+import 'package:avalon/state.dart';
 import 'package:flutter/material.dart';
 
 class PreviewProfileView extends StatefulWidget {

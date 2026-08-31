@@ -1,3 +1,3 @@
-import 'package:fl_clash/l10n/l10n.dart';
+import 'package:avalon/l10n/l10n.dart';
 
 final currentAppLocalizations = AppLocalizations.current;

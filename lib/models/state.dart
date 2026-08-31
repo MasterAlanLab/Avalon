@@ -1,5 +1,5 @@
 import 'package:collection/collection.dart';
-import 'package:fl_clash/enum/enum.dart';
+import 'package:avalon/enum/enum.dart';
 import 'package:flutter/material.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 

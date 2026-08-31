@@ -1,7 +1,7 @@
 import 'dart:async';
 
-import 'package:fl_clash/common/common.dart';
-import 'package:fl_clash/models/models.dart';
+import 'package:avalon/common/common.dart';
+import 'package:avalon/models/models.dart';
 
 import 'desktop/model.dart';
 import 'method.dart';

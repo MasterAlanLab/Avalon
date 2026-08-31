@@ -1,9 +1,9 @@
 import 'dart:async';
 
-import 'package:fl_clash/common/common.dart';
-import 'package:fl_clash/plugins/service.dart';
-import 'package:fl_clash/providers/providers.dart';
-import 'package:fl_clash/state.dart';
+import 'package:avalon/common/common.dart';
+import 'package:avalon/plugins/service.dart';
+import 'package:avalon/providers/providers.dart';
+import 'package:avalon/state.dart';
 
 import 'desktop/model.dart';
 import 'interface.dart';

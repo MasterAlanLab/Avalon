@@ -1,12 +1,12 @@
 library;
 
 import 'package:dynamic_color/dynamic_color.dart';
-import 'package:fl_clash/common/common.dart';
-import 'package:fl_clash/enum/enum.dart';
-import 'package:fl_clash/models/clash_config.dart';
-import 'package:fl_clash/models/state.dart';
-import 'package:fl_clash/state.dart';
-import 'package:fl_clash/widgets/widgets.dart';
+import 'package:avalon/common/common.dart';
+import 'package:avalon/enum/enum.dart';
+import 'package:avalon/models/clash_config.dart';
+import 'package:avalon/models/state.dart';
+import 'package:avalon/state.dart';
+import 'package:avalon/widgets/widgets.dart';
 import 'package:flutter/material.dart';
 
 final ruleItemHeight =

@@ -1,5 +1,5 @@
-import 'package:fl_clash/widgets/active_polling.dart';
-import 'package:fl_clash/widgets/inherited.dart';
+import 'package:avalon/widgets/active_polling.dart';
+import 'package:avalon/widgets/inherited.dart';
 import 'package:flutter/material.dart';
 
 typedef TickWidgetBuilder = Widget Function(BuildContext context, int tick);

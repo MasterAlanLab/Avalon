@@ -1,6 +1,6 @@
 ---
 name: provider-tests
-description: Use when adding or updating FlClash Riverpod provider tests, notifier tests, or state-management tests in this repository.
+description: Use when adding or updating Avalon Riverpod provider tests, notifier tests, or state-management tests in this repository.
 ---
 
 # Provider Tests
@@ -32,6 +32,6 @@ For broader test expansion, pair this with `.agents/rules.md` and `.agents/comma
 
 ## Pitfalls
 
-- Do not use `dart test`; FlClash models and provider tests may depend on Flutter types.
+- Do not use `dart test`; Avalon models and provider tests may depend on Flutter types.
 - Re-check source defaults before asserting them; provider defaults can drift.
 - If async provider timing matters, wait on provider futures or state changes instead of fixed sleeps.

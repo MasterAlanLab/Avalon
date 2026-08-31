@@ -1,5 +1,5 @@
-import 'package:fl_clash/common/common.dart';
-import 'package:fl_clash/features/nodes/nodes.dart';
+import 'package:avalon/common/common.dart';
+import 'package:avalon/features/nodes/nodes.dart';
 import 'package:flutter/material.dart';
 
 import 'dialog.dart';

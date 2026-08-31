@@ -36,7 +36,7 @@ Task 10、11、15。
 - 运行中保存可更新最终 YAML。
 - 校验 error 保留上一份有效配置和运行状态。
 - 桌面、Android 的输入、绑定和链路结果一致。
-- 配置中可检查后 hop 的 `dialer-proxy` 指向前 hop，运行期间只有一个 FlClash Core 生命周期。
+- 配置中可检查后 hop 的 `dialer-proxy` 指向前 hop，运行期间只有一个 Avalon Core 生命周期。
 
 ## 测试
 

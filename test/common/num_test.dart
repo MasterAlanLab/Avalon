@@ -1,4 +1,4 @@
-import 'package:fl_clash/common/num.dart';
+import 'package:avalon/common/num.dart';
 import 'package:test/test.dart';
 
 void main() {

@@ -1,4 +1,4 @@
-import 'package:fl_clash/widgets/side_sheet.dart';
+import 'package:avalon/widgets/side_sheet.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 

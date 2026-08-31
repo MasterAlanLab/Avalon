@@ -2,11 +2,11 @@ import 'dart:io';
 
 import 'package:drift/drift.dart' show driftRuntimeOptions;
 import 'package:drift/native.dart';
-import 'package:fl_clash/database/database.dart';
-import 'package:fl_clash/enum/enum.dart';
-import 'package:fl_clash/features/chains/service.dart';
-import 'package:fl_clash/features/nodes/service.dart';
-import 'package:fl_clash/models/models.dart';
+import 'package:avalon/database/database.dart';
+import 'package:avalon/enum/enum.dart';
+import 'package:avalon/features/chains/service.dart';
+import 'package:avalon/features/nodes/service.dart';
+import 'package:avalon/models/models.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:path/path.dart';
 

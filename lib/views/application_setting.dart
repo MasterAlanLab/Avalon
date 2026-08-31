@@ -1,6 +1,6 @@
-import 'package:fl_clash/common/common.dart';
-import 'package:fl_clash/providers/config.dart';
-import 'package:fl_clash/widgets/widgets.dart';
+import 'package:avalon/common/common.dart';
+import 'package:avalon/providers/config.dart';
+import 'package:avalon/widgets/widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -202,28 +202,6 @@ class OpenLogsItem extends ConsumerWidget {
   }
 }
 
-class CrashlyticsItem extends ConsumerWidget {
-  const CrashlyticsItem({super.key});
-
-  @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final appLocalizations = context.appLocalizations;
-    final crashlytics = ref.watch(
-      appSettingProvider.select((state) => state.crashlytics),
-    );
-    return ListItem.toggle(
-      title: Text(appLocalizations.crashlytics),
-      subtitle: Text(appLocalizations.crashlyticsTip),
-      value: crashlytics,
-      onChanged: (bool value) {
-        ref
-            .read(appSettingProvider.notifier)
-            .update((state) => state.copyWith(crashlytics: value));
-      },
-    );
-  }
-}
-
 class AutoCheckUpdateItem extends ConsumerWidget {
   const AutoCheckUpdateItem({super.key});
 
@@ -263,7 +241,6 @@ class ApplicationSettingView extends StatelessWidget {
       const OpenLogsItem(),
       const CloseConnectionsItem(),
       const UsageItem(),
-      if (system.isAndroid) const CrashlyticsItem(),
       const AutoCheckUpdateItem(),
     ];
     return BaseScaffold(

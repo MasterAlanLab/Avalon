@@ -1,7 +1,7 @@
 import 'dart:convert';
 
-import 'package:fl_clash/enum/enum.dart';
-import 'package:fl_clash/models/models.dart';
+import 'package:avalon/enum/enum.dart';
+import 'package:avalon/models/models.dart';
 import 'package:test/test.dart';
 
 void main() {

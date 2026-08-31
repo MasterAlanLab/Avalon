@@ -1,7 +1,7 @@
 import 'dart:math';
 import 'dart:ui';
 
-import 'package:fl_clash/widgets/inherited.dart';
+import 'package:avalon/widgets/inherited.dart';
 import 'package:flutter/material.dart';
 
 class EffectGestureDetector extends StatefulWidget {

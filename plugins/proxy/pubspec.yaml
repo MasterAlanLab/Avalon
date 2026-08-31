@@ -1,5 +1,5 @@
 name: proxy
-description: FlClash system proxy integration for Windows, macOS, and Linux.
+description: Avalon system proxy integration for Windows, macOS, and Linux.
 version: 0.0.1
 publish_to: none
 
