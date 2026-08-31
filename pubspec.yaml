@@ -1,5 +1,8 @@
 name: avalon
 description: A multi-platform proxy client based on ClashMeta, with a standalone node library and multi-hop proxy chains.
+homepage: https://github.com/MasterAlanLab/avalon
+repository: https://github.com/MasterAlanLab/avalon
+issue_tracker: https://github.com/MasterAlanLab/avalon/issues
 publish_to: 'none'
 version: 0.8.97+2026083101
 environment:
@@ -106,7 +109,6 @@ flutter:
     - assets/data/
     - assets/fonts/
     - assets/images/
-    - assets/images/avatar/
     - assets/images/empty/
     - assets/images/icon/
   fonts:

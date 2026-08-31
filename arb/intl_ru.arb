@@ -169,7 +169,7 @@
   "proxyGroup": "Группа прокси",
   "go": "Перейти",
   "externalLink": "Внешняя ссылка",
-  "otherContributors": "Другие участники",
+  "contributors": "Участники",
   "autoCloseConnections": "Автоматическое закрытие соединений",
   "autoCloseConnectionsDesc": "Автоматически закрывать соединения после смены узла",
   "onlyStatisticsProxy": "Только статистика прокси",

@@ -4,7 +4,7 @@ A proxy client for Android, Windows, macOS, and Linux, powered by [mihomo](https
 
 > Avalon is based on [FlClash](https://github.com/chen08209/FlClash).
 
-Download the package for your platform from [Releases](https://github.com/MasterAlanLab/Avalon/releases).
+Download the package for your platform from [Releases](https://github.com/MasterAlanLab/avalon/releases).
 
 ## Features
 
@@ -38,8 +38,8 @@ Subscriptions, the node library, and proxy chains are combined into a single run
 ## Build
 
 ```bash
-git clone --recurse-submodules https://github.com/MasterAlanLab/Avalon.git
-cd Avalon
+git clone --recurse-submodules https://github.com/MasterAlanLab/avalon.git
+cd avalon
 flutter pub get
 ```
 

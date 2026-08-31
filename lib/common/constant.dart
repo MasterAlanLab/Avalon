@@ -72,7 +72,14 @@ const localhost = '127.0.0.1';
 const clashConfigKey = 'clash_config';
 const configKey = 'config';
 const double dialogCommonWidth = 300;
-const repository = 'MasterAlanLab/Avalon';
+const repository = 'MasterAlanLab/avalon';
+const projectUrl = 'https://github.com/$repository';
+const telegramUrl = 'https://t.me/masteralanlab';
+const contributorsUrl = '$projectUrl/graphs/contributors';
+const coreSourceUrl = '$projectUrl/tree/main/core';
+const latestReleaseUrl = '$projectUrl/releases/latest';
+const latestReleaseApiUrl =
+    'https://api.github.com/repos/$repository/releases/latest';
 const defaultExternalController = '127.0.0.1:9090';
 const maxMobileWidth = 600;
 const maxLaptopWidth = 840;

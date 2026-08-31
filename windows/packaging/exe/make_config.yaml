@@ -2,7 +2,7 @@ script_template: inno_setup.iss
 app_id: 927F3295-D5A9-418D-8918-E24F855FDED8
 app_name: Avalon
 publisher: MasterAlanLab
-publisher_url: https://github.com/MasterAlanLab/Avalon
+publisher_url: https://github.com/MasterAlanLab/avalon
 display_name: Avalon
 executable_name: Avalon.exe
 output_base_file_name: Avalon.exe

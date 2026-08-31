@@ -1284,11 +1284,11 @@ class AppLocalizations {
     );
   }
 
-  /// `Other contributors`
-  String get otherContributors {
+  /// `Contributors`
+  String get contributors {
     return Intl.message(
-      'Other contributors',
-      name: 'otherContributors',
+      'Contributors',
+      name: 'contributors',
       desc: '',
       args: [],
     );

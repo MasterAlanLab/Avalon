@@ -307,6 +307,7 @@ class MessageLookup extends MessageLookupByLibrary {
       "Содержимое не может быть пустым",
     ),
     "contentScheme": MessageLookupByLibrary.simpleMessage("Контентная тема"),
+    "contributors": MessageLookupByLibrary.simpleMessage("Участники"),
     "controlGlobalAddedRules": MessageLookupByLibrary.simpleMessage(
       "Управление глобальными добавленными правилами",
     ),
@@ -743,9 +744,6 @@ class MessageLookup extends MessageLookupByLibrary {
     "optional": MessageLookupByLibrary.simpleMessage("Необязательно"),
     "options": MessageLookupByLibrary.simpleMessage("Опции"),
     "other": MessageLookupByLibrary.simpleMessage("Другое"),
-    "otherContributors": MessageLookupByLibrary.simpleMessage(
-      "Другие участники",
-    ),
     "outboundMode": MessageLookupByLibrary.simpleMessage(
       "Режим исходящего трафика",
     ),

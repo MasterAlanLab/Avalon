@@ -4,7 +4,7 @@ Android、Windows、macOS、Linux 向けのプロキシクライアント。[mih
 
 > Avalon は [FlClash](https://github.com/chen08209/FlClash) をベースに開発されています。
 
-各プラットフォームのインストールパッケージは [Releases](https://github.com/MasterAlanLab/Avalon/releases) からダウンロードできます。
+各プラットフォームのインストールパッケージは [Releases](https://github.com/MasterAlanLab/avalon/releases) からダウンロードできます。
 
 ## 主な機能
 
@@ -38,8 +38,8 @@ Android、Windows、macOS、Linux 向けのプロキシクライアント。[mih
 ## ビルド
 
 ```bash
-git clone --recurse-submodules https://github.com/MasterAlanLab/Avalon.git
-cd Avalon
+git clone --recurse-submodules https://github.com/MasterAlanLab/avalon.git
+cd avalon
 flutter pub get
 ```
 

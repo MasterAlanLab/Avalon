@@ -295,7 +295,7 @@ jobs:
         shell: bash
         run: |
           pre_tag=$(
-            curl --silent "https://api.github.com/repos/MasterAlanLab/Avalon/releases/latest" |
+            curl --silent "https://api.github.com/repos/MasterAlanLab/avalon/releases/latest" |
               sed -nE 's/.*"tag_name": "([^"]+)".*/\1/p'
           )
           bash .github/scripts/generate_release_notes.sh "$pre_tag" release.md

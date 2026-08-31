@@ -300,6 +300,7 @@ class MessageLookup extends MessageLookupByLibrary {
       "Content cannot be empty",
     ),
     "contentScheme": MessageLookupByLibrary.simpleMessage("Content"),
+    "contributors": MessageLookupByLibrary.simpleMessage("Contributors"),
     "controlGlobalAddedRules": MessageLookupByLibrary.simpleMessage(
       "Control global added rules",
     ),
@@ -710,9 +711,6 @@ class MessageLookup extends MessageLookupByLibrary {
     "optional": MessageLookupByLibrary.simpleMessage("Optional"),
     "options": MessageLookupByLibrary.simpleMessage("Options"),
     "other": MessageLookupByLibrary.simpleMessage("Other"),
-    "otherContributors": MessageLookupByLibrary.simpleMessage(
-      "Other contributors",
-    ),
     "outboundMode": MessageLookupByLibrary.simpleMessage("Outbound mode"),
     "override": MessageLookupByLibrary.simpleMessage("Override"),
     "overrideDns": MessageLookupByLibrary.simpleMessage("Override Dns"),

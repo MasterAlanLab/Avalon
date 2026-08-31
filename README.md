@@ -4,7 +4,7 @@ Android、Windows、macOS 和 Linux 平台的代理客户端，基于 [mihomo](h
 
 > Avalon 基于 [FlClash](https://github.com/chen08209/FlClash) 二次开发。
 
-从 [Releases](https://github.com/MasterAlanLab/Avalon/releases) 下载对应平台的安装包。
+从 [Releases](https://github.com/MasterAlanLab/avalon/releases) 下载对应平台的安装包。
 
 ## 功能特性
 
@@ -38,8 +38,8 @@ Android、Windows、macOS 和 Linux 平台的代理客户端，基于 [mihomo](h
 ## 构建
 
 ```bash
-git clone --recurse-submodules https://github.com/MasterAlanLab/Avalon.git
-cd Avalon
+git clone --recurse-submodules https://github.com/MasterAlanLab/avalon.git
+cd avalon
 flutter pub get
 ```
 

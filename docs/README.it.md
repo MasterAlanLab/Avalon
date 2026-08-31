@@ -4,7 +4,7 @@ Client proxy per Android, Windows, macOS e Linux, basato su [mihomo](https://git
 
 > Avalon è basato su [FlClash](https://github.com/chen08209/FlClash).
 
-Scarica il pacchetto di installazione per la tua piattaforma da [Releases](https://github.com/MasterAlanLab/Avalon/releases).
+Scarica il pacchetto di installazione per la tua piattaforma da [Releases](https://github.com/MasterAlanLab/avalon/releases).
 
 ## Funzionalità
 
@@ -38,8 +38,8 @@ Sottoscrizioni, libreria dei nodi e catene di proxy confluiscono in un'unica con
 ## Compilazione
 
 ```bash
-git clone --recurse-submodules https://github.com/MasterAlanLab/Avalon.git
-cd Avalon
+git clone --recurse-submodules https://github.com/MasterAlanLab/avalon.git
+cd avalon
 flutter pub get
 ```
 

@@ -4,7 +4,7 @@ Android, Windows, macOS, Linux용 프록시 클라이언트입니다. [mihomo](h
 
 > Avalon은 [FlClash](https://github.com/chen08209/FlClash)를 기반으로 개발되었습니다.
 
-[Releases](https://github.com/MasterAlanLab/Avalon/releases)에서 플랫폼에 맞는 설치 패키지를 다운로드할 수 있습니다.
+[Releases](https://github.com/MasterAlanLab/avalon/releases)에서 플랫폼에 맞는 설치 패키지를 다운로드할 수 있습니다.
 
 ## 주요 기능
 
@@ -38,8 +38,8 @@ Android, Windows, macOS, Linux용 프록시 클라이언트입니다. [mihomo](h
 ## 빌드
 
 ```bash
-git clone --recurse-submodules https://github.com/MasterAlanLab/Avalon.git
-cd Avalon
+git clone --recurse-submodules https://github.com/MasterAlanLab/avalon.git
+cd avalon
 flutter pub get
 ```
 

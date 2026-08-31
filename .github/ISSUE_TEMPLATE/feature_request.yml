@@ -8,11 +8,11 @@ body:
       value: |
         ## 在提交问题之前，请确认以下事项：
         1. 请务必给issue填写一个简洁明了的标题，以便他人快速检索
-        2. 请确保[已有的问题](https://github.com/MasterAlanLab/Avalon/issues?q=is%3Aissue) 中没有人提交过相似issue，否则请在已有的issue下进行讨论
+        2. 请确保[已有的问题](https://github.com/MasterAlanLab/avalon/issues?q=is%3Aissue) 中没有人提交过相似issue，否则请在已有的issue下进行讨论
         3. 请务必按照模板规范详细描述问题，否则issue将会被直接关闭
         ## Before submitting the issue, please make sure of the following checklist:
         1. Please be sure to fill in a concise and clear title for the issue so that others can quickly search
-        2. Please make sure there is no similar issue in the [existing issues](https://github.com/MasterAlanLab/Avalon/issues?q=is%3Aissue), otherwise please discuss under the existing issue
+        2. Please make sure there is no similar issue in the [existing issues](https://github.com/MasterAlanLab/avalon/issues?q=is%3Aissue), otherwise please discuss under the existing issue
         3. Please describe the problem in detail according to the template specification, otherwise issue will be closed directly.
 
   - type: textarea

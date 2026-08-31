@@ -1,26 +1,12 @@
 import 'dart:async';
 
 import 'package:avalon/common/common.dart';
-import 'package:avalon/l10n/l10n.dart';
 import 'package:avalon/providers/providers.dart';
 import 'package:avalon/state.dart';
 import 'package:avalon/widgets/list.dart';
 import 'package:avalon/widgets/scaffold.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-
-@immutable
-class Contributor {
-  final String avatar;
-  final String name;
-  final String link;
-
-  const Contributor({
-    required this.avatar,
-    required this.name,
-    required this.link,
-  });
-}
 
 class AboutView extends StatelessWidget {
   const AboutView({super.key});
@@ -50,58 +36,30 @@ class AboutView extends StatelessWidget {
         ListItem(
           title: const Text('Telegram'),
           onTap: () {
-            globalState.openUrl('https://t.me/MasterAlanLab_Channel');
+            globalState.openUrl(telegramUrl);
           },
           trailing: const Icon(Icons.launch),
         ),
         ListItem(
           title: Text(appLocalizations.project),
           onTap: () {
-            globalState.openUrl('https://github.com/$repository');
+            globalState.openUrl(projectUrl);
           },
           trailing: const Icon(Icons.launch),
         ),
         ListItem(
           title: Text(appLocalizations.core),
           onTap: () {
-            globalState.openUrl(
-              'https://github.com/chen08209/Clash.Meta/tree/FlClash',
-            );
+            globalState.openUrl(coreSourceUrl);
           },
           trailing: const Icon(Icons.launch),
         ),
-      ],
-    );
-  }
-
-  List<Widget> _buildContributorsSection(AppLocalizations appLocalizations) {
-    const contributors = [
-      Contributor(
-        avatar: 'assets/images/avatar/june2.jpg',
-        name: 'June2',
-        link: 'https://t.me/Jibadong',
-      ),
-      Contributor(
-        avatar: 'assets/images/avatar/arue.jpg',
-        name: 'Arue',
-        link: 'https://t.me/xrcm6868',
-      ),
-    ];
-    return generateSection(
-      separated: false,
-      title: appLocalizations.otherContributors,
-      items: [
         ListItem(
-          title: SingleChildScrollView(
-            scrollDirection: Axis.horizontal,
-            child: Wrap(
-              spacing: 24,
-              children: [
-                for (final contributor in contributors)
-                  Avatar(contributor: contributor),
-              ],
-            ),
-          ),
+          title: Text(appLocalizations.contributors),
+          onTap: () {
+            globalState.openUrl(contributorsUrl);
+          },
+          trailing: const Icon(Icons.launch),
         ),
       ],
     );
@@ -165,7 +123,6 @@ class AboutView extends StatelessWidget {
         ),
       ),
       const SizedBox(height: 12),
-      ..._buildContributorsSection(appLocalizations),
       ..._buildMoreSection(context),
     ];
     return BaseScaffold(
@@ -173,31 +130,6 @@ class AboutView extends StatelessWidget {
       body: Padding(
         padding: kMaterialListPadding.copyWith(top: 16, bottom: 16),
         child: generateListView(items),
-      ),
-    );
-  }
-}
-
-class Avatar extends StatelessWidget {
-  final Contributor contributor;
-
-  const Avatar({super.key, required this.contributor});
-
-  @override
-  Widget build(BuildContext context) {
-    return GestureDetector(
-      child: Column(
-        children: [
-          SizedBox(
-            width: 36,
-            height: 36,
-            child: CircleAvatar(
-              foregroundImage: AssetImage(contributor.avatar),
-            ),
-          ),
-          const SizedBox(height: 4),
-          Text(contributor.name, style: context.textTheme.bodySmall),
-        ],
       ),
     );
   }
