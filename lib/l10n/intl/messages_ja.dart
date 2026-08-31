@@ -260,6 +260,18 @@ class MessageLookup extends MessageLookupByLibrary {
     "create": MessageLookupByLibrary.simpleMessage("作成"),
     "createChain": MessageLookupByLibrary.simpleMessage("チェーンを作成"),
     "createCopy": MessageLookupByLibrary.simpleMessage("コピーを作成"),
+    "createFromChain": MessageLookupByLibrary.simpleMessage(
+      "Create from chain",
+    ),
+    "createFromChainDesc": MessageLookupByLibrary.simpleMessage(
+      "Build a runnable profile from a chain in the chain library",
+    ),
+    "createFromChainEmpty": MessageLookupByLibrary.simpleMessage(
+      "No chain yet. Create one on the Chains tab first.",
+    ),
+    "createFromChainTip": MessageLookupByLibrary.simpleMessage(
+      "The chain becomes this profile’s default outbound.",
+    ),
     "createNode": MessageLookupByLibrary.simpleMessage("ノードを作成"),
     "createProfile": MessageLookupByLibrary.simpleMessage("Create Profile"),
     "creationTime": MessageLookupByLibrary.simpleMessage("作成時間"),

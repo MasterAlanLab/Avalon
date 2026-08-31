@@ -4579,6 +4579,46 @@ class AppLocalizations {
     );
   }
 
+  /// `Create from chain`
+  String get createFromChain {
+    return Intl.message(
+      'Create from chain',
+      name: 'createFromChain',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Build a runnable profile from a chain in the chain library`
+  String get createFromChainDesc {
+    return Intl.message(
+      'Build a runnable profile from a chain in the chain library',
+      name: 'createFromChainDesc',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `The chain becomes this profile’s default outbound.`
+  String get createFromChainTip {
+    return Intl.message(
+      'The chain becomes this profile’s default outbound.',
+      name: 'createFromChainTip',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `No chain yet. Create one on the Chains tab first.`
+  String get createFromChainEmpty {
+    return Intl.message(
+      'No chain yet. Create one on the Chains tab first.',
+      name: 'createFromChainEmpty',
+      desc: '',
+      args: [],
+    );
+  }
+
   /// `Node data`
   String get nodeInput {
     return Intl.message('Node data', name: 'nodeInput', desc: '', args: []);

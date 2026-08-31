@@ -328,6 +328,18 @@ class MessageLookup extends MessageLookupByLibrary {
     "create": MessageLookupByLibrary.simpleMessage("Create"),
     "createChain": MessageLookupByLibrary.simpleMessage("Create chain"),
     "createCopy": MessageLookupByLibrary.simpleMessage("Create copy"),
+    "createFromChain": MessageLookupByLibrary.simpleMessage(
+      "Create from chain",
+    ),
+    "createFromChainDesc": MessageLookupByLibrary.simpleMessage(
+      "Build a runnable profile from a chain in the chain library",
+    ),
+    "createFromChainEmpty": MessageLookupByLibrary.simpleMessage(
+      "No chain yet. Create one on the Chains tab first.",
+    ),
+    "createFromChainTip": MessageLookupByLibrary.simpleMessage(
+      "The chain becomes this profile’s default outbound.",
+    ),
     "createNode": MessageLookupByLibrary.simpleMessage("Create node"),
     "createProfile": MessageLookupByLibrary.simpleMessage("Create Profile"),
     "creationTime": MessageLookupByLibrary.simpleMessage("Creation time"),

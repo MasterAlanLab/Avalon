@@ -276,6 +276,52 @@ void main() {
       );
       expect(artifact.isValid, isTrue);
     });
+
+    // Backs `addProfileFromChain`: the generated stub profile ships an empty
+    // entry group so the appended chain selector ends up as the only member,
+    // and therefore the default outbound.
+    test('makes the chain the sole member of an empty entry group', () async {
+      await store.profilesDao.putAll([profile.toCompanion()]);
+      await store.restore(
+        const [],
+        const [],
+        const [],
+        const [],
+        const [],
+        proxyNodes: const [node],
+        proxyChains: const [chain],
+        proxyChainHops: const [hop],
+        proxyChainBindings: const [
+          ProxyChainBinding(
+            profileId: 1,
+            chainId: 200,
+            isDefault: true,
+            entryGroups: ['PROXY'],
+          ),
+        ],
+      );
+      final artifact =
+          await ProfileEffectiveConfigService(
+            store: store,
+            nodeStorePath: Directory.systemTemp.path,
+          ).assemble(
+            profileId: 1,
+            profileConfig: const {
+              'proxies': <Map<String, Object?>>[],
+              'proxy-groups': [
+                {'name': 'PROXY', 'type': 'select', 'proxies': <String>[]},
+              ],
+              'rules': ['MATCH,PROXY'],
+            },
+          );
+      final selector = artifact.chainResults.single.generatedGroups.first.name;
+      expect(membersOf(artifact, 'PROXY'), [selector]);
+      expect(
+        artifact.diagnostics.map((item) => item.code),
+        isNot(contains('missing-chain-entry-group')),
+      );
+      expect(artifact.isValid, isTrue);
+    });
   });
 
   group('chain preview', () {

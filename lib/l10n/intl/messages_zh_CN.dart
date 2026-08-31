@@ -236,6 +236,16 @@ class MessageLookup extends MessageLookupByLibrary {
     "create": MessageLookupByLibrary.simpleMessage("创建"),
     "createChain": MessageLookupByLibrary.simpleMessage("创建链路"),
     "createCopy": MessageLookupByLibrary.simpleMessage("创建副本"),
+    "createFromChain": MessageLookupByLibrary.simpleMessage("从链路创建"),
+    "createFromChainDesc": MessageLookupByLibrary.simpleMessage(
+      "基于链库中的链路生成一个可运行的配置",
+    ),
+    "createFromChainEmpty": MessageLookupByLibrary.simpleMessage(
+      "还没有链路，请先在链路页创建。",
+    ),
+    "createFromChainTip": MessageLookupByLibrary.simpleMessage(
+      "该链路将作为此配置的默认出口。",
+    ),
     "createNode": MessageLookupByLibrary.simpleMessage("创建节点"),
     "createProfile": MessageLookupByLibrary.simpleMessage("创建配置"),
     "creationTime": MessageLookupByLibrary.simpleMessage("创建时间"),

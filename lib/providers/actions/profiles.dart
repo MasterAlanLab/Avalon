@@ -137,6 +137,58 @@ class ProfilesAction extends _$ProfilesAction {
     }
   }
 
+  /// Group the generated chain selector is attached to. The template leaves it
+  /// empty on purpose: `_attachChainEntry` appends the selector, so it ends up
+  /// as the only member and therefore the default outbound.
+  static const _chainEntryGroupName = 'PROXY';
+
+  static const _chainProfileTemplate =
+      '''
+mixed-port: 7890
+allow-lan: false
+mode: rule
+log-level: info
+proxies: []
+proxy-groups:
+  - name: $_chainEntryGroupName
+    type: select
+    proxies: []
+rules:
+  - MATCH,$_chainEntryGroupName
+''';
+
+  Future<void> addProfileFromChain({
+    required int chainId,
+    required String label,
+  }) async {
+    if (globalState.navigatorKey.currentState?.canPop() ?? false) {
+      globalState.navigatorKey.currentState?.popUntil((route) => route.isFirst);
+    }
+    ref.read(currentPageLabelProvider.notifier).toProfiles();
+    final profile = await globalState.loadingRun(
+      tag: LoadingTag.profiles,
+      () async {
+        return Profile.normal(
+          label: label,
+        ).saveFile(utf8.encode(_chainProfileTemplate));
+      },
+      title: currentAppLocalizations.addProfile,
+    );
+    if (profile == null) return;
+    putProfile(profile);
+    const service = ChainLibraryService();
+    await service.bind(
+      profileId: profile.id,
+      chainId: chainId,
+      isDefault: true,
+    );
+    await service.setEntryGroups(
+      profileId: profile.id,
+      chainId: chainId,
+      entryGroups: const [_chainEntryGroupName],
+    );
+  }
+
   Future<void> addProfileFormURL(String url) async {
     if (globalState.navigatorKey.currentState?.canPop() ?? false) {
       globalState.navigatorKey.currentState?.popUntil((route) => route.isFirst);

@@ -1,4 +1,6 @@
 import 'package:fl_clash/common/common.dart';
+import 'package:fl_clash/features/chains/service.dart';
+import 'package:fl_clash/models/models.dart';
 import 'package:fl_clash/pages/scan.dart';
 import 'package:fl_clash/providers/action.dart';
 import 'package:fl_clash/state.dart';
@@ -22,29 +24,20 @@ class AddProfileView extends StatelessWidget {
         .addProfileFormURL(url);
   }
 
-  Future<void> _handleImportNode() async {
+  Future<void> _handleCreateFromChain() async {
     final appLocalizations = context.appLocalizations;
-    final value = await globalState.showCommonDialog<String>(
-      child: InputDialog(
-        title: appLocalizations.importNode,
-        labelText: appLocalizations.nodeInput,
-        value: '',
-        keyboardType: TextInputType.multiline,
-        hintText: appLocalizations.nodeInputHint,
-        autovalidateMode: AutovalidateMode.onUnfocus,
-        validator: (value) {
-          if (value == null || value.trim().isEmpty) {
-            return appLocalizations.emptyTip('').trim();
-          }
-          return null;
-        },
-      ),
-    );
-    if (value != null && value.trim().isNotEmpty) {
-      await globalState.container
-          .read(profilesActionProvider.notifier)
-          .addProfileFormInput(value);
+    final chains = await const ChainLibraryService().list();
+    if (chains.isEmpty) {
+      globalState.showNotifier(appLocalizations.createFromChainEmpty);
+      return;
     }
+    final chain = await globalState.showCommonDialog<ProxyChain>(
+      child: ChainPickerDialog(chains: chains),
+    );
+    if (chain == null) return;
+    await globalState.container
+        .read(profilesActionProvider.notifier)
+        .addProfileFromChain(chainId: chain.id, label: chain.name);
   }
 
   Future<void> _toScan() async {
@@ -114,11 +107,56 @@ class AddProfileView extends StatelessWidget {
         ),
         ListItem(
           leading: const Icon(Icons.hub_outlined),
-          title: Text(appLocalizations.importNode),
-          subtitle: Text(appLocalizations.importNodeDesc),
-          onTap: _handleImportNode,
+          title: Text(appLocalizations.createFromChain),
+          subtitle: Text(appLocalizations.createFromChainDesc),
+          onTap: _handleCreateFromChain,
         ),
       ],
+    );
+  }
+}
+
+class ChainPickerDialog extends StatelessWidget {
+  final List<ProxyChain> chains;
+
+  const ChainPickerDialog({super.key, required this.chains});
+
+  @override
+  Widget build(BuildContext context) {
+    final appLocalizations = context.appLocalizations;
+    return CommonDialog(
+      title: appLocalizations.createFromChain,
+      actions: [
+        TextButton(
+          onPressed: () => Navigator.of(context).pop(),
+          child: Text(appLocalizations.cancel),
+        ),
+      ],
+      child: SizedBox(
+        width: 300,
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            Padding(
+              padding: const EdgeInsets.only(bottom: 8),
+              child: Text(
+                appLocalizations.createFromChainTip,
+                style: context.textTheme.bodySmall?.copyWith(
+                  color: context.colorScheme.onSurfaceVariant,
+                ),
+              ),
+            ),
+            for (final chain in chains)
+              ListTile(
+                contentPadding: EdgeInsets.zero,
+                leading: const Icon(Icons.link_sharp),
+                title: Text(chain.name, maxLines: 1),
+                onTap: () => Navigator.of(context).pop(chain),
+              ),
+          ],
+        ),
+      ),
     );
   }
 }
