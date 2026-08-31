@@ -6,9 +6,11 @@ publisher_url: https://github.com/MasterAlanLab/Avalon
 display_name: Avalon
 executable_name: Avalon.exe
 output_base_file_name: Avalon.exe
-setup_icon_file: ..\windows\runner\resources\app_icon.ico
+# flutter_distributor resolves the icon from the project root.
+setup_icon_file: windows\runner\resources\app_icon.ico
 locales:
   - lang: zh
-    file: ..\windows\packaging\exe\ChineseSimplified.isl
+    # Inno Setup resolves this from dist/<package>/_exe.iss.
+    file: ..\..\windows\packaging\exe\ChineseSimplified.isl
   - lang: en
 privileges_required: admin

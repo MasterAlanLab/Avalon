@@ -66,7 +66,7 @@ end;
 {% if locale.lang == 'bg' %}Name: "bulgarian"; MessagesFile: "compiler:Languages\\Bulgarian.isl"{% endif %}
 {% if locale.lang == 'ca' %}Name: "catalan"; MessagesFile: "compiler:Languages\\Catalan.isl"{% endif %}
 {% if locale.lang == 'zh' %}
-Name: "chineseSimplified"; MessagesFile: {% if locale.file %}{{ locale.file }}{% else %}"compiler:Languages\\ChineseSimplified.isl"{% endif %}
+Name: "chineseSimplified"; MessagesFile: {% if locale.file %}"{{ locale.file }}"{% else %}"compiler:Languages\\ChineseSimplified.isl"{% endif %}
 {% endif %}
 {% if locale.lang == 'co' %}Name: "corsican"; MessagesFile: "compiler:Languages\\Corsican.isl"{% endif %}
 {% if locale.lang == 'cs' %}Name: "czech"; MessagesFile: "compiler:Languages\\Czech.isl"{% endif %}
