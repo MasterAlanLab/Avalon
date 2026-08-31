@@ -1,230 +1,108 @@
-**🌐 Languages:** [中文](../README.md) · [English](README.en.md) · [Deutsch](README.de.md) · [Español](README.es.md) · [العربية](README.ar.md) · [Italiano](README.it.md) · [日本語](README.ja.md) · [한국어](README.ko.md)
+# Avalon
 
-# Avalon — A Multi-Platform Proxy Client With Standalone Nodes and Proxy Chains
+A proxy client for Android, Windows, macOS, and Linux, powered by [mihomo](https://github.com/MetaCubeX/mihomo). Supports standalone nodes, subscription management, and multi-hop proxy chains. Built with Flutter.
 
-> Avalon is a fork of [FlClash](https://github.com/chen08209/FlClash), powered by the mihomo (Clash.Meta) core. On top of the original subscription-based workflow it adds a **standalone node library** and **multi-hop proxy chains**: you can add a single VLESS, VMess, Shadowsocks, Trojan, Hysteria2, TUIC, AnyTLS, SOCKS4/4a/5 or HTTP(S) node on its own, then arrange nodes into a `client → prepend → main → append → target` path — all inside a **single core instance**, with no second process.
+> Avalon is based on [FlClash](https://github.com/chen08209/FlClash).
 
-> ⚠️ **This project is provided for study, research and technical exchange only. Any illegal use is strictly prohibited.** Users must comply with the laws and regulations of their country or region and take full responsibility for how they use this software. See the [Disclaimer](#disclaimer).
+Download the package for your platform from [Releases](https://github.com/MasterAlanLab/Avalon/releases).
 
-<p>
-  <a href="https://github.com/MasterAlanLab/Avalon/releases/"><img alt="Downloads" src="https://img.shields.io/github/downloads/MasterAlanLab/Avalon/total?style=flat-square&logo=github"></a>
-  <a href="https://github.com/MasterAlanLab/Avalon/releases/"><img alt="Last Version" src="https://img.shields.io/github/release/MasterAlanLab/Avalon/all.svg?style=flat-square"></a>
-  <a href="../LICENSE"><img alt="License" src="https://img.shields.io/badge/License-AGPL--3.0-blue?style=flat-square"></a>
-  <img alt="Platforms" src="https://img.shields.io/badge/Platforms-Android%20·%20Windows%20·%20macOS%20·%20Linux-brightgreen?style=flat-square">
-  <img alt="Purpose" src="https://img.shields.io/badge/Purpose-Study%20%26%20Research%20Only-orange?style=flat-square">
-</p>
+## Features
 
-I share the technical background, usage notes and product updates on these channels:
+- Protocol support: VLESS, VMess, Shadowsocks, Trojan, Hysteria2, TUIC, AnyTLS, SOCKS4/4a/5, HTTP(S), and more.
+- Node management: manage individual nodes independently, with options to add, edit, duplicate, and bind them to profiles.
+- Subscriptions: import profiles from URLs or local files, with automatic subscription updates.
+- Proxy chains: combine nodes, proxy groups, and local proxy endpoints, with support for pre-proxies, multi-hop connections, and path previews.
+- Profile generation: create ready-to-use profiles from chains, or add chains to proxy groups in existing profiles.
+- Import and export: support for node URIs, QR codes, YAML / JSON, and packaged exports of nodes and chains with their attachments.
+- Routing rules: Rule, Global, and Direct modes, with editable routing rules and proxy groups.
+- Network diagnostics: node latency tests, live connection monitoring, and runtime logs.
+- Data sync: local backup and restore, with WebDAV synchronization.
+- Themes: desktop and mobile layouts, dark mode, and custom colors.
 
-[![YouTube](https://img.shields.io/badge/YouTube-FF0000?style=for-the-badge&logo=youtube&logoColor=white)](https://www.youtube.com/@MasterAlanLab)
-[![Bilibili](https://img.shields.io/badge/Bilibili-00A1D6?style=for-the-badge&logo=bilibili&logoColor=white)](https://space.bilibili.com/3691004225914941)
-[![Telegram](https://img.shields.io/badge/Telegram-0088CC?style=for-the-badge&logo=telegram&logoColor=white)](https://t.me/MasterAlanLab_Channel)
+## Operating Modes
 
-Desktop:
+| Mode | Description |
+| :--- | :--- |
+| Rule | Select outbound routes according to the profile's rules |
+| Global | Send all traffic entering the core through the outbound selected in the global proxy group |
+| Direct | Connect directly to the destination without a proxy node |
 
-<p style="text-align: center;">
-    <img alt="desktop" src="../snapshots/desktop.gif">
-</p>
+Traffic can enter through the system proxy or TUN. The system proxy serves applications that follow the system settings; TUN captures traffic through a virtual network interface and routes it according to the selected mode.
 
-Mobile:
+## Core Engine
 
-<p style="text-align: center;">
-    <img alt="mobile" src="../snapshots/mobile.gif">
-</p>
+[mihomo](https://github.com/MetaCubeX/mihomo) handles proxy connections, DNS resolution, rule-based routing, and TUN traffic. In addition to protocol-specific forms, Raw YAML / JSON can be used to configure other mihomo node types.
 
----
-
-## What Avalon Adds on Top of FlClash
-
-### 1. Standalone Node Library (Single-Node Support)
-
-A subscription is no longer required before you can use a node. Nodes are global objects that can be added, edited, grouped and bound on their own:
-
-- **Protocol-specific forms and URI import**: VLESS, VMess, Shadowsocks, Trojan, Hysteria2, TUIC, AnyTLS, SOCKS4/4a/5, plus HTTP(S) URIs that carry an explicit port or credentials.
-- **Raw YAML / JSON nodes**: cover **every** mihomo proxy type, including protocols the dedicated forms do not model yet. Raw nodes can still be saved, bound, used in chains and exported.
-- **Several ways to add a node**: paste a URI, scan a QR code, open a system URL scheme, or fill in the form by hand.
-- **Subscriptions and single nodes coexist**: a plain `http(s)://` address is synced as a subscription, while an address with an explicit port, credentials or proxy parameters is parsed as a single node. Ambiguous input can always go through the Raw editor.
-- **Export**: nodes and chains can be exported as Clash config or JSON.
-
-### 2. Proxy Chains (Multi-Hop / Upstream Proxy)
-
-- The display and dial direction is fixed as **client → prepend → main → append → target**; the list order is the nesting order.
-- Every hop can be a node, a global proxy group, a group from the current subscription, or an **existing local SOCKS / HTTP / HTTPS endpoint** (for example a port opened by another client on the same machine).
-- At compile time each hop's `dialer-proxy` points at the previous hop, so the result is **one config and one core lifecycle**. A single-hop chain behaves exactly like using that node directly.
-- A proxy group used as a hop expands into a branch matrix, with a default branch limit of 64 (configurable from 1 to 1024) and a live preview of path count and diagnostics before saving.
-- Chains are global objects: copy, rename and reorder them, and bind one chain to several subscriptions. `error` level diagnostics block the chain from reaching the runtime config; `warning` level requires confirmation.
-- When binding, you explicitly choose the *entry groups*: the generated chain selector is appended to those proxy groups, leaving the subscription's own selection untouched.
-
-### 3. Everything Inherited From FlClash
-
-✈️ Multi-platform: Android, Windows, macOS and Linux
-
-💻 Adapts to many screen sizes, multiple color themes
-
-💡 Material You design with a [Surfboard](https://github.com/getsurfboard/surfboard)-like UI
-
-☁️ Data sync via WebDAV
-
-✨ One-click subscription import, dark mode
-
----
-
-## Install
-
-### Download
-
-<a href="https://github.com/MasterAlanLab/Avalon/releases"><img alt="Get it on GitHub" src="../snapshots/get-it-on-github.svg" width="200px"/></a>
-
-### Linux Dependencies
-
-⚠️ Make sure the following dependencies are installed first:
-
-```bash
-sudo apt-get install libayatana-appindicator3-dev
-sudo apt-get install libkeybinder-3.0-dev
-```
-
-### Android Broadcast Actions
-
-The following actions are supported:
-
-```bash
-com.masteralanlab.avalon.action.START
-
-com.masteralanlab.avalon.action.STOP
-
-com.masteralanlab.avalon.action.TOGGLE
-```
-
----
-
-## Quick Start
-
-1. **Add a configuration**: paste a subscription link under "Profiles", or paste a `vless://`, `anytls://`, `socks5://` … URI directly under "Nodes" — or import it by scanning a QR code.
-2. **Build a chain** (optional): under "Chains", drag nodes or proxy groups into prepend → main → append order and check the path count and diagnostics before saving.
-3. **Bind and start**: bind the chain to the current profile, pick the entry groups, then start from the home page. Profiles without a bound chain keep their original behavior.
-
----
+Subscriptions, the node library, and proxy chains are combined into a single runtime configuration. Chains use `dialer-proxy` to connect each hop in the order “client → pre-proxy → main node → post-proxy → destination,” within a single core instance.
 
 ## Build
 
-1. Update submodules
+```bash
+git clone --recurse-submodules https://github.com/MasterAlanLab/Avalon.git
+cd Avalon
+flutter pub get
+```
 
-   ```bash
-   git submodule update --init --recursive
-   ```
+Building requires Flutter, Go, and Rust. CI currently uses Flutter 3.44.4 and Go 1.26.4. Platform commands and additional dependencies:
 
-2. Install the `Flutter` and `Golang` toolchains
+| Platform | Build command | Additional dependencies |
+| :--- | :--- | :--- |
+| Android | `dart setup.dart android` | Android SDK and NDK; set `ANDROID_NDK` |
+| Windows | `dart setup.dart windows` | Visual Studio C++ toolchain, GCC, Inno Setup |
+| macOS | `dart setup.dart macos` | Xcode, CocoaPods, Node.js / npm |
+| Linux | `dart setup.dart linux` | The script installs GTK, AppIndicator, Keybinder, and other dependencies through apt |
 
-3. Build the application
+Build desktop packages on the corresponding operating system. Output is saved to `dist/`. See the [build workflow](../.github/workflows/build.yaml) for the full environment configuration.
 
-    - android
+## Tests
 
-        1. Install `Android SDK` and `Android NDK`
+```bash
+# Static analysis
+flutter analyze --no-fatal-infos
 
-        2. Set the `ANDROID_NDK` environment variable
+# Unit and widget tests
+flutter test
 
-        3. Run the build script
+# Go core wrapper tests
+(cd core && go test .)
 
-           ```bash
-           dart setup.dart android
-           ```
+# Rust component tests
+cargo test --manifest-path services/helper/Cargo.toml
+cargo test --manifest-path plugins/rust_api/rust/Cargo.toml
+```
 
-    - windows
+## Tech Stack
 
-        1. Requires a Windows machine
-
-        2. Install `GCC` and `Inno Setup`
-
-        3. Run the build script
-
-           ```bash
-           dart setup.dart windows
-           ```
-
-    - linux
-
-        1. Requires a Linux machine
-
-        2. Dependencies are installed by the setup script, or manually:
-
-           ```bash
-           sudo apt-get install -y libayatana-appindicator3-dev libkeybinder-3.0-dev
-           ```
-
-        3. Run the build script
-
-           ```bash
-           dart setup.dart linux
-           ```
-
-    - macOS
-
-        1. Requires a macOS machine
-
-        2. Run the build script
-
-           ```bash
-           dart setup.dart macos
-           ```
-
----
+- Languages: Dart, Go, Rust
+- UI framework: Flutter / Material Design
+- State management: Riverpod
+- Database: SQLite / Drift
+- Proxy core: mihomo
+- Package management: Pub, Go Modules, Cargo
 
 ## Recommended Resources
 
-Services I use myself or that pair well with this project. Some links are promotional / affiliate links: signing up or buying through them may earn the author a small commission at **no extra cost to you**.
+Some links are affiliate links. The author may earn a commission when you register or purchase through them. Service details and prices are listed on the respective websites.
 
-- **Self-hosted proxy pool**: [Free Proxy](https://github.com/MasterAlanLab/free-proxy) — runs a free node pool on your own VPS and exposes SOCKS5 / HTTP, which Avalon can use as a standalone node or as one hop in a chain
-- **VPS with China-optimized routes**: [BandwagonHost](https://cutt.ly/qywJNWzd) · [DMIT](https://cutt.ly/YywJIzY0) — for self-hosted nodes or landing servers
-- **Virtual credit cards**: [here](https://cutt.ly/IyrMR4Mg) — for paying overseas services
-- **Telegram resource search bot**: [here](https://cutt.ly/2yeh3GOE)
-- **Overseas accounts and SIM cards**: [here](https://cutt.ly/dywt86NC)
-- **Anti-detect browser**: [BitBrowser](https://client.bitbrowser.cn/register?lang=zh&code=Alan123) — environment isolation on top of chained proxies
-- **Bulk mailbox hosting**: [Emailbox](https://github.com/MasterAlanLab/emailbox) — manage mailboxes in bulk with per-group proxies
-- **Captcha solving**: [Captcha.run](https://captcha.run/sso?inviter=542f4f4f-31b6-4b70-b485-c4762c45d1e8) · [YesCaptcha](https://cutt.ly/Mywt39r0)
-- **GPT API relay**: [CC / GPT relay](https://cutt.ly/JywJG3G5)
-- **Shared subscriptions**: [here](https://cutt.ly/5ywt8vb4)
-
----
-
-## Disclaimer
-
-- This project is **for study, research and technical exchange only, and any illegal use is strictly prohibited** — including but not limited to intruding into other people's systems, bypassing access restrictions where local law forbids it, carrying out network attacks, distributing unlawful content, or any other criminal activity.
-- Users must comply with the laws and regulations of their country or region. All consequences of using this project are borne by the user; the authors and contributors are not liable for any direct or indirect damage.
-- This project **does not provide, sell or endorse any proxy nodes or subscription services**, and makes no guarantee about the availability, privacy or security of third-party nodes. Never send sensitive information through nodes of unknown origin.
-- If software of this kind is prohibited in your country or region, stop using it and delete it immediately.
-- The VPS, virtual credit card, Telegram bot and similar links above are promotional / affiliate links. Ordering through them may earn the author a small commission at **no extra cost to you** — thanks for the support ❤️
-
----
+| Category | Project / Service | Description |
+| :--- | :--- | :--- |
+| Proxy pool | [Free Proxy](https://github.com/MasterAlanLab/free-proxy) | Self-hosted proxy pool for use with the node library or proxy chains |
+| VPS | [BandwagonHost](https://cutt.ly/qywJNWzd) · [DMIT](https://cutt.ly/YywJIzY0) | Node and application hosting |
+| Virtual credit cards | [International virtual cards](https://cutt.ly/IyrMR4Mg) | Payments for international services |
+| Resource search | [Telegram search bot](https://cutt.ly/2yeh3GOE) | Find resources on Telegram |
+| Accounts and SIM cards | [International accounts and SIM cards](https://cutt.ly/dywt86NC) | Account and communication services |
+| Fingerprint browser | [BitBrowser](https://client.bitbrowser.cn/register?lang=zh&code=Alan123) | Manage isolated browser environments |
+| Email hosting | [Emailbox](https://github.com/MasterAlanLab/emailbox) | Bulk email management and proxy grouping |
+| CAPTCHA services | [Captcha.run](https://captcha.run/sso?inviter=542f4f4f-31b6-4b70-b485-c4762c45d1e8) · [YesCaptcha](https://cutt.ly/Mywt39r0) | CAPTCHA recognition |
+| AI APIs | [CC / GPT relay](https://cutt.ly/JywJG3G5) | Model API services |
+| Subscription sharing | [Subscription-sharing platform](https://cutt.ly/5ywt8vb4) | Shared subscriptions |
 
 ## License
 
-Avalon-authored additions and modifications are licensed under **AGPL-3.0**. FlClash upstream code, mihomo, and other third-party components remain under their respective licenses. See [LICENSE](../LICENSE) for the AGPL terms, [LICENSE-GPL-3.0](../LICENSE-GPL-3.0) for the upstream GPLv3 text, and [NOTICE](../NOTICE) for the fork notice and third-party components.
+[AGPL-3.0](../LICENSE). Third-party code retains its respective licenses. See [NOTICE](../NOTICE) for copyright and licensing information.
 
-Avalon is a modified version (fork) of [FlClash](https://github.com/chen08209/FlClash):
+## Acknowledgments
 
-- Copyright of the original work belongs to the FlClash authors and contributors; all original copyright and license notices are retained.
-- This project modifies the original work, mainly by adding the standalone node library, multi-hop proxy chains and single-core chain compilation, and by changing the project name and application identifiers. See [CHANGELOG.md](../CHANGELOG.md) for an overview.
-- Avalon-authored additions and modifications are released under AGPL-3.0; redistributions must follow its source and network-interaction requirements and keep the notices above.
-- Avalon is **not affiliated** with the upstream FlClash project — please do not file issues about this fork there.
-
-## Acknowledgements
-
-- [FlClash](https://github.com/chen08209/FlClash) — the upstream project this fork is built on 🙏
-- [mihomo (Clash.Meta)](https://github.com/MetaCubeX/mihomo) — the proxy core
-- [Surfboard](https://github.com/getsurfboard/surfboard) — UI design reference
-
-## Contact
-
-- Telegram channel: <https://t.me/MasterAlanLab_Channel>
-- Business enquiries: <masteralanlab@gmail.com>
-
-## Star
-
-The easiest way to support the developer is to click the star (⭐) at the top of the page.
-
-<p style="text-align: center;">
-    <a href="https://api.star-history.com/svg?repos=MasterAlanLab/Avalon&Date">
-        <img alt="star" width=50% src="https://api.star-history.com/svg?repos=MasterAlanLab/Avalon&Date"/>
-    </a>
-</p>
+- [FlClash](https://github.com/chen08209/FlClash)
+- [mihomo](https://github.com/MetaCubeX/mihomo)
+- [Surfboard](https://github.com/getsurfboard/surfboard)
