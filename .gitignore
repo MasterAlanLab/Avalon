@@ -41,13 +41,6 @@ app.*.symbols
 # Obfuscation related
 app.*.map.json
 
-# Claude Code - ignore user-specific settings only
-.claude/settings.local.json
-
-# Documentation (generated/planning artifacts)
-docs/
-
-
 # Android Studio will place build artifacts here
 /android/app/debug
 /android/app/profile
