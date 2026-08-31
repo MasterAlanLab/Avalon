@@ -110,6 +110,9 @@ class ProxyChainBindings extends Table {
 
   TextColumn get selectorName => text().nullable()();
 
+  TextColumn get entryGroups =>
+      text().map(const StringListConverter()).nullable()();
+
   IntColumn get order => integer().nullable()();
 
   @override
@@ -346,6 +349,7 @@ extension RawProxyChainBindingExt on RawProxyChainBinding {
     enabled: enabled,
     isDefault: isDefault,
     selectorName: selectorName,
+    entryGroups: entryGroups ?? const [],
     order: order,
   );
 }
@@ -358,6 +362,7 @@ extension ProxyChainBindingCompanionExt on ProxyChainBinding {
       enabled: Value(enabled),
       isDefault: Value(isDefault),
       selectorName: Value(selectorName),
+      entryGroups: Value(entryGroups),
       order: Value(order),
     );
   }

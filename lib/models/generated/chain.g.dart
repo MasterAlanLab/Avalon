@@ -56,6 +56,11 @@ _ProxyChainBinding _$ProxyChainBindingFromJson(Map<String, dynamic> json) =>
       enabled: json['enabled'] as bool? ?? true,
       isDefault: json['isDefault'] as bool? ?? false,
       selectorName: json['selectorName'] as String?,
+      entryGroups:
+          (json['entryGroups'] as List<dynamic>?)
+              ?.map((e) => e as String)
+              .toList() ??
+          const [],
       order: (json['order'] as num?)?.toInt(),
     );
 
@@ -66,6 +71,7 @@ Map<String, dynamic> _$ProxyChainBindingToJson(_ProxyChainBinding instance) =>
       'enabled': instance.enabled,
       'isDefault': instance.isDefault,
       'selectorName': instance.selectorName,
+      'entryGroups': instance.entryGroups,
       'order': instance.order,
     };
 

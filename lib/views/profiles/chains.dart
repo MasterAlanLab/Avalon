@@ -1,11 +1,18 @@
+import 'dart:async';
+
 import 'package:fl_clash/common/common.dart';
+import 'package:fl_clash/core/core.dart';
 import 'package:fl_clash/database/database.dart';
+import 'package:fl_clash/features/chains/chains.dart';
+import 'package:fl_clash/features/chains/runtime.dart';
 import 'package:fl_clash/features/chains/service.dart';
+import 'package:fl_clash/features/nodes/nodes.dart';
 import 'package:fl_clash/models/models.dart';
 import 'package:fl_clash/providers/providers.dart';
 import 'package:fl_clash/state.dart';
 import 'package:fl_clash/widgets/widgets.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class ChainLibraryView extends ConsumerWidget {
@@ -73,6 +80,12 @@ class ChainLibraryView extends ConsumerWidget {
     return StreamBuilder<List<ProxyChain>>(
       stream: database.proxyChainsDao.query().watch(),
       builder: (context, snapshot) {
+        if (snapshot.hasError) {
+          return NullStatus(label: snapshot.error.toString());
+        }
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return Center(child: Text(context.appLocalizations.loading));
+        }
         final chains = snapshot.data ?? const <ProxyChain>[];
         final profileId = ref.watch(currentProfileIdProvider);
         if (chains.isEmpty) {
@@ -157,11 +170,71 @@ class _ChainEditorDialog extends StatefulWidget {
 
 class _ChainEditorDialogState extends State<_ChainEditorDialog> {
   late List<ProxyChainHop> _hops;
+  ChainPreview? _preview;
+  int _previewGeneration = 0;
 
   @override
   void initState() {
     super.initState();
     _hops = [...widget.initialHops]..sort((a, b) => a.order.compareTo(b.order));
+    unawaited(_refreshPreview());
+  }
+
+  Future<void> _refreshPreview() async {
+    final profileId = widget.profileId;
+    if (profileId == null) return;
+    final generation = ++_previewGeneration;
+    final hops = [
+      for (var index = 0; index < _hops.length; index++)
+        _ordered(_hops[index], index),
+    ];
+    ChainPreview? preview;
+    try {
+      Map<String, dynamic> profileConfig;
+      try {
+        profileConfig = await coreController.getConfig(profileId);
+      } catch (_) {
+        profileConfig = <String, dynamic>{};
+      }
+      preview = await const ProfileEffectiveConfigService().previewChain(
+        profileId: profileId,
+        profileConfig: profileConfig,
+        chain: widget.chain,
+        hops: hops,
+      );
+    } catch (error) {
+      preview = ChainPreview(
+        pathCount: 0,
+        diagnostics: [
+          ChainDiagnostic(
+            severity: ChainDiagnosticSeverity.warning,
+            code: 'preview-unavailable',
+            message: error.toString(),
+          ),
+        ],
+      );
+    }
+    if (!mounted || generation != _previewGeneration) return;
+    setState(() => _preview = preview);
+  }
+
+  Future<void> _save() async {
+    final preview = _preview;
+    if (preview != null && preview.diagnostics.isNotEmpty) {
+      final confirmed = await globalState.showMessage(
+        title: context.appLocalizations.chainDiagnostics,
+        message: TextSpan(
+          text: [
+            context.appLocalizations.chainWarningConfirm,
+            ...preview.diagnostics.map((item) => '· ${item.message}'),
+          ].join('\n'),
+        ),
+      );
+      if (confirmed != true) return;
+    }
+    if (!mounted) return;
+    _normalizeOrders();
+    Navigator.of(context).pop(_hops);
   }
 
   String _labelFor(ProxyChainHop hop) {
@@ -296,6 +369,7 @@ class _ChainEditorDialogState extends State<_ChainEditorDialog> {
     final hop = await _pickHop();
     if (!mounted || hop == null) return;
     setState(() => _hops.add(hop));
+    await _refreshPreview();
   }
 
   Future<void> _edit(int index) async {
@@ -304,6 +378,7 @@ class _ChainEditorDialogState extends State<_ChainEditorDialog> {
       final replacement = await _pickHop();
       if (!mounted || replacement == null) return;
       setState(() => _hops[index] = _ordered(replacement, index));
+      await _refreshPreview();
       return;
     }
     final endpoint = await globalState.showCommonDialog<Map<String, Object?>>(
@@ -313,6 +388,7 @@ class _ChainEditorDialogState extends State<_ChainEditorDialog> {
     );
     if (!mounted || endpoint == null) return;
     setState(() => _hops[index] = current.copyWith(localEndpoint: endpoint));
+    await _refreshPreview();
   }
 
   @override
@@ -331,10 +407,7 @@ class _ChainEditorDialogState extends State<_ChainEditorDialog> {
           child: Text(context.appLocalizations.cancel),
         ),
         FilledButton(
-          onPressed: () {
-            _normalizeOrders();
-            Navigator.of(context).pop(_hops);
-          },
+          onPressed: _save,
           child: Text(context.appLocalizations.save),
         ),
       ],
@@ -343,11 +416,24 @@ class _ChainEditorDialogState extends State<_ChainEditorDialog> {
         children: [
           Text(
             '${context.appLocalizations.chainHop}: ${_hops.length} · '
-            '${context.appLocalizations.branchLimit}: ${widget.chain.branchLimit}',
+            '${context.appLocalizations.branchLimit}: ${widget.chain.branchLimit}'
+            '${_preview == null ? '' : ' · ${context.appLocalizations.chainPathCount(_preview!.pathCount)}'}',
             style: context.textTheme.labelLarge,
           ),
           const SizedBox(height: 6),
           Text(path, style: context.textTheme.bodySmall),
+          if (_preview?.diagnostics.isNotEmpty == true) ...[
+            const SizedBox(height: 6),
+            for (final diagnostic in _preview!.diagnostics)
+              Text(
+                '· ${diagnostic.message}',
+                style: context.textTheme.bodySmall?.copyWith(
+                  color: diagnostic.isError
+                      ? context.colorScheme.error
+                      : context.colorScheme.tertiary,
+                ),
+              ),
+          ],
           const SizedBox(height: 12),
           Expanded(
             child: _hops.isEmpty
@@ -361,6 +447,7 @@ class _ChainEditorDialogState extends State<_ChainEditorDialog> {
                         _hops.insert(newIndex, hop);
                         _normalizeOrders();
                       });
+                      unawaited(_refreshPreview());
                     },
                     itemBuilder: (context, index) {
                       final hop = _hops[index];
@@ -382,6 +469,7 @@ class _ChainEditorDialogState extends State<_ChainEditorDialog> {
                                   _hops.removeAt(index);
                                   _normalizeOrders();
                                 });
+                                unawaited(_refreshPreview());
                               },
                               icon: const Icon(Icons.delete_outline),
                             ),
@@ -673,6 +761,107 @@ class ChainLibraryItem extends StatelessWidget {
     _applyProfile();
   }
 
+  Future<void> _editEntryGroups(BuildContext context) async {
+    final id = profileId;
+    if (id == null) return;
+    final groups = await (database.select(
+      database.proxyGroups,
+    )..where((row) => row.profileId.equals(id))).get();
+    if (!context.mounted) return;
+    final names = groups.map((group) => group.name).toList();
+    final selected = await globalState.showCommonDialog<List<String>>(
+      context: context,
+      child: _ChainEntryGroupsDialog(
+        names: names,
+        initial: binding?.entryGroups ?? const [],
+      ),
+    );
+    if (selected == null) return;
+    await const ChainLibraryService().setEntryGroups(
+      profileId: id,
+      chainId: chain.id,
+      entryGroups: selected,
+    );
+    _applyProfile();
+  }
+
+  Future<NodeExportResult?> _exportResult({bool includeZip = false}) async {
+    final id = profileId;
+    if (id == null) return null;
+    final hops = await const ChainLibraryService().hops(chain.id);
+    Map<String, dynamic> profileConfig;
+    try {
+      profileConfig = await coreController.getConfig(id);
+    } catch (_) {
+      profileConfig = <String, dynamic>{};
+    }
+    final preview =
+        await const ProfileEffectiveConfigService(
+          materializeAssets: false,
+        ).previewChain(
+          profileId: id,
+          profileConfig: profileConfig,
+          chain: chain,
+          hops: hops,
+        );
+    final names = preview.generatedProxies.keys.toList();
+    final assets = <NodeAsset>[];
+    for (final name in names) {
+      final nodeId = int.tryParse(preview.generatedNodeIds[name] ?? '');
+      if (nodeId == null) continue;
+      for (final asset in await const StoredNodeAssetService().list(nodeId)) {
+        assets.add(
+          NodeAsset(
+            id: '$name-${asset.id}',
+            nodeId: name,
+            fieldPath: asset.fieldPath,
+            relativePath: asset.relativePath,
+            sha256: asset.sha256,
+            size: asset.size ?? 0,
+          ),
+        );
+      }
+    }
+    return NodeExportService().exportConfigs(
+      [for (final name in names) preview.generatedProxies[name]!],
+      nodeIds: names,
+      groups: preview.generatedGroups.map((group) => group.toConfig()),
+      assets: assets,
+      assetManager: NodeAssetManager(await appPath.homeDirPath),
+      includeZip: includeZip,
+    );
+  }
+
+  Future<void> _export(BuildContext context, bool asJson) async {
+    final output = await _exportResult();
+    if (output == null || !context.mounted) return;
+    await Clipboard.setData(
+      ClipboardData(text: asJson ? output.json : output.yaml),
+    );
+    if (!context.mounted) return;
+    context.showNotifier(
+      output.issues.isEmpty
+          ? context.appLocalizations.copySuccess
+          : output.issues.map((issue) => issue.message).join('\n'),
+    );
+  }
+
+  Future<void> _exportZip(BuildContext context) async {
+    final output = await _exportResult(includeZip: true);
+    final bytes = output?.zip;
+    if (bytes == null) return;
+    final path = await picker.saveFile(
+      'chain-${chain.id}.zip',
+      Uint8List.fromList(bytes),
+    );
+    if (!context.mounted || path == null) return;
+    context.showNotifier(
+      output!.issues.isEmpty
+          ? context.appLocalizations.exportSuccess
+          : output.issues.map((issue) => issue.message).join('\n'),
+    );
+  }
+
   Future<void> _setDefault() async {
     final id = profileId;
     if (id == null) return;
@@ -703,7 +892,8 @@ class ChainLibraryItem extends StatelessWidget {
             subtitle: Text(
               '${snapshot.data?.length ?? 0} ${context.appLocalizations.chainHop} · '
               '${context.appLocalizations.branchLimit}: ${chain.branchLimit}'
-              '${binding?.isDefault == true ? ' · ${context.appLocalizations.defaultText}' : ''}',
+              '${binding?.isDefault == true ? ' · ${context.appLocalizations.defaultText}' : ''}'
+              '${binding?.entryGroups.isNotEmpty == true ? ' · ${context.appLocalizations.chainEntryGroups}: ${binding!.entryGroups.join(', ')}' : ''}',
             ),
             trailing: Row(
               mainAxisSize: MainAxisSize.min,
@@ -747,6 +937,34 @@ class ChainLibraryItem extends StatelessWidget {
                               : context.appLocalizations.unbind,
                           onPressed: _toggleBinding,
                         ),
+                      if (profileId != null)
+                        PopupMenuItemData(
+                          icon: Icons.alt_route,
+                          label: context.appLocalizations.chainEntryGroups,
+                          onPressed: () => _editEntryGroups(context),
+                        ),
+                      if (profileId != null)
+                        PopupMenuItemData(
+                          icon: Icons.ios_share_outlined,
+                          label: context.appLocalizations.export,
+                          subItems: [
+                            PopupMenuItemData(
+                              icon: Icons.description_outlined,
+                              label: context.appLocalizations.exportYaml,
+                              onPressed: () => _export(context, false),
+                            ),
+                            PopupMenuItemData(
+                              icon: Icons.data_object,
+                              label: context.appLocalizations.exportJson,
+                              onPressed: () => _export(context, true),
+                            ),
+                            PopupMenuItemData(
+                              icon: Icons.archive_outlined,
+                              label: context.appLocalizations.exportZip,
+                              onPressed: () => _exportZip(context),
+                            ),
+                          ],
+                        ),
                       if (profileId != null && binding?.isDefault != true)
                         PopupMenuItemData(
                           icon: Icons.star_outline,
@@ -770,6 +988,60 @@ class ChainLibraryItem extends StatelessWidget {
             ),
           ),
         ),
+      ),
+    );
+  }
+}
+
+class _ChainEntryGroupsDialog extends StatefulWidget {
+  const _ChainEntryGroupsDialog({required this.names, required this.initial});
+
+  final List<String> names;
+  final List<String> initial;
+
+  @override
+  State<_ChainEntryGroupsDialog> createState() =>
+      _ChainEntryGroupsDialogState();
+}
+
+class _ChainEntryGroupsDialogState extends State<_ChainEntryGroupsDialog> {
+  late final Set<String> _selected = {...widget.initial};
+
+  @override
+  Widget build(BuildContext context) {
+    return CommonDialog(
+      title: context.appLocalizations.chainEntryGroups,
+      actions: [
+        TextButton(
+          onPressed: () => Navigator.of(context).pop(),
+          child: Text(context.appLocalizations.cancel),
+        ),
+        FilledButton(
+          onPressed: () => Navigator.of(context).pop(_selected.toList()),
+          child: Text(context.appLocalizations.save),
+        ),
+      ],
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Text(
+            context.appLocalizations.chainEntryGroupsTip,
+            style: context.textTheme.bodySmall,
+          ),
+          const SizedBox(height: 12),
+          if (widget.names.isEmpty)
+            Text(context.appLocalizations.chainEntryGroupsEmpty)
+          else
+            for (final name in widget.names)
+              CheckboxListTile(
+                value: _selected.contains(name),
+                title: Text(name),
+                onChanged: (value) => setState(() {
+                  value == true ? _selected.add(name) : _selected.remove(name);
+                }),
+              ),
+        ],
       ),
     );
   }

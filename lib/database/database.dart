@@ -55,7 +55,7 @@ class Database extends _$Database {
   Database([QueryExecutor? executor]) : super(executor ?? _openConnection());
 
   @override
-  int get schemaVersion => 3;
+  int get schemaVersion => 4;
 
   static LazyDatabase _openConnection() {
     return LazyDatabase(() async {
@@ -82,6 +82,9 @@ class Database extends _$Database {
           await m.createTable(proxyChainBindings);
           await m.createTable(proxyNodeAssets);
           await m.createTable(proxyGroupMembers);
+        }
+        if (from >= 3 && from < 4) {
+          await m.addColumn(proxyChainBindings, proxyChainBindings.entryGroups);
         }
       },
     );
@@ -136,6 +139,59 @@ class Database extends _$Database {
 
   Future<void> _resetOrders() async {
     await rulesDao.resetOrders();
+  }
+
+  Future<MigrationData> snapshot() async {
+    return MigrationData(
+      profiles: await profilesDao.query().get(),
+      scripts: await scriptsDao.query().get(),
+      rules: await rules.all().map((item) => item.toRule()).get(),
+      links: await profileRuleLinks.all().map((item) => item.toLink()).get(),
+      proxyGroups: await proxyGroups
+          .all()
+          .map((item) => item.toProxyGroup())
+          .get(),
+      proxyNodes: await proxyNodesDao.query().get(),
+      proxyNodeBindings: await proxyNodeBindings
+          .all()
+          .map((item) => item.toProxyNodeBinding())
+          .get(),
+      proxyChains: await proxyChainsDao.query().get(),
+      proxyChainHops: await proxyChainHops
+          .all()
+          .map((item) => item.toProxyChainHop())
+          .get(),
+      proxyChainBindings: await proxyChainBindings
+          .all()
+          .map((item) => item.toProxyChainBinding())
+          .get(),
+      proxyNodeAssets: await proxyNodeAssets
+          .all()
+          .map((item) => item.toProxyNodeAsset())
+          .get(),
+      proxyGroupMembers: await proxyGroupMembers
+          .all()
+          .map((item) => item.toProxyGroupMember())
+          .get(),
+    );
+  }
+
+  Future<void> restoreSnapshot(MigrationData data) async {
+    await restore(
+      data.profiles,
+      data.scripts,
+      data.rules,
+      data.links,
+      data.proxyGroups,
+      proxyNodes: data.proxyNodes,
+      proxyNodeBindings: data.proxyNodeBindings,
+      proxyChains: data.proxyChains,
+      proxyChainHops: data.proxyChainHops,
+      proxyChainBindings: data.proxyChainBindings,
+      proxyNodeAssets: data.proxyNodeAssets,
+      groupMembers: data.proxyGroupMembers,
+      isOverride: true,
+    );
   }
 
   Future<void> restore(

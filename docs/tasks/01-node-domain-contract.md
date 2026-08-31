@@ -1,5 +1,11 @@
 # 节点领域契约
 
+## 进度补充（2026-08-30）
+
+下面「输出」列出的是草案类型名，与实现命名存在差异（如 `NodeSourceRef` → `ProxyNodeSource`、
+`ProfileNodeBinding` → `ProxyNodeBinding`，`NodeImportRequest` / `NodeExportRequest` 无对应类型）。
+完整对照表见 [复核记录](verify-2026-08-30.md)，收敛前以实现命名为准。
+
 ## 目标
 
 定义稳定、可持久化且能保留 Mihomo 未知字段的节点领域模型。

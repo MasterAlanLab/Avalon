@@ -148,3 +148,5 @@ const main = (config) => {
 
 const backupDatabaseName = 'database.sqlite';
 const configJsonName = 'config.json';
+const backupManifestName = 'manifest.json';
+const backupManifestVersion = 1;

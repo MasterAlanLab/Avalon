@@ -5749,6 +5749,18 @@ class $ProxyChainBindingsTable extends ProxyChainBindings
     type: DriftSqlType.string,
     requiredDuringInsert: false,
   );
+  @override
+  late final GeneratedColumnWithTypeConverter<List<String>?, String>
+  entryGroups =
+      GeneratedColumn<String>(
+        'entry_groups',
+        aliasedName,
+        true,
+        type: DriftSqlType.string,
+        requiredDuringInsert: false,
+      ).withConverter<List<String>?>(
+        $ProxyChainBindingsTable.$converterentryGroupsn,
+      );
   static const VerificationMeta _orderMeta = const VerificationMeta('order');
   @override
   late final GeneratedColumn<int> order = GeneratedColumn<int>(
@@ -5765,6 +5777,7 @@ class $ProxyChainBindingsTable extends ProxyChainBindings
     enabled,
     isDefault,
     selectorName,
+    entryGroups,
     order,
   ];
   @override
@@ -5851,6 +5864,12 @@ class $ProxyChainBindingsTable extends ProxyChainBindings
         DriftSqlType.string,
         data['${effectivePrefix}selector_name'],
       ),
+      entryGroups: $ProxyChainBindingsTable.$converterentryGroupsn.fromSql(
+        attachedDatabase.typeMapping.read(
+          DriftSqlType.string,
+          data['${effectivePrefix}entry_groups'],
+        ),
+      ),
       order: attachedDatabase.typeMapping.read(
         DriftSqlType.int,
         data['${effectivePrefix}order'],
@@ -5862,6 +5881,11 @@ class $ProxyChainBindingsTable extends ProxyChainBindings
   $ProxyChainBindingsTable createAlias(String alias) {
     return $ProxyChainBindingsTable(attachedDatabase, alias);
   }
+
+  static TypeConverter<List<String>, String> $converterentryGroups =
+      const StringListConverter();
+  static TypeConverter<List<String>?, String?> $converterentryGroupsn =
+      NullAwareTypeConverter.wrap($converterentryGroups);
 }
 
 class RawProxyChainBinding extends DataClass
@@ -5871,6 +5895,7 @@ class RawProxyChainBinding extends DataClass
   final bool enabled;
   final bool isDefault;
   final String? selectorName;
+  final List<String>? entryGroups;
   final int? order;
   const RawProxyChainBinding({
     required this.profileId,
@@ -5878,6 +5903,7 @@ class RawProxyChainBinding extends DataClass
     required this.enabled,
     required this.isDefault,
     this.selectorName,
+    this.entryGroups,
     this.order,
   });
   @override
@@ -5889,6 +5915,11 @@ class RawProxyChainBinding extends DataClass
     map['is_default'] = Variable<bool>(isDefault);
     if (!nullToAbsent || selectorName != null) {
       map['selector_name'] = Variable<String>(selectorName);
+    }
+    if (!nullToAbsent || entryGroups != null) {
+      map['entry_groups'] = Variable<String>(
+        $ProxyChainBindingsTable.$converterentryGroupsn.toSql(entryGroups),
+      );
     }
     if (!nullToAbsent || order != null) {
       map['order'] = Variable<int>(order);
@@ -5905,6 +5936,9 @@ class RawProxyChainBinding extends DataClass
       selectorName: selectorName == null && nullToAbsent
           ? const Value.absent()
           : Value(selectorName),
+      entryGroups: entryGroups == null && nullToAbsent
+          ? const Value.absent()
+          : Value(entryGroups),
       order: order == null && nullToAbsent
           ? const Value.absent()
           : Value(order),
@@ -5922,6 +5956,7 @@ class RawProxyChainBinding extends DataClass
       enabled: serializer.fromJson<bool>(json['enabled']),
       isDefault: serializer.fromJson<bool>(json['isDefault']),
       selectorName: serializer.fromJson<String?>(json['selectorName']),
+      entryGroups: serializer.fromJson<List<String>?>(json['entryGroups']),
       order: serializer.fromJson<int?>(json['order']),
     );
   }
@@ -5934,6 +5969,7 @@ class RawProxyChainBinding extends DataClass
       'enabled': serializer.toJson<bool>(enabled),
       'isDefault': serializer.toJson<bool>(isDefault),
       'selectorName': serializer.toJson<String?>(selectorName),
+      'entryGroups': serializer.toJson<List<String>?>(entryGroups),
       'order': serializer.toJson<int?>(order),
     };
   }
@@ -5944,6 +5980,7 @@ class RawProxyChainBinding extends DataClass
     bool? enabled,
     bool? isDefault,
     Value<String?> selectorName = const Value.absent(),
+    Value<List<String>?> entryGroups = const Value.absent(),
     Value<int?> order = const Value.absent(),
   }) => RawProxyChainBinding(
     profileId: profileId ?? this.profileId,
@@ -5951,6 +5988,7 @@ class RawProxyChainBinding extends DataClass
     enabled: enabled ?? this.enabled,
     isDefault: isDefault ?? this.isDefault,
     selectorName: selectorName.present ? selectorName.value : this.selectorName,
+    entryGroups: entryGroups.present ? entryGroups.value : this.entryGroups,
     order: order.present ? order.value : this.order,
   );
   RawProxyChainBinding copyWithCompanion(ProxyChainBindingsCompanion data) {
@@ -5962,6 +6000,9 @@ class RawProxyChainBinding extends DataClass
       selectorName: data.selectorName.present
           ? data.selectorName.value
           : this.selectorName,
+      entryGroups: data.entryGroups.present
+          ? data.entryGroups.value
+          : this.entryGroups,
       order: data.order.present ? data.order.value : this.order,
     );
   }
@@ -5974,14 +6015,22 @@ class RawProxyChainBinding extends DataClass
           ..write('enabled: $enabled, ')
           ..write('isDefault: $isDefault, ')
           ..write('selectorName: $selectorName, ')
+          ..write('entryGroups: $entryGroups, ')
           ..write('order: $order')
           ..write(')'))
         .toString();
   }
 
   @override
-  int get hashCode =>
-      Object.hash(profileId, chainId, enabled, isDefault, selectorName, order);
+  int get hashCode => Object.hash(
+    profileId,
+    chainId,
+    enabled,
+    isDefault,
+    selectorName,
+    entryGroups,
+    order,
+  );
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
@@ -5991,6 +6040,7 @@ class RawProxyChainBinding extends DataClass
           other.enabled == this.enabled &&
           other.isDefault == this.isDefault &&
           other.selectorName == this.selectorName &&
+          other.entryGroups == this.entryGroups &&
           other.order == this.order);
 }
 
@@ -6001,6 +6051,7 @@ class ProxyChainBindingsCompanion
   final Value<bool> enabled;
   final Value<bool> isDefault;
   final Value<String?> selectorName;
+  final Value<List<String>?> entryGroups;
   final Value<int?> order;
   final Value<int> rowid;
   const ProxyChainBindingsCompanion({
@@ -6009,6 +6060,7 @@ class ProxyChainBindingsCompanion
     this.enabled = const Value.absent(),
     this.isDefault = const Value.absent(),
     this.selectorName = const Value.absent(),
+    this.entryGroups = const Value.absent(),
     this.order = const Value.absent(),
     this.rowid = const Value.absent(),
   });
@@ -6018,6 +6070,7 @@ class ProxyChainBindingsCompanion
     this.enabled = const Value.absent(),
     this.isDefault = const Value.absent(),
     this.selectorName = const Value.absent(),
+    this.entryGroups = const Value.absent(),
     this.order = const Value.absent(),
     this.rowid = const Value.absent(),
   }) : profileId = Value(profileId),
@@ -6028,6 +6081,7 @@ class ProxyChainBindingsCompanion
     Expression<bool>? enabled,
     Expression<bool>? isDefault,
     Expression<String>? selectorName,
+    Expression<String>? entryGroups,
     Expression<int>? order,
     Expression<int>? rowid,
   }) {
@@ -6037,6 +6091,7 @@ class ProxyChainBindingsCompanion
       if (enabled != null) 'enabled': enabled,
       if (isDefault != null) 'is_default': isDefault,
       if (selectorName != null) 'selector_name': selectorName,
+      if (entryGroups != null) 'entry_groups': entryGroups,
       if (order != null) 'order': order,
       if (rowid != null) 'rowid': rowid,
     });
@@ -6048,6 +6103,7 @@ class ProxyChainBindingsCompanion
     Value<bool>? enabled,
     Value<bool>? isDefault,
     Value<String?>? selectorName,
+    Value<List<String>?>? entryGroups,
     Value<int?>? order,
     Value<int>? rowid,
   }) {
@@ -6057,6 +6113,7 @@ class ProxyChainBindingsCompanion
       enabled: enabled ?? this.enabled,
       isDefault: isDefault ?? this.isDefault,
       selectorName: selectorName ?? this.selectorName,
+      entryGroups: entryGroups ?? this.entryGroups,
       order: order ?? this.order,
       rowid: rowid ?? this.rowid,
     );
@@ -6080,6 +6137,13 @@ class ProxyChainBindingsCompanion
     if (selectorName.present) {
       map['selector_name'] = Variable<String>(selectorName.value);
     }
+    if (entryGroups.present) {
+      map['entry_groups'] = Variable<String>(
+        $ProxyChainBindingsTable.$converterentryGroupsn.toSql(
+          entryGroups.value,
+        ),
+      );
+    }
     if (order.present) {
       map['order'] = Variable<int>(order.value);
     }
@@ -6097,6 +6161,7 @@ class ProxyChainBindingsCompanion
           ..write('enabled: $enabled, ')
           ..write('isDefault: $isDefault, ')
           ..write('selectorName: $selectorName, ')
+          ..write('entryGroups: $entryGroups, ')
           ..write('order: $order, ')
           ..write('rowid: $rowid')
           ..write(')'))
@@ -12499,6 +12564,7 @@ typedef $$ProxyChainBindingsTableCreateCompanionBuilder =
       Value<bool> enabled,
       Value<bool> isDefault,
       Value<String?> selectorName,
+      Value<List<String>?> entryGroups,
       Value<int?> order,
       Value<int> rowid,
     });
@@ -12509,6 +12575,7 @@ typedef $$ProxyChainBindingsTableUpdateCompanionBuilder =
       Value<bool> enabled,
       Value<bool> isDefault,
       Value<String?> selectorName,
+      Value<List<String>?> entryGroups,
       Value<int?> order,
       Value<int> rowid,
     });
@@ -12583,6 +12650,12 @@ class $$ProxyChainBindingsTableFilterComposer
   ColumnFilters<String> get selectorName => $composableBuilder(
     column: $table.selectorName,
     builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnWithTypeConverterFilters<List<String>?, List<String>, String>
+  get entryGroups => $composableBuilder(
+    column: $table.entryGroups,
+    builder: (column) => ColumnWithTypeConverterFilters(column),
   );
 
   ColumnFilters<int> get order => $composableBuilder(
@@ -12661,6 +12734,11 @@ class $$ProxyChainBindingsTableOrderingComposer
     builder: (column) => ColumnOrderings(column),
   );
 
+  ColumnOrderings<String> get entryGroups => $composableBuilder(
+    column: $table.entryGroups,
+    builder: (column) => ColumnOrderings(column),
+  );
+
   ColumnOrderings<int> get order => $composableBuilder(
     column: $table.order,
     builder: (column) => ColumnOrderings(column),
@@ -12732,6 +12810,12 @@ class $$ProxyChainBindingsTableAnnotationComposer
     column: $table.selectorName,
     builder: (column) => column,
   );
+
+  GeneratedColumnWithTypeConverter<List<String>?, String> get entryGroups =>
+      $composableBuilder(
+        column: $table.entryGroups,
+        builder: (column) => column,
+      );
 
   GeneratedColumn<int> get order =>
       $composableBuilder(column: $table.order, builder: (column) => column);
@@ -12821,6 +12905,7 @@ class $$ProxyChainBindingsTableTableManager
                 Value<bool> enabled = const Value.absent(),
                 Value<bool> isDefault = const Value.absent(),
                 Value<String?> selectorName = const Value.absent(),
+                Value<List<String>?> entryGroups = const Value.absent(),
                 Value<int?> order = const Value.absent(),
                 Value<int> rowid = const Value.absent(),
               }) => ProxyChainBindingsCompanion(
@@ -12829,6 +12914,7 @@ class $$ProxyChainBindingsTableTableManager
                 enabled: enabled,
                 isDefault: isDefault,
                 selectorName: selectorName,
+                entryGroups: entryGroups,
                 order: order,
                 rowid: rowid,
               ),
@@ -12839,6 +12925,7 @@ class $$ProxyChainBindingsTableTableManager
                 Value<bool> enabled = const Value.absent(),
                 Value<bool> isDefault = const Value.absent(),
                 Value<String?> selectorName = const Value.absent(),
+                Value<List<String>?> entryGroups = const Value.absent(),
                 Value<int?> order = const Value.absent(),
                 Value<int> rowid = const Value.absent(),
               }) => ProxyChainBindingsCompanion.insert(
@@ -12847,6 +12934,7 @@ class $$ProxyChainBindingsTableTableManager
                 enabled: enabled,
                 isDefault: isDefault,
                 selectorName: selectorName,
+                entryGroups: entryGroups,
                 order: order,
                 rowid: rowid,
               ),

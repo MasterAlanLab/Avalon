@@ -7,18 +7,62 @@ import '../nodes/assets.dart' as runtime_asset;
 import '../nodes/node.dart';
 
 class ProfileEffectiveConfigService {
-  const ProfileEffectiveConfigService({Database? store, String? nodeStorePath})
-    : _store = store,
-      _nodeStorePath = nodeStorePath;
+  const ProfileEffectiveConfigService({
+    Database? store,
+    String? nodeStorePath,
+    bool materializeAssets = true,
+  }) : _store = store,
+       _nodeStorePath = nodeStorePath,
+       _materializeAssets = materializeAssets;
 
   final Database? _store;
   final String? _nodeStorePath;
+  final bool _materializeAssets;
 
   Database get store => _store ?? database;
+
+  Future<ChainPreview> previewChain({
+    required int profileId,
+    required Map<String, dynamic> profileConfig,
+    required ProxyChain chain,
+    required List<ProxyChainHop> hops,
+  }) async {
+    final artifact = await assemble(
+      profileId: profileId,
+      profileConfig: profileConfig,
+      chainHopOverrides: {chain.id: hops},
+      previewChainIds: {chain.id},
+    );
+    final index = artifact.previewChainIndexes[chain.id];
+    final result = index == null ? null : artifact.chainResults[index];
+    return ChainPreview(
+      pathCount: result?.paths.length ?? 0,
+      diagnostics: [
+        for (final diagnostic in artifact.diagnostics)
+          if (diagnostic.path?.startsWith('${chain.id}:') == true ||
+              diagnostic.path == chain.id.toString())
+            diagnostic,
+        ...?result?.diagnostics,
+      ],
+      generatedProxies: result?.generatedProxies ?? const {},
+      generatedGroups: result?.generatedGroups ?? const [],
+      generatedNodeIds: {
+        for (final path in result?.paths ?? const <ChainPath>[])
+          for (
+            var index = 0;
+            index < path.generatedNames.length && index < path.targets.length;
+            index++
+          )
+            path.generatedNames[index]: path.targets[index],
+      },
+    );
+  }
 
   Future<EffectiveConfigArtifact> assemble({
     required int profileId,
     required Map<String, dynamic> profileConfig,
+    Map<int, List<ProxyChainHop>> chainHopOverrides = const {},
+    Set<int> previewChainIds = const {},
   }) async {
     final diagnostics = <ChainDiagnostic>[];
     final allNodes = await store.proxyNodesDao.query().get();
@@ -27,12 +71,50 @@ class ProfileEffectiveConfigService {
     );
     final nodeById = {for (final node in allNodes) node.id: node};
     final boundRows = await store.proxyNodeBindingsDao.query(profileId).get();
+    final groupRows = await store.select(store.proxyGroups).get();
+    final groupMemberRows = <int, List<ProxyGroupMember>>{};
+    for (final group in groupRows) {
+      groupMemberRows[group.id] = await store.proxyGroupMembersDao
+          .query(group.id)
+          .get();
+    }
+    final chainBindings = await store.proxyChainBindingsDao
+        .query(profileId)
+        .get();
+    final enabledChainBindings =
+        chainBindings.where((item) => item.enabled).toList()..sort((a, b) {
+          if (a.isDefault != b.isDefault) return a.isDefault ? -1 : 1;
+          return (a.order ?? a.chainId).compareTo(b.order ?? b.chainId);
+        });
+    for (final chainId in previewChainIds) {
+      if (enabledChainBindings.any((item) => item.chainId == chainId)) continue;
+      enabledChainBindings.add(
+        ProxyChainBinding(profileId: profileId, chainId: chainId),
+      );
+    }
+    final boundChains = <int, ProxyChain>{};
+    final boundChainHops = <int, List<ProxyChainHop>>{};
+    for (final binding in enabledChainBindings) {
+      final chain = await store.proxyChainsDao.get(binding.chainId);
+      if (chain == null) continue;
+      boundChains[binding.chainId] = chain;
+      boundChainHops[binding.chainId] =
+          chainHopOverrides[binding.chainId] ??
+          await store.proxyChainHopsDao.query(chain.id).get();
+    }
     final visibleNodeIds = <int>{
       for (final node in allNodes)
         if (node.source?.profileId == profileId) node.id,
       for (final binding in boundRows)
         if (binding.enabled && nodeById[binding.nodeId]?.source == null)
           binding.nodeId,
+      ..._chainLibraryNodeIds(
+        hops: boundChainHops.values.expand((hops) => hops),
+        nodeById: nodeById,
+        groupRows: groupRows,
+        groupMemberRows: groupMemberRows,
+        profileId: profileId,
+      ),
     };
     final staleNodeIds = {
       for (final node in allNodes)
@@ -43,23 +125,27 @@ class ProfileEffectiveConfigService {
     final nodeAssetErrors = <int, Object>{};
     for (final node in allNodes) {
       final id = node.id.toString();
-      final assets = await store.proxyNodeAssetsDao.query(node.id).get();
-      try {
-        nodeConfigs[id] = await assetManager.materialize(
-          effectiveStoredNodeConfig(node),
-          assets.map(
-            (asset) => runtime_asset.NodeAsset(
-              id: asset.id.toString(),
-              nodeId: asset.nodeId.toString(),
-              fieldPath: asset.fieldPath,
-              relativePath: asset.relativePath,
-              sha256: asset.sha256,
-              size: asset.size ?? 0,
+      if (!_materializeAssets) {
+        nodeConfigs[id] = effectiveStoredNodeConfig(node);
+      } else {
+        final assets = await store.proxyNodeAssetsDao.query(node.id).get();
+        try {
+          nodeConfigs[id] = await assetManager.materialize(
+            effectiveStoredNodeConfig(node),
+            assets.map(
+              (asset) => runtime_asset.NodeAsset(
+                id: asset.id.toString(),
+                nodeId: asset.nodeId.toString(),
+                fieldPath: asset.fieldPath,
+                relativePath: asset.relativePath,
+                sha256: asset.sha256,
+                size: asset.size ?? 0,
+              ),
             ),
-          ),
-        );
-      } on Object catch (error) {
-        nodeAssetErrors[node.id] = error;
+          );
+        } on Object catch (error) {
+          nodeAssetErrors[node.id] = error;
+        }
       }
       final source = node.source;
       final isVisibleInProfile =
@@ -79,20 +165,31 @@ class ProfileEffectiveConfigService {
     }
 
     final effectiveProfileConfig = _copyMap(profileConfig);
-    final profileSourceNodes = <String, ProxyNode>{};
+    final profileSourceNodesByKey = <String, ProxyNode>{};
+    final profileSourceNodesByName = <String, List<ProxyNode>>{};
     for (final node in allNodes) {
-      if (node.source?.profileId != profileId ||
-          node.source?.provider != null) {
+      final source = node.source;
+      if (source?.profileId != profileId || source?.provider != null) {
         continue;
+      }
+      final sourceKey = source?.sourceKey;
+      if (sourceKey != null && sourceKey.isNotEmpty) {
+        profileSourceNodesByKey[sourceKey] = node;
       }
       final sourceName =
           node.sourceSnapshot?['name']?.toString() ??
           node.config['name']?.toString();
       if (sourceName != null && sourceName.isNotEmpty) {
-        profileSourceNodes[sourceName] = node;
+        profileSourceNodesByName.putIfAbsent(sourceName, () => []).add(node);
       }
     }
+    for (final nodes in profileSourceNodesByName.values) {
+      nodes.sort((a, b) => a.id.compareTo(b.id));
+    }
+    final claimedSourceNodeIds = <int>{};
+    final sourceKeyAllocator = SourceNodeKeyAllocator(kind: 'profile');
     final sourceNames = <String, String>{};
+    final claimedSourceNames = <String>{};
     final embeddedNodeIds = <int>{};
     final materializedSourceProxies = <Map<String, dynamic>>[];
     final sourceProxies = _proxyEntries(effectiveProfileConfig['proxies']);
@@ -106,7 +203,14 @@ class ProfileEffectiveConfigService {
           materializedSourceProxies.add(original);
           continue;
         }
-        final storedNode = profileSourceNodes[name];
+        final storedNode = _claimSourceNode(
+          config: original,
+          name: name,
+          allocator: sourceKeyAllocator,
+          byKey: profileSourceNodesByKey,
+          byName: profileSourceNodesByName,
+          claimed: claimedSourceNodeIds,
+        );
         final storedNodeConfig = storedNode == null
             ? null
             : nodeConfigs[storedNode.id.toString()];
@@ -127,10 +231,11 @@ class ProfileEffectiveConfigService {
         final id = storedNode?.id.toString() ?? 'source:$name';
         if (storedNode != null) embeddedNodeIds.add(storedNode.id);
         nodeConfigs[id] = config;
-        sourceNames[name] = id;
-        sourceNames[config['name'].toString()] = id;
-        nodeByDisplayName[name] = id;
-        nodeByDisplayName[config['name'].toString()] = id;
+        for (final alias in {name, config['name'].toString()}) {
+          if (!claimedSourceNames.add(alias)) continue;
+          sourceNames[alias] = id;
+          nodeByDisplayName[alias] = id;
+        }
         materializedSourceProxies.add(config);
       }
       effectiveProfileConfig['proxies'] = materializedSourceProxies;
@@ -194,18 +299,13 @@ class ProfileEffectiveConfigService {
         allNodes,
         nodeConfigs,
       ),
+      groupRows: groupRows,
+      groupMemberRows: groupMemberRows,
     );
-    final chainBindings = await store.proxyChainBindingsDao
-        .query(profileId)
-        .get();
-    final enabledChainBindings =
-        chainBindings.where((item) => item.enabled).toList()..sort((a, b) {
-          if (a.isDefault != b.isDefault) return a.isDefault ? -1 : 1;
-          return (a.order ?? a.chainId).compareTo(b.order ?? b.chainId);
-        });
     final chains = <ChainCompileRequest>[];
+    final compiledBindings = <ProxyChainBinding>[];
     for (final binding in enabledChainBindings) {
-      final chain = await store.proxyChainsDao.get(binding.chainId);
+      final chain = boundChains[binding.chainId];
       if (chain == null) {
         diagnostics.add(
           ChainDiagnostic(
@@ -217,7 +317,7 @@ class ProfileEffectiveConfigService {
         );
         continue;
       }
-      final hops = await store.proxyChainHopsDao.query(chain.id).get();
+      final hops = boundChainHops[binding.chainId] ?? const <ProxyChainHop>[];
       final targets = <ChainHop>[];
       for (final hop in hops) {
         final node = hop.nodeId == null ? null : nodeById[hop.nodeId];
@@ -262,6 +362,7 @@ class ProfileEffectiveConfigService {
         }
         targets.add(ChainHop(target: target));
       }
+      compiledBindings.add(binding);
       chains.add(
         ChainCompileRequest(
           name: binding.selectorName?.trim().isNotEmpty == true
@@ -291,7 +392,16 @@ class ProfileEffectiveConfigService {
     for (var index = 0; index < artifact.chainResults.length; index++) {
       final result = artifact.chainResults[index];
       if (!result.isValid || result.generatedGroups.isEmpty) continue;
-      generatedSelectors.add(result.generatedGroups.first.name);
+      final selectorName = result.generatedGroups.first.name;
+      generatedSelectors.add(selectorName);
+      if (index >= compiledBindings.length) continue;
+      diagnostics.addAll(
+        _attachChainEntry(
+          config: finalConfig,
+          entryGroups: compiledBindings[index].entryGroups,
+          selectorName: selectorName,
+        ),
+      );
     }
     if (generatedSelectors.isNotEmpty) {
       final groups = finalConfig['proxy-groups'] is List
@@ -314,6 +424,10 @@ class ProfileEffectiveConfigService {
       digest: effectiveConfigDigest(finalConfig),
       chainResults: artifact.chainResults,
       diagnostics: [...diagnostics, ...artifact.diagnostics],
+      previewChainIndexes: {
+        for (var index = 0; index < compiledBindings.length; index++)
+          compiledBindings[index].chainId: index,
+      },
     );
   }
 
@@ -324,16 +438,17 @@ class ProfileEffectiveConfigService {
     required Map<String, String> nodeByDisplayName,
     required Set<int> visibleNodeIds,
     required Map<String, List<ChainTarget>> providerNodeTargets,
+    required List<RawProxyGroup> groupRows,
+    required Map<int, List<ProxyGroupMember>> groupMemberRows,
   }) async {
     final memberNames = <String, List<String>>{};
     final directMembers = <String, List<ChainTarget>>{};
     final persistedByGroup = <String, List<ProxyGroupMember>>{};
     final dbNames = <String, String>{};
-    final rawGroups = await store.select(store.proxyGroups).get();
-    for (final group in rawGroups) {
+    for (final group in groupRows) {
       if (group.profileId != null && group.profileId != profileId) continue;
       final key = 'db:${group.id}';
-      final rows = await store.proxyGroupMembersDao.query(group.id).get();
+      final rows = groupMemberRows[group.id] ?? const <ProxyGroupMember>[];
       final names = rows.isEmpty
           ? List<String>.from(group.proxies ?? const [])
           : <String>[];
@@ -487,6 +602,119 @@ class ProfileEffectiveConfigService {
     }
     return null;
   }
+}
+
+List<ChainDiagnostic> _attachChainEntry({
+  required Map<String, dynamic> config,
+  required List<String> entryGroups,
+  required String selectorName,
+}) {
+  if (entryGroups.isEmpty) return const [];
+  final groups = config['proxy-groups'];
+  final diagnostics = <ChainDiagnostic>[];
+  for (final entryGroup in entryGroups) {
+    final name = entryGroup.trim();
+    if (name.isEmpty) continue;
+    final target = groups is List
+        ? groups
+              .whereType<Map>()
+              .where((item) => item['name']?.toString() == name)
+              .firstOrNull
+        : null;
+    if (target is! Map) {
+      diagnostics.add(
+        ChainDiagnostic(
+          severity: ChainDiagnosticSeverity.warning,
+          code: 'missing-chain-entry-group',
+          message: 'A chain entry group is missing from this profile.',
+          path: name,
+        ),
+      );
+      continue;
+    }
+    final members = target['proxies'] is List
+        ? List<dynamic>.from(target['proxies'] as List)
+        : <dynamic>[];
+    if (members.any((item) => item.toString() == selectorName)) continue;
+    members.add(selectorName);
+    target['proxies'] = members;
+  }
+  return diagnostics;
+}
+
+Set<int> _chainLibraryNodeIds({
+  required Iterable<ProxyChainHop> hops,
+  required Map<int, ProxyNode> nodeById,
+  required List<RawProxyGroup> groupRows,
+  required Map<int, List<ProxyGroupMember>> groupMemberRows,
+  required int profileId,
+}) {
+  final visibleGroups = [
+    for (final group in groupRows)
+      if (group.profileId == null || group.profileId == profileId) group,
+  ];
+  final groupsById = {for (final group in visibleGroups) group.id: group};
+  final groupsByName = <String, RawProxyGroup>{};
+  for (final group in visibleGroups) {
+    if (group.name.isNotEmpty) {
+      groupsByName.putIfAbsent(group.name, () => group);
+    }
+  }
+  final result = <int>{};
+  final visitedGroups = <int>{};
+  void collectGroup(RawProxyGroup? group) {
+    if (group == null || !visitedGroups.add(group.id)) return;
+    final rows = groupMemberRows[group.id] ?? const <ProxyGroupMember>[];
+    for (final member in rows) {
+      final nodeId = member.nodeId;
+      if (nodeId != null) {
+        final node = nodeById[nodeId];
+        if (node != null && node.source == null) result.add(nodeId);
+        continue;
+      }
+      final literal = member.literalName?.trim();
+      if (literal != null && literal.isNotEmpty) {
+        collectGroup(groupsByName[literal]);
+      }
+    }
+    for (final name in group.proxies ?? const <String>[]) {
+      collectGroup(groupsByName[name]);
+    }
+  }
+
+  for (final hop in hops) {
+    final nodeId = hop.nodeId;
+    final node = nodeId == null ? null : nodeById[nodeId];
+    if (nodeId != null && node != null && node.source == null) {
+      result.add(nodeId);
+    }
+    final groupId = hop.groupId;
+    if (groupId != null) collectGroup(groupsById[groupId]);
+    final groupName = hop.groupName?.trim();
+    if (hop.profileId == null && groupName != null && groupName.isNotEmpty) {
+      collectGroup(groupsByName[groupName]);
+    }
+  }
+  return result;
+}
+
+ProxyNode? _claimSourceNode({
+  required Map<String, dynamic> config,
+  required String name,
+  required SourceNodeKeyAllocator allocator,
+  required Map<String, ProxyNode> byKey,
+  required Map<String, List<ProxyNode>> byName,
+  required Set<int> claimed,
+}) {
+  final key = allocator.allocate(config, name);
+  final keyed = byKey[key];
+  if (keyed != null && claimed.add(keyed.id)) return keyed;
+  final candidate = byName[name]
+      ?.where((node) => !claimed.contains(node.id))
+      .firstOrNull;
+  if (candidate == null) return null;
+  claimed.add(candidate.id);
+  return candidate;
 }
 
 Map<String, dynamic> _copyMap(Map value) => {

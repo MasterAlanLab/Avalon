@@ -39,42 +39,62 @@ class BackupAction extends _$BackupAction {
       if (!await restoreDir.exists()) {
         throw currentAppLocalizations.restoreException;
       }
-      await database.restore(
-        migrationData.profiles,
-        migrationData.scripts,
-        migrationData.rules,
-        migrationData.links,
-        migrationData.proxyGroups,
-        proxyNodes: migrationData.proxyNodes,
-        proxyNodeBindings: migrationData.proxyNodeBindings,
-        proxyChains: migrationData.proxyChains,
-        proxyChainHops: migrationData.proxyChainHops,
-        proxyChainBindings: migrationData.proxyChainBindings,
-        proxyNodeAssets: migrationData.proxyNodeAssets,
-        groupMembers: migrationData.proxyGroupMembers,
-        isOverride: isOverride,
-      );
-      await installRestoredNodeAssets(isOverride: isOverride);
       final configMap = migrationData.configMap;
-      if (option == RestoreOption.onlyProfiles || configMap == null) return;
-      final config = Config.fromJson(configMap);
-      ref.read(davSettingProvider.notifier).update((_) => config.davProps);
-      ref.read(patchClashConfigProvider.notifier).value =
-          config.patchClashConfig;
-      ref.read(appSettingProvider.notifier).value = config.appSettingProps;
-      ref.read(currentProfileIdProvider.notifier).value =
-          config.currentProfileId;
-      ref.read(themeSettingProvider.notifier).value = config.themeProps;
-      ref.read(windowSettingProvider.notifier).value = config.windowProps;
-      ref.read(vpnSettingProvider.notifier).value = config.vpnProps;
-      ref.read(proxiesStyleSettingProvider.notifier).value =
-          config.proxiesStyleProps;
-      ref.read(overrideDnsProvider.notifier).value = config.overrideDns;
-      ref.read(networkSettingProvider.notifier).value = config.networkProps;
-      ref.read(hotKeyActionsProvider.notifier).value = config.hotKeyActions;
+      final restoredConfig =
+          option == RestoreOption.onlyProfiles || configMap == null
+          ? null
+          : Config.fromJson(configMap);
+      final previousDatabase = await database.snapshot();
+      final previousConfig = ref.read(configProvider);
+      final files = await applyRestoredProfileFiles(
+        restoreDirPath: restoreDirPath,
+        homeDirPath: await appPath.homeDirPath,
+        profiles: migrationData.profiles,
+        scripts: migrationData.scripts,
+      );
+      try {
+        await database.restore(
+          migrationData.profiles,
+          migrationData.scripts,
+          migrationData.rules,
+          migrationData.links,
+          migrationData.proxyGroups,
+          proxyNodes: migrationData.proxyNodes,
+          proxyNodeBindings: migrationData.proxyNodeBindings,
+          proxyChains: migrationData.proxyChains,
+          proxyChainHops: migrationData.proxyChainHops,
+          proxyChainBindings: migrationData.proxyChainBindings,
+          proxyNodeAssets: migrationData.proxyNodeAssets,
+          groupMembers: migrationData.proxyGroupMembers,
+          isOverride: isOverride,
+        );
+        await installRestoredNodeAssets(isOverride: isOverride);
+        if (restoredConfig != null) _applyConfig(restoredConfig);
+      } catch (_) {
+        await files.rollback();
+        await database.restoreSnapshot(previousDatabase);
+        if (restoredConfig != null) _applyConfig(previousConfig);
+        rethrow;
+      }
+      await files.commit();
       return;
     } finally {
       await restoreDir.safeDelete(recursive: true);
     }
+  }
+
+  void _applyConfig(Config config) {
+    ref.read(davSettingProvider.notifier).update((_) => config.davProps);
+    ref.read(patchClashConfigProvider.notifier).value = config.patchClashConfig;
+    ref.read(appSettingProvider.notifier).value = config.appSettingProps;
+    ref.read(currentProfileIdProvider.notifier).value = config.currentProfileId;
+    ref.read(themeSettingProvider.notifier).value = config.themeProps;
+    ref.read(windowSettingProvider.notifier).value = config.windowProps;
+    ref.read(vpnSettingProvider.notifier).value = config.vpnProps;
+    ref.read(proxiesStyleSettingProvider.notifier).value =
+        config.proxiesStyleProps;
+    ref.read(overrideDnsProvider.notifier).value = config.overrideDns;
+    ref.read(networkSettingProvider.notifier).value = config.networkProps;
+    ref.read(hotKeyActionsProvider.notifier).value = config.hotKeyActions;
   }
 }

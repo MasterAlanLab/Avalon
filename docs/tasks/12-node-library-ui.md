@@ -1,5 +1,20 @@
 # 节点库 UI
 
+## 进度补充（2026-08-30）
+
+除移动端全屏布局外的实现边界与验收标准均已落地：列表、筛选、表单/Raw 编辑、绑定、复制、
+重命名、资产、导出与统一导入预览（`lib/widgets/node_import_preview.dart`）齐备，
+loading / error / 空状态已分开并有本地化文案。
+
+密钥遮罩已复核成立：列表项只渲染 `type / 来源 / stale / 本地覆盖` 标签，导入预览只渲染
+`#index · TYPE · name` 与 issue 文案，导出预览走 `includeSecrets: false`，表单密码字段使用
+`obscureText`；Raw 编辑器按设计显示原文。
+
+**仍缺**：「移动端使用全屏页」这条实现边界。节点与链编辑一律走 `globalState.showCommonDialog` +
+`CommonDialog`，而 `lib/widgets/dialog.dart` 是固定 `maxWidth: 300`、
+`maxHeight: min(height - 40, 500)` 的 `AlertDialog`，不随尺寸切换全屏页。
+详见 [复核记录](verify-2026-08-30.md)。
+
 ## 目标
 
 在 Profiles 页面提供完整的全局节点库管理体验。

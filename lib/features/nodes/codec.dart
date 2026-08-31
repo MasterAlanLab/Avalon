@@ -1952,13 +1952,18 @@ class SocksCodec implements NodeCodec {
     final name = config['name'] == null
         ? ''
         : '#${Uri.encodeComponent(config['name'].toString())}';
-    final exportScheme = config['type']?.toString().toLowerCase() == 'socks4'
-        ? 'socks4'
-        : config['type']?.toString().toLowerCase() == 'socks4a'
-        ? 'socks4a'
-        : 'socks5';
+    final exportScheme = _socksScheme(config);
     return '$exportScheme://$user${_hostPort(config)}${params.isEmpty ? '' : '?$params'}$name';
   }
+}
+
+String _socksScheme(Map<String, dynamic> config) {
+  final type = config['type']?.toString().toLowerCase();
+  if (type == 'socks4' || type == 'socks4a') return type!;
+  final version = config['version']?.toString().toLowerCase();
+  if (version == '4') return 'socks4';
+  if (version == '4a') return 'socks4a';
+  return 'socks5';
 }
 
 String? _decodeBase64(String value) {

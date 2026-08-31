@@ -519,6 +519,7 @@ Future<String> _backupTask<T>(
   final tempZipFilePath = '$tempBasePath.zip';
   final tempDBFile = File('$tempBasePath.sqlite');
   final tempConfigFile = File('$tempBasePath.json');
+  final tempManifestFile = File('$tempBasePath-manifest.json');
   final dbFile = File(dbPath);
   final encoder = ZipFileEncoder();
   var encoderClosed = false;
@@ -557,6 +558,23 @@ Future<String> _backupTask<T>(
     if (await nodesDir.exists()) {
       await encoder.addDirectory(nodesDir, followLinks: false);
     }
+    final entries = <Map<String, Object?>>[
+      if (await tempDBFile.exists())
+        await _manifestEntry(backupDatabaseName, tempDBFile),
+      await _manifestEntry(configJsonName, tempConfigFile),
+      ...await _manifestEntries(profilesDir, 'profiles', fileNames),
+      ...await _manifestEntries(scriptsDir, 'scripts', fileNames),
+      ...await _manifestEntries(nodesDir, 'nodes', null),
+    ];
+    await tempManifestFile.writeAsString(
+      json.encode({
+        'version': backupManifestVersion,
+        'createdAt': DateTime.now().toIso8601String(),
+        'appVersion': configMap['version'],
+        'entries': entries,
+      }),
+    );
+    await encoder.addFile(tempManifestFile, backupManifestName);
     encoder.close();
     encoderClosed = true;
     return tempZipFilePath;
@@ -565,7 +583,82 @@ Future<String> _backupTask<T>(
       encoder.close();
     }
     await tempConfigFile.safeDelete();
+    await tempManifestFile.safeDelete();
     await tempDBFile.safeDelete();
+  }
+}
+
+Future<Map<String, Object?>> _manifestEntry(String path, File file) async {
+  final bytes = await file.readAsBytes();
+  return {
+    'path': path,
+    'sha256': sha256.convert(bytes).toString(),
+    'size': bytes.length,
+  };
+}
+
+Future<List<Map<String, Object?>>> _manifestEntries(
+  Directory directory,
+  String prefix,
+  Iterable<String>? fileNames,
+) async {
+  if (!await directory.exists()) return const [];
+  final result = <Map<String, Object?>>[];
+  await for (final entity in directory.list(
+    recursive: true,
+    followLinks: false,
+  )) {
+    if (entity is! File) continue;
+    if (fileNames != null && !fileNames.contains(basename(entity.path))) {
+      continue;
+    }
+    final archivePath = posix.joinAll([
+      prefix,
+      ...split(relative(entity.path, from: directory.path)),
+    ]);
+    result.add(await _manifestEntry(archivePath, entity));
+  }
+  result.sort((a, b) => (a['path'] as String).compareTo(b['path'] as String));
+  return result;
+}
+
+Future<void> verifyBackupManifest(String restoreDirPath) async {
+  final manifestFile = File(join(restoreDirPath, backupManifestName));
+  if (!await manifestFile.exists()) return;
+  final Object? decoded;
+  try {
+    decoded = json.decode(await manifestFile.readAsString());
+  } catch (_) {
+    throw currentAppLocalizations.invalidBackupFile;
+  }
+  if (decoded is! Map) throw currentAppLocalizations.invalidBackupFile;
+  final version = decoded['version'];
+  if (version is! int || version > backupManifestVersion) {
+    throw currentAppLocalizations.invalidBackupFile;
+  }
+  final entries = decoded['entries'];
+  if (entries is! List) throw currentAppLocalizations.invalidBackupFile;
+  final restoreRoot = normalize(restoreDirPath);
+  for (final entry in entries) {
+    if (entry is! Map) throw currentAppLocalizations.invalidBackupFile;
+    final path = entry['path']?.toString();
+    final digest = entry['sha256']?.toString();
+    if (path == null || digest == null) {
+      throw currentAppLocalizations.invalidBackupFile;
+    }
+    final relativePath = posix.normalize(path);
+    final filePath = normalize(join(restoreDirPath, relativePath));
+    if (posix.isAbsolute(relativePath) ||
+        relativePath.startsWith('../') ||
+        !isWithin(restoreRoot, filePath)) {
+      throw currentAppLocalizations.invalidBackupFile;
+    }
+    final file = File(filePath);
+    if (!await file.exists()) throw currentAppLocalizations.invalidBackupFile;
+    final bytes = await file.readAsBytes();
+    if (sha256.convert(bytes).toString() != digest.toLowerCase()) {
+      throw currentAppLocalizations.invalidBackupFile;
+    }
   }
 }
 
@@ -595,6 +688,7 @@ Future<MigrationData> _restoreTask(RootIsolateToken token) async {
   } finally {
     await input.close();
   }
+  await verifyBackupManifest(restoreDirPath);
   final restoreConfigFile = File(join(restoreDirPath, configJsonName));
   if (!await restoreConfigFile.exists()) {
     throw currentAppLocalizations.invalidBackupFile;
@@ -651,19 +745,6 @@ Future<MigrationData> _restoreTask(RootIsolateToken token) async {
     ]);
     final profiles = results[0].cast<Profile>();
     final scripts = results[1].cast<Script>();
-    final profilesMigration = profiles.map(
-      (item) => VM2(
-        _getProfilePath(restoreDirPath, item.id.toString()),
-        _getProfilePath(homeDirPath, item.id.toString()),
-      ),
-    );
-    final scriptsMigration = scripts.map(
-      (item) => VM2(
-        _getScriptPath(restoreDirPath, item.id.toString()),
-        _getScriptPath(homeDirPath, item.id.toString()),
-      ),
-    );
-    await _copyWithMapList([...profilesMigration, ...scriptsMigration]);
     migrationData = migrationData.copyWith(
       profiles: profiles,
       scripts: scripts,
@@ -678,29 +759,167 @@ Future<MigrationData> _restoreTask(RootIsolateToken token) async {
       proxyNodeAssets: results[10].cast<ProxyNodeAsset>(),
       proxyGroupMembers: results[11].cast<ProxyGroupMember>(),
     );
-    final restoredAssets = migrationData.proxyNodeAssets;
-    for (final asset in restoredAssets) {
-      final relativePath = posix.normalize(asset.relativePath);
-      final restoreRoot = normalize(restoreDirPath);
-      final filePath = normalize(join(restoreDirPath, relativePath));
-      if (posix.isAbsolute(relativePath) ||
-          relativePath == '.' ||
-          relativePath == '..' ||
-          relativePath.startsWith('../') ||
-          !isWithin(restoreRoot, filePath) ||
-          !relativePath.startsWith('nodes/')) {
-        throw currentAppLocalizations.invalidBackupFile;
-      }
-      final file = File(filePath);
-      if (!await file.exists()) throw currentAppLocalizations.invalidBackupFile;
-      final digest = sha256.convert(await file.readAsBytes()).toString();
-      if (digest != asset.sha256.toLowerCase()) {
-        throw currentAppLocalizations.invalidBackupFile;
-      }
-    }
+    await verifyRestoredNodeAssets(
+      restoreDirPath: restoreDirPath,
+      assets: migrationData.proxyNodeAssets,
+    );
     return migrationData;
   } finally {
     await database.close();
+  }
+}
+
+Future<void> verifyRestoredNodeAssets({
+  required String restoreDirPath,
+  required List<ProxyNodeAsset> assets,
+}) async {
+  final restoreRoot = normalize(restoreDirPath);
+  for (final asset in assets) {
+    final relativePath = posix.normalize(asset.relativePath);
+    final filePath = normalize(join(restoreDirPath, relativePath));
+    if (posix.isAbsolute(relativePath) ||
+        relativePath == '.' ||
+        relativePath == '..' ||
+        relativePath.startsWith('../') ||
+        !isWithin(restoreRoot, filePath) ||
+        !relativePath.startsWith('nodes/')) {
+      throw currentAppLocalizations.invalidBackupFile;
+    }
+    final file = File(filePath);
+    if (!await file.exists()) throw currentAppLocalizations.invalidBackupFile;
+    final digest = sha256.convert(await file.readAsBytes()).toString();
+    if (digest != asset.sha256.toLowerCase()) {
+      throw currentAppLocalizations.invalidBackupFile;
+    }
+  }
+}
+
+class FileReplacement {
+  FileReplacement._(this.path, this._backupPath);
+
+  final String path;
+  final String? _backupPath;
+
+  bool get hasPrevious => _backupPath != null;
+
+  Future<void> commit() async {
+    final backupPath = _backupPath;
+    if (backupPath != null) await File(backupPath).safeDelete();
+  }
+
+  Future<void> rollback() async {
+    final backupPath = _backupPath;
+    if (backupPath == null) {
+      await File(path).safeDelete();
+      return;
+    }
+    final backup = File(backupPath);
+    if (!await backup.exists()) return;
+    await File(path).safeDelete();
+    await backup.rename(path);
+  }
+}
+
+Future<FileReplacement> replaceFileAtomically(
+  String path,
+  String content,
+) async {
+  final target = File(path);
+  await target.parent.create(recursive: true);
+  String? backupPath;
+  if (await target.exists()) {
+    backupPath = '$path.bak-${utils.id}';
+    await File(backupPath).safeDelete();
+    await target.copy(backupPath);
+  }
+  final temporary = File('$path.tmp-${utils.id}');
+  try {
+    await temporary.writeAsString(content, flush: true);
+    try {
+      await temporary.rename(path);
+    } on FileSystemException {
+      if (backupPath == null) rethrow;
+      await target.safeDelete();
+      await temporary.rename(path);
+    }
+  } catch (_) {
+    final replacement = FileReplacement._(path, backupPath);
+    await replacement.rollback();
+    rethrow;
+  } finally {
+    await temporary.safeDelete();
+  }
+  return FileReplacement._(path, backupPath);
+}
+
+class RestoredFileTransaction {
+  RestoredFileTransaction._();
+
+  final Map<String, String> _replaced = {};
+  final List<String> _created = [];
+
+  Future<void> commit() async {
+    for (final backup in _replaced.values) {
+      await File(backup).safeDelete();
+    }
+    _replaced.clear();
+    _created.clear();
+  }
+
+  Future<void> rollback() async {
+    for (final path in _created) {
+      await File(path).safeDelete();
+    }
+    for (final entry in _replaced.entries) {
+      final backup = File(entry.value);
+      if (!await backup.exists()) continue;
+      await File(entry.key).safeDelete();
+      await backup.rename(entry.key);
+    }
+    _replaced.clear();
+    _created.clear();
+  }
+}
+
+Future<RestoredFileTransaction> applyRestoredProfileFiles({
+  required String restoreDirPath,
+  required String homeDirPath,
+  required List<Profile> profiles,
+  required List<Script> scripts,
+}) async {
+  final copyMapList = <VM2<String, String>>[
+    for (final item in profiles)
+      VM2(
+        _getProfilePath(restoreDirPath, item.id.toString()),
+        _getProfilePath(homeDirPath, item.id.toString()),
+      ),
+    for (final item in scripts)
+      VM2(
+        _getScriptPath(restoreDirPath, item.id.toString()),
+        _getScriptPath(homeDirPath, item.id.toString()),
+      ),
+  ];
+  final transaction = RestoredFileTransaction._();
+  try {
+    for (final item in copyMapList) {
+      final source = File(item.a);
+      if (!await source.exists()) continue;
+      final target = File(item.b);
+      await Directory(dirname(target.path)).create(recursive: true);
+      if (await target.exists()) {
+        final backup = '${target.path}.restore-${utils.id}';
+        await File(backup).safeDelete();
+        await target.rename(backup);
+        transaction._replaced[target.path] = backup;
+      } else {
+        transaction._created.add(target.path);
+      }
+      await source.copy(target.path);
+    }
+    return transaction;
+  } catch (_) {
+    await transaction.rollback();
+    rethrow;
   }
 }
 
@@ -794,12 +1013,6 @@ Future<void> _extractRestoreArchive(
     file.writeContent(outputStream);
     await outputStream.close();
   }
-}
-
-Future<void> _copyWithMapList(List<VM2<String, String>> copyMapList) async {
-  await Future.wait(
-    copyMapList.map((item) => File(item.a).safeCopy(item.b)).toList(),
-  );
 }
 
 String _getScriptPath(String root, String fileName) {

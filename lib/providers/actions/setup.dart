@@ -453,14 +453,24 @@ class SetupAction extends _$SetupAction {
           }
         }
         final configFilePath = await appPath.configFilePath;
-        await _writeConfigAtomically(configFilePath, yamlString);
-        final message = await coreController.setupConfig(
-          params: _setupParams,
-          preloadInvoke: preloadInvoke,
+        final replacement = await replaceFileAtomically(
+          configFilePath,
+          yamlString,
         );
-        if (message.isNotEmpty && !message.endsWith('is empty')) {
-          throw message;
+        try {
+          final message = await coreController.setupConfig(
+            params: _setupParams,
+            preloadInvoke: preloadInvoke,
+          );
+          if (message.isNotEmpty && !message.endsWith('is empty')) {
+            throw message;
+          }
+        } catch (_) {
+          await replacement.rollback();
+          await _reloadLastValidConfig(replacement);
+          rethrow;
         }
+        await replacement.commit();
         globalState.lastConfigMd5 = yamlMd5;
         ref.read(checkIpNumProvider.notifier).add();
         await onUpdated?.call();
@@ -479,30 +489,15 @@ class SetupAction extends _$SetupAction {
     return config;
   }
 
-  Future<void> _writeConfigAtomically(String path, String content) async {
-    final target = File(path);
-    await target.parent.create(recursive: true);
-    final temporary = File('$path.tmp-${utils.id}');
+  Future<void> _reloadLastValidConfig(FileReplacement replacement) async {
+    if (!replacement.hasPrevious) return;
     try {
-      await temporary.writeAsString(content, flush: true);
-      try {
-        await temporary.rename(path);
-      } on FileSystemException {
-        if (!await target.exists()) rethrow;
-        final backup = File('$path.bak-${utils.id}');
-        await target.rename(backup.path);
-        try {
-          await temporary.rename(path);
-        } catch (_) {
-          if (!await target.exists() && await backup.exists()) {
-            await backup.rename(path);
-          }
-          rethrow;
-        }
-        await backup.safeDelete();
-      }
-    } finally {
-      await temporary.safeDelete();
+      await coreController.setupConfig(params: _setupParams);
+    } catch (error) {
+      commonPrint.log(
+        'unable to reload the last valid config: $error',
+        logLevel: LogLevel.error,
+      );
     }
   }
 }

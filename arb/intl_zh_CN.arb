@@ -609,5 +609,11 @@
   "attachAsset": "附加资产",
   "assetFieldPath": "资产字段路径",
   "noNodeAssets": "暂无节点资产",
-  "server": "服务器"
+  "server": "服务器",
+  "chainEntryGroups": "链路入口组",
+  "chainEntryGroupsTip": "把链路加入所选策略组，然后在代理页选用。",
+  "chainEntryGroupsEmpty": "当前配置没有可加入的策略组",
+  "chainPathCount": "路径数：{count}",
+  "chainDiagnostics": "链路诊断",
+  "chainWarningConfirm": "链路存在警告，仍要保存吗？"
 }

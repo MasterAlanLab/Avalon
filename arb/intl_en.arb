@@ -609,5 +609,11 @@
   "attachAsset": "Attach asset",
   "assetFieldPath": "Asset field path",
   "noNodeAssets": "No node assets",
-  "server": "Server"
+  "server": "Server",
+  "chainEntryGroups": "Chain entry groups",
+  "chainEntryGroupsTip": "Add this chain to the selected groups, then select it on the proxies page.",
+  "chainEntryGroupsEmpty": "This profile has no group to add the chain to",
+  "chainPathCount": "Paths: {count}",
+  "chainDiagnostics": "Chain diagnostics",
+  "chainWarningConfirm": "This chain reports warnings. Save it anyway?"
 }

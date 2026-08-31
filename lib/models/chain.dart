@@ -57,6 +57,7 @@ abstract class ProxyChainBinding with _$ProxyChainBinding {
     @Default(true) bool enabled,
     @Default(false) bool isDefault,
     String? selectorName,
+    @Default([]) List<String> entryGroups,
     int? order,
   }) = _ProxyChainBinding;
 

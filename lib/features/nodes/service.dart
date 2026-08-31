@@ -330,7 +330,10 @@ class NodeSourceSyncService {
         }
       }
     }
-    final keyCounts = <String, int>{};
+    final keyAllocator = SourceNodeKeyAllocator(
+      kind: sourceKind,
+      provider: provider,
+    );
     final created = <ProxyNode>[];
     final updated = <ProxyNode>[];
     final unchanged = <ProxyNode>[];
@@ -402,21 +405,8 @@ class NodeSourceSyncService {
       }
       validEntries++;
       final name = rawName;
-      final sourceIdentity = map['id'] ?? map['uuid'] ?? name;
-      final identity = sourceIdentity.toString().trim().isEmpty
-          ? name
-          : sourceIdentity.toString().trim();
-      final draft = NodeDraft(
-        config: map,
-        sourceKey: '$sourceKind:${provider ?? ''}:$identity',
-      );
-      final baseKey = draft.sourceKey!;
-      final occurrence = keyCounts.update(
-        baseKey,
-        (value) => value + 1,
-        ifAbsent: () => 0,
-      );
-      final key = occurrence == 0 ? baseKey : '$baseKey#$occurrence';
+      final key = keyAllocator.allocate(map, name);
+      final draft = NodeDraft(config: map, sourceKey: key);
       final exact = sourceNodes
           .where(
             (node) =>

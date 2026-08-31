@@ -114,14 +114,12 @@ class ProfilesAction extends _$ProfilesAction {
         !looksLikeFullProfile) {
       globalState.navigatorKey.currentState?.popUntil((route) => route.isFirst);
       ref.read(currentPageLabelProvider.notifier).toProfiles();
-      final result = await const NodeLibraryService().commit(nodeInput);
-      if (result.issues.isNotEmpty) {
-        globalState.showNotifier(
-          result.issues.map(_formatNodeIssue).join('\n'),
-        );
-      } else if (result.all.isNotEmpty) {
-        globalState.showNotifier(currentAppLocalizations.importSuccess);
-      }
+      final profileId = ref.read(currentProfileIdProvider);
+      await _previewAndCommitNodes(
+        nodeInput,
+        profileId: profileId,
+        bind: profileId != null,
+      );
       return;
     }
     globalState.navigatorKey.currentState?.popUntil((route) => route.isFirst);
@@ -260,13 +258,48 @@ class ProfilesAction extends _$ProfilesAction {
       await addProfileFormURL(subscriptionUrl);
       return null;
     }
+    return _previewAndCommitNodes(
+      input,
+      profileId: profileId,
+      bind: bind,
+      createCopy: createCopy,
+    );
+  }
+
+  Future<NodeImportCommitResult?> _previewAndCommitNodes(
+    NodeImportResult input, {
+    int? profileId,
+    bool bind = false,
+    bool createCopy = false,
+  }) async {
+    var selected = input;
+    var effectiveBind = bind;
+    var effectiveCreateCopy = createCopy;
+    if (input.drafts.isNotEmpty) {
+      final selection = await globalState.showCommonDialog<NodeImportSelection>(
+        child: NodeImportPreview(
+          result: input,
+          profileId: profileId,
+          bind: bind,
+        ),
+      );
+      if (selection == null || selection.indexes.isEmpty) return null;
+      selected = NodeImportResult(
+        drafts: [for (final index in selection.indexes) input.drafts[index]],
+        kind: input.kind,
+        issues: input.issues,
+        subscriptionUrl: input.subscriptionUrl,
+      );
+      effectiveBind = selection.bind;
+      effectiveCreateCopy = selection.createCopy;
+    }
     final result = await globalState.loadingRun(
       tag: LoadingTag.profiles,
       () => const NodeLibraryService().commit(
-        input,
+        selected,
         profileId: profileId,
-        bind: bind,
-        createCopy: createCopy,
+        bind: effectiveBind,
+        createCopy: effectiveCreateCopy,
       ),
       title: currentAppLocalizations.addProfile,
     );
@@ -276,7 +309,7 @@ class ProfilesAction extends _$ProfilesAction {
     } else if (result.all.isNotEmpty) {
       globalState.showNotifier(currentAppLocalizations.importSuccess);
     }
-    if (bind && profileId == ref.read(currentProfileIdProvider)) {
+    if (effectiveBind && profileId == ref.read(currentProfileIdProvider)) {
       ref.read(setupActionProvider.notifier).applyProfileDebounce();
     }
     return result;

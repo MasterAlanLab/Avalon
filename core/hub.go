@@ -3,6 +3,7 @@ package main
 import (
 	"cmp"
 	"context"
+	"fmt"
 	"github.com/metacubex/mihomo/adapter"
 	"github.com/metacubex/mihomo/adapter/outboundgroup"
 	"github.com/metacubex/mihomo/common/observable"
@@ -85,11 +86,55 @@ func handleShutdown() bool {
 
 func handleValidateConfig(path string) string {
 	buf, err := readFile(path)
-	_, err = config.UnmarshalRawConfig(buf)
 	if err != nil {
 		return err.Error()
 	}
+	rawCfg, err := config.UnmarshalRawConfig(buf)
+	if err != nil {
+		return err.Error()
+	}
+	if err = validateRawOutbounds(rawCfg); err != nil {
+		return err.Error()
+	}
 	return ""
+}
+
+var reservedProxyNames = []string{
+	"DIRECT",
+	"REJECT",
+	"REJECT-DROP",
+	"COMPATIBLE",
+	"PASS",
+	"PASS-RULE",
+}
+
+func validateRawOutbounds(rawCfg *config.RawConfig) error {
+	names := make(map[string]struct{}, len(rawCfg.Proxy)+len(rawCfg.ProxyGroup))
+	for _, name := range reservedProxyNames {
+		names[name] = struct{}{}
+	}
+	for idx, mapping := range rawCfg.Proxy {
+		proxy, err := adapter.ParseProxy(mapping, adapter.WithTunnelForAPI(tunnel.Tunnel))
+		if err != nil {
+			return fmt.Errorf("proxy %d: %w", idx, err)
+		}
+		name := proxy.Name()
+		if _, exist := names[name]; exist {
+			return fmt.Errorf("proxy %s is the duplicate name", name)
+		}
+		names[name] = struct{}{}
+	}
+	for idx, mapping := range rawCfg.ProxyGroup {
+		groupName, existName := mapping["name"].(string)
+		if !existName {
+			return fmt.Errorf("proxy group %d: missing name", idx)
+		}
+		if _, exist := names[groupName]; exist {
+			return fmt.Errorf("proxy group %s is the duplicate name", groupName)
+		}
+		names[groupName] = struct{}{}
+	}
+	return nil
 }
 
 func handleGetProxies() ProxiesData {

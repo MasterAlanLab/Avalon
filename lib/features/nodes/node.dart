@@ -123,6 +123,26 @@ class NodeExportResult {
   final List<NodeIssue> issues;
 }
 
+class SourceNodeKeyAllocator {
+  SourceNodeKeyAllocator({required this.kind, this.provider});
+
+  final String kind;
+  final String? provider;
+  final Map<String, int> _counts = <String, int>{};
+
+  String allocate(Map<String, dynamic> config, String name) {
+    final identity = (config['id'] ?? config['uuid'] ?? name).toString().trim();
+    final baseKey =
+        '$kind:${provider ?? ''}:${identity.isEmpty ? name : identity}';
+    final occurrence = _counts.update(
+      baseKey,
+      (value) => value + 1,
+      ifAbsent: () => 0,
+    );
+    return occurrence == 0 ? baseKey : '$baseKey#$occurrence';
+  }
+}
+
 String nodeFingerprint(Map<String, dynamic> config) {
   final normalized = _withoutRuntimeFields(config);
   final encoded = jsonEncode(_sortValue(normalized));

@@ -189,6 +189,31 @@ void main() {
       expect(draft.config['name'], '日本語节点');
     });
 
+    test('keeps the SOCKS version across export and re-import', () {
+      final registry = NodeCodecRegistry();
+      for (final entry in {'socks4': 4, 'socks4a': '4a'}.entries) {
+        final draft = registry.parse('${entry.key}://USER@HOST:1080#NODE');
+        expect(draft.issues.where((issue) => issue.isError), isEmpty);
+        expect(draft.config['type'], 'socks');
+        expect(draft.config['version'], entry.value);
+
+        final exported = const SocksCodec().exportUri(draft.config)!;
+        expect(exported, startsWith('${entry.key}://'));
+
+        final round = registry.parse(exported);
+        expect(round.config['version'], entry.value);
+        expect(round.config['username'], 'USER');
+        expect(round.config['name'], 'NODE');
+      }
+
+      final socks5 = registry.parse('socks5://USER@HOST:1080#NODE');
+      expect(socks5.config.containsKey('version'), isFalse);
+      expect(
+        const SocksCodec().exportUri(socks5.config),
+        startsWith('socks5://'),
+      );
+    });
+
     test('parses standard and escaped VMess links', () {
       final registry = NodeCodecRegistry();
       final standard = registry.parse(
@@ -361,6 +386,58 @@ proxies:
     } finally {
       await directory.delete(recursive: true);
     }
+  });
+
+  test('exports generated chain proxies with their selector', () async {
+    final result = await NodeExportService().exportConfigs(
+      [
+        {
+          'name': 'CHAIN_1_1_FIRST',
+          'type': 'socks5',
+          'server': 'HOST_A',
+          'port': 1080,
+        },
+        {
+          'name': 'CHAIN_1_2_SECOND',
+          'type': 'socks5',
+          'server': 'HOST_B',
+          'port': 1080,
+          'dialer-proxy': 'CHAIN_1_1_FIRST',
+        },
+      ],
+      nodeIds: const ['CHAIN_1_1_FIRST', 'CHAIN_1_2_SECOND'],
+      groups: const [
+        {
+          'name': 'CHAIN_selector',
+          'type': 'select',
+          'proxies': ['CHAIN_1_2_SECOND'],
+        },
+      ],
+      includeZip: true,
+    );
+
+    expect(result.yaml, contains('proxy-groups:'));
+    final decoded = jsonDecode(result.json);
+    expect(decoded['proxies'], hasLength(2));
+    expect(decoded['proxy-groups'][0]['proxies'], ['CHAIN_1_2_SECOND']);
+    expect(decoded['proxies'][1]['dialer-proxy'], 'CHAIN_1_1_FIRST');
+
+    final archive = ZipDecoder().decodeBytes(result.zip!);
+    final entries = {for (final file in archive.files) file.name: file};
+    final manifest = jsonDecode(
+      utf8.decode(entries['manifest.json']!.content as List<int>),
+    );
+    expect(manifest['groups'], [
+      {
+        'name': 'CHAIN_selector',
+        'type': 'select',
+        'proxies': ['CHAIN_1_2_SECOND'],
+      },
+    ]);
+    final zipConfig = jsonDecode(
+      utf8.decode(entries['nodes.json']!.content as List<int>),
+    );
+    expect(zipConfig['proxy-groups'][0]['name'], 'CHAIN_selector');
   });
 
   test('materializes verified assets from portable paths', () async {

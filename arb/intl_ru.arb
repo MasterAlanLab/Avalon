@@ -609,5 +609,11 @@
   "attachAsset": "Прикрепить ресурс",
   "assetFieldPath": "Путь поля ресурса",
   "noNodeAssets": "Ресурсы узла отсутствуют",
-  "server": "Сервер"
+  "server": "Сервер",
+  "chainEntryGroups": "Группы входа цепочки",
+  "chainEntryGroupsTip": "Добавьте цепочку в выбранные группы, затем выберите её на странице прокси.",
+  "chainEntryGroupsEmpty": "В этом профиле нет групп для добавления цепочки",
+  "chainPathCount": "Путей: {count}",
+  "chainDiagnostics": "Диагностика цепочки",
+  "chainWarningConfirm": "Цепочка сообщает о предупреждениях. Всё равно сохранить?"
 }

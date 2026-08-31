@@ -116,6 +116,32 @@ class ChainLibraryService {
   Future<void> unbind({required int profileId, required int chainId}) =>
       store.proxyChainBindingsDao.remove(profileId, chainId);
 
+  Future<void> setEntryGroups({
+    required int profileId,
+    required int chainId,
+    required Iterable<String> entryGroups,
+  }) async {
+    final groups = <String>[
+      for (final group in entryGroups)
+        if (group.trim().isNotEmpty) group.trim(),
+    ];
+    await store.transaction(() async {
+      final bindings = await store.proxyChainBindingsDao.query(profileId).get();
+      final binding = bindings
+          .where((item) => item.chainId == chainId)
+          .firstOrNull;
+      await store.proxyChainBindingsDao.put(
+        binding == null
+            ? ProxyChainBinding(
+                profileId: profileId,
+                chainId: chainId,
+                entryGroups: groups,
+              )
+            : binding.copyWith(entryGroups: groups),
+      );
+    });
+  }
+
   Future<void> setDefault({
     required int profileId,
     required int chainId,

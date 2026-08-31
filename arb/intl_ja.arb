@@ -609,5 +609,11 @@
   "attachAsset": "アセットを添付",
   "assetFieldPath": "アセットフィールドパス",
   "noNodeAssets": "ノードアセットなし",
-  "server": "サーバー"
+  "server": "サーバー",
+  "chainEntryGroups": "チェーン入口グループ",
+  "chainEntryGroupsTip": "選択したグループにチェーンを追加し、プロキシページで選択してください。",
+  "chainEntryGroupsEmpty": "このプロファイルには追加できるグループがありません",
+  "chainPathCount": "パス数: {count}",
+  "chainDiagnostics": "チェーン診断",
+  "chainWarningConfirm": "チェーンに警告があります。保存しますか？"
 }

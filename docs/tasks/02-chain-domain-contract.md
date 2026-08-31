@@ -1,5 +1,16 @@
 # 链路领域契约
 
+## 进度补充（2026-08-30）
+
+下面「输出」列出的是草案类型名：`ProxyChainRecord` → `ProxyChain`、
+`ProfileChainBinding` → `ProxyChainBinding`、`ChainTargetRef` 在持久化侧为 `ProxyChainHop`、
+在编译期为 `ChainTarget`；`ChainDiagnostic` 与 `ChainCompileResult` 同名。
+完整对照表见 [复核记录](verify-2026-08-30.md)。
+
+分支上限、循环与本地端点已复核：`branchLimit` 默认 64、校验范围 1–1024、超限给
+`branch-limit-exceeded` error，组循环给 `group-cycle`，本地端点接受 `http` / `socks` / `socks5`
+（UI 的 HTTPS 落为 `type: http` + `tls: true`）。
+
 ## 目标
 
 定义可变多跳、策略组分支和 Profile 绑定的全局链路模型，并固定单 Core 的编译语义。

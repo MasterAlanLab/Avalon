@@ -45,8 +45,8 @@ class _NodeLibraryViewState extends ConsumerState<NodeLibraryView> {
       return;
     }
     final profileId = ref.read(currentProfileIdProvider);
-    final selection = await globalState.showCommonDialog<_ImportSelection>(
-      child: _ImportPreview(result: result, profileId: profileId),
+    final selection = await globalState.showCommonDialog<NodeImportSelection>(
+      child: NodeImportPreview(result: result, profileId: profileId),
     );
     if (!mounted || selection == null || selection.indexes.isEmpty) return;
     final committed = await const NodeLibraryService().commit(
@@ -94,6 +94,12 @@ class _NodeLibraryViewState extends ConsumerState<NodeLibraryView> {
     return StreamBuilder<List<ProxyNode>>(
       stream: database.proxyNodesDao.query().watch(),
       builder: (context, snapshot) {
+        if (snapshot.hasError) {
+          return NullStatus(label: snapshot.error.toString());
+        }
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return Center(child: Text(context.appLocalizations.loading));
+        }
         final nodes = snapshot.data ?? const <ProxyNode>[];
         if (nodes.isEmpty) {
           return _NodeEmpty(onImport: _import, onCreate: _create);
@@ -589,125 +595,6 @@ class NodeLibraryItem extends StatelessWidget {
   }
 }
 
-class _ImportPreview extends StatefulWidget {
-  const _ImportPreview({required this.result, required this.profileId});
-
-  final NodeImportResult result;
-  final int? profileId;
-
-  @override
-  State<_ImportPreview> createState() => _ImportPreviewState();
-}
-
-class _ImportPreviewState extends State<_ImportPreview> {
-  late final Set<int> selected = {
-    for (var index = 0; index < widget.result.drafts.length; index++)
-      if (widget.result.drafts[index].issues.every((issue) => !issue.isError))
-        index,
-  };
-  bool createCopy = false;
-  bool bind = true;
-
-  @override
-  Widget build(BuildContext context) {
-    return CommonDialog(
-      title: context.appLocalizations.importPreview,
-      overrideScroll: true,
-      actions: [
-        TextButton(
-          onPressed: () => Navigator.of(context).pop(),
-          child: Text(context.appLocalizations.cancel),
-        ),
-        FilledButton(
-          onPressed: selected.isEmpty
-              ? null
-              : () => Navigator.of(context).pop(
-                  _ImportSelection(
-                    indexes: selected.toList()..sort(),
-                    createCopy: createCopy,
-                    bind: bind && widget.profileId != null,
-                  ),
-                ),
-          child: Text(context.appLocalizations.importNode),
-        ),
-      ],
-      child: Column(
-        children: [
-          Expanded(
-            child: ListView.builder(
-              itemCount: widget.result.drafts.length,
-              itemBuilder: (context, index) {
-                final draft = widget.result.drafts[index];
-                final valid = draft.issues.every((issue) => !issue.isError);
-                final details = draft.issues
-                    .map(
-                      (issue) =>
-                          '#${issue.index ?? index} ${issue.code ?? issue.severity.name}: ${issue.message}',
-                    )
-                    .join('\n');
-                return CheckboxListTile(
-                  value: selected.contains(index),
-                  onChanged: valid
-                      ? (value) => setState(() {
-                          if (value == true) {
-                            selected.add(index);
-                          } else {
-                            selected.remove(index);
-                          }
-                        })
-                      : null,
-                  title: Text(
-                    '#$index · ${draft.type.toUpperCase()} · ${draft.name}',
-                  ),
-                  subtitle: details.isEmpty ? null : Text(details),
-                );
-              },
-            ),
-          ),
-          RadioGroup<bool>(
-            groupValue: createCopy,
-            onChanged: (value) => setState(() => createCopy = value ?? false),
-            child: Row(
-              children: [
-                Expanded(
-                  child: RadioListTile<bool>(
-                    value: false,
-                    title: Text(context.appLocalizations.updateExisting),
-                  ),
-                ),
-                Expanded(
-                  child: RadioListTile<bool>(
-                    value: true,
-                    title: Text(context.appLocalizations.createCopy),
-                  ),
-                ),
-              ],
-            ),
-          ),
-          if (widget.profileId != null)
-            CheckboxListTile(
-              value: bind,
-              onChanged: (value) => setState(() => bind = value ?? false),
-              title: Text(context.appLocalizations.bindCurrentProfile),
-            ),
-        ],
-      ),
-    );
-  }
-}
-
-class _ImportSelection {
-  const _ImportSelection({
-    required this.indexes,
-    required this.createCopy,
-    required this.bind,
-  });
-
-  final List<int> indexes;
-  final bool createCopy;
-  final bool bind;
-}
-
 class _NodeAssetsDialog extends StatefulWidget {
   const _NodeAssetsDialog({required this.node});
 
@@ -776,6 +663,12 @@ class _NodeAssetsDialogState extends State<_NodeAssetsDialog> {
       child: FutureBuilder<List<ProxyNodeAsset>>(
         future: assets,
         builder: (context, snapshot) {
+          if (snapshot.hasError) {
+            return Text(snapshot.error.toString());
+          }
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return Text(context.appLocalizations.loading);
+          }
           final values = snapshot.data ?? const <ProxyNodeAsset>[];
           if (values.isEmpty) {
             return Text(context.appLocalizations.noNodeAssets);

@@ -4948,6 +4948,66 @@ class AppLocalizations {
   String get server {
     return Intl.message('Server', name: 'server', desc: '', args: []);
   }
+
+  /// `Chain entry groups`
+  String get chainEntryGroups {
+    return Intl.message(
+      'Chain entry groups',
+      name: 'chainEntryGroups',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Add this chain to the selected groups, then select it on the proxies page.`
+  String get chainEntryGroupsTip {
+    return Intl.message(
+      'Add this chain to the selected groups, then select it on the proxies page.',
+      name: 'chainEntryGroupsTip',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `This profile has no group to add the chain to`
+  String get chainEntryGroupsEmpty {
+    return Intl.message(
+      'This profile has no group to add the chain to',
+      name: 'chainEntryGroupsEmpty',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Paths: {count}`
+  String chainPathCount(Object count) {
+    return Intl.message(
+      'Paths: $count',
+      name: 'chainPathCount',
+      desc: '',
+      args: [count],
+    );
+  }
+
+  /// `Chain diagnostics`
+  String get chainDiagnostics {
+    return Intl.message(
+      'Chain diagnostics',
+      name: 'chainDiagnostics',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `This chain reports warnings. Save it anyway?`
+  String get chainWarningConfirm {
+    return Intl.message(
+      'This chain reports warnings. Save it anyway?',
+      name: 'chainWarningConfirm',
+      desc: '',
+      args: [],
+    );
+  }
 }
 
 class AppLocalizationDelegate extends LocalizationsDelegate<AppLocalizations> {

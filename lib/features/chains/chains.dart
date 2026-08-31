@@ -504,14 +504,36 @@ class EffectiveConfigArtifact {
     required this.digest,
     required this.chainResults,
     required this.diagnostics,
+    this.previewChainIndexes = const {},
   });
 
   final Map<String, dynamic> config;
   final String digest;
   final List<ChainCompileResult> chainResults;
   final List<ChainDiagnostic> diagnostics;
+  final Map<int, int> previewChainIndexes;
 
   bool get isValid => diagnostics.every((item) => !item.isError);
+}
+
+class ChainPreview {
+  const ChainPreview({
+    required this.pathCount,
+    required this.diagnostics,
+    this.generatedProxies = const {},
+    this.generatedGroups = const [],
+    this.generatedNodeIds = const {},
+  });
+
+  final int pathCount;
+  final List<ChainDiagnostic> diagnostics;
+  final Map<String, Map<String, dynamic>> generatedProxies;
+  final List<ChainGeneratedGroup> generatedGroups;
+  final Map<String, String> generatedNodeIds;
+
+  bool get isValid => diagnostics.every((item) => !item.isError);
+
+  bool get hasWarnings => diagnostics.any((item) => !item.isError);
 }
 
 class EffectiveConfigAssembler {

@@ -585,7 +585,7 @@ as Map<String, Object?>?,
 /// @nodoc
 mixin _$ProxyChainBinding {
 
- int get profileId; int get chainId; bool get enabled; bool get isDefault; String? get selectorName; int? get order;
+ int get profileId; int get chainId; bool get enabled; bool get isDefault; String? get selectorName; List<String> get entryGroups; int? get order;
 /// Create a copy of ProxyChainBinding
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -598,16 +598,16 @@ $ProxyChainBindingCopyWith<ProxyChainBinding> get copyWith => _$ProxyChainBindin
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is ProxyChainBinding&&(identical(other.profileId, profileId) || other.profileId == profileId)&&(identical(other.chainId, chainId) || other.chainId == chainId)&&(identical(other.enabled, enabled) || other.enabled == enabled)&&(identical(other.isDefault, isDefault) || other.isDefault == isDefault)&&(identical(other.selectorName, selectorName) || other.selectorName == selectorName)&&(identical(other.order, order) || other.order == order));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is ProxyChainBinding&&(identical(other.profileId, profileId) || other.profileId == profileId)&&(identical(other.chainId, chainId) || other.chainId == chainId)&&(identical(other.enabled, enabled) || other.enabled == enabled)&&(identical(other.isDefault, isDefault) || other.isDefault == isDefault)&&(identical(other.selectorName, selectorName) || other.selectorName == selectorName)&&const DeepCollectionEquality().equals(other.entryGroups, entryGroups)&&(identical(other.order, order) || other.order == order));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,profileId,chainId,enabled,isDefault,selectorName,order);
+int get hashCode => Object.hash(runtimeType,profileId,chainId,enabled,isDefault,selectorName,const DeepCollectionEquality().hash(entryGroups),order);
 
 @override
 String toString() {
-  return 'ProxyChainBinding(profileId: $profileId, chainId: $chainId, enabled: $enabled, isDefault: $isDefault, selectorName: $selectorName, order: $order)';
+  return 'ProxyChainBinding(profileId: $profileId, chainId: $chainId, enabled: $enabled, isDefault: $isDefault, selectorName: $selectorName, entryGroups: $entryGroups, order: $order)';
 }
 
 
@@ -618,7 +618,7 @@ abstract mixin class $ProxyChainBindingCopyWith<$Res>  {
   factory $ProxyChainBindingCopyWith(ProxyChainBinding value, $Res Function(ProxyChainBinding) _then) = _$ProxyChainBindingCopyWithImpl;
 @useResult
 $Res call({
- int profileId, int chainId, bool enabled, bool isDefault, String? selectorName, int? order
+ int profileId, int chainId, bool enabled, bool isDefault, String? selectorName, List<String> entryGroups, int? order
 });
 
 
@@ -635,14 +635,15 @@ class _$ProxyChainBindingCopyWithImpl<$Res>
 
 /// Create a copy of ProxyChainBinding
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? profileId = null,Object? chainId = null,Object? enabled = null,Object? isDefault = null,Object? selectorName = freezed,Object? order = freezed,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? profileId = null,Object? chainId = null,Object? enabled = null,Object? isDefault = null,Object? selectorName = freezed,Object? entryGroups = null,Object? order = freezed,}) {
   return _then(_self.copyWith(
 profileId: null == profileId ? _self.profileId : profileId // ignore: cast_nullable_to_non_nullable
 as int,chainId: null == chainId ? _self.chainId : chainId // ignore: cast_nullable_to_non_nullable
 as int,enabled: null == enabled ? _self.enabled : enabled // ignore: cast_nullable_to_non_nullable
 as bool,isDefault: null == isDefault ? _self.isDefault : isDefault // ignore: cast_nullable_to_non_nullable
 as bool,selectorName: freezed == selectorName ? _self.selectorName : selectorName // ignore: cast_nullable_to_non_nullable
-as String?,order: freezed == order ? _self.order : order // ignore: cast_nullable_to_non_nullable
+as String?,entryGroups: null == entryGroups ? _self.entryGroups : entryGroups // ignore: cast_nullable_to_non_nullable
+as List<String>,order: freezed == order ? _self.order : order // ignore: cast_nullable_to_non_nullable
 as int?,
   ));
 }
@@ -728,10 +729,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( int profileId,  int chainId,  bool enabled,  bool isDefault,  String? selectorName,  int? order)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( int profileId,  int chainId,  bool enabled,  bool isDefault,  String? selectorName,  List<String> entryGroups,  int? order)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _ProxyChainBinding() when $default != null:
-return $default(_that.profileId,_that.chainId,_that.enabled,_that.isDefault,_that.selectorName,_that.order);case _:
+return $default(_that.profileId,_that.chainId,_that.enabled,_that.isDefault,_that.selectorName,_that.entryGroups,_that.order);case _:
   return orElse();
 
 }
@@ -749,10 +750,10 @@ return $default(_that.profileId,_that.chainId,_that.enabled,_that.isDefault,_tha
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( int profileId,  int chainId,  bool enabled,  bool isDefault,  String? selectorName,  int? order)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( int profileId,  int chainId,  bool enabled,  bool isDefault,  String? selectorName,  List<String> entryGroups,  int? order)  $default,) {final _that = this;
 switch (_that) {
 case _ProxyChainBinding():
-return $default(_that.profileId,_that.chainId,_that.enabled,_that.isDefault,_that.selectorName,_that.order);case _:
+return $default(_that.profileId,_that.chainId,_that.enabled,_that.isDefault,_that.selectorName,_that.entryGroups,_that.order);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -769,10 +770,10 @@ return $default(_that.profileId,_that.chainId,_that.enabled,_that.isDefault,_tha
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( int profileId,  int chainId,  bool enabled,  bool isDefault,  String? selectorName,  int? order)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( int profileId,  int chainId,  bool enabled,  bool isDefault,  String? selectorName,  List<String> entryGroups,  int? order)?  $default,) {final _that = this;
 switch (_that) {
 case _ProxyChainBinding() when $default != null:
-return $default(_that.profileId,_that.chainId,_that.enabled,_that.isDefault,_that.selectorName,_that.order);case _:
+return $default(_that.profileId,_that.chainId,_that.enabled,_that.isDefault,_that.selectorName,_that.entryGroups,_that.order);case _:
   return null;
 
 }
@@ -784,7 +785,7 @@ return $default(_that.profileId,_that.chainId,_that.enabled,_that.isDefault,_tha
 @JsonSerializable()
 
 class _ProxyChainBinding implements ProxyChainBinding {
-  const _ProxyChainBinding({required this.profileId, required this.chainId, this.enabled = true, this.isDefault = false, this.selectorName, this.order});
+  const _ProxyChainBinding({required this.profileId, required this.chainId, this.enabled = true, this.isDefault = false, this.selectorName, final  List<String> entryGroups = const [], this.order}): _entryGroups = entryGroups;
   factory _ProxyChainBinding.fromJson(Map<String, dynamic> json) => _$ProxyChainBindingFromJson(json);
 
 @override final  int profileId;
@@ -792,6 +793,13 @@ class _ProxyChainBinding implements ProxyChainBinding {
 @override@JsonKey() final  bool enabled;
 @override@JsonKey() final  bool isDefault;
 @override final  String? selectorName;
+ final  List<String> _entryGroups;
+@override@JsonKey() List<String> get entryGroups {
+  if (_entryGroups is EqualUnmodifiableListView) return _entryGroups;
+  // ignore: implicit_dynamic_type
+  return EqualUnmodifiableListView(_entryGroups);
+}
+
 @override final  int? order;
 
 /// Create a copy of ProxyChainBinding
@@ -807,16 +815,16 @@ Map<String, dynamic> toJson() {
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _ProxyChainBinding&&(identical(other.profileId, profileId) || other.profileId == profileId)&&(identical(other.chainId, chainId) || other.chainId == chainId)&&(identical(other.enabled, enabled) || other.enabled == enabled)&&(identical(other.isDefault, isDefault) || other.isDefault == isDefault)&&(identical(other.selectorName, selectorName) || other.selectorName == selectorName)&&(identical(other.order, order) || other.order == order));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _ProxyChainBinding&&(identical(other.profileId, profileId) || other.profileId == profileId)&&(identical(other.chainId, chainId) || other.chainId == chainId)&&(identical(other.enabled, enabled) || other.enabled == enabled)&&(identical(other.isDefault, isDefault) || other.isDefault == isDefault)&&(identical(other.selectorName, selectorName) || other.selectorName == selectorName)&&const DeepCollectionEquality().equals(other._entryGroups, _entryGroups)&&(identical(other.order, order) || other.order == order));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,profileId,chainId,enabled,isDefault,selectorName,order);
+int get hashCode => Object.hash(runtimeType,profileId,chainId,enabled,isDefault,selectorName,const DeepCollectionEquality().hash(_entryGroups),order);
 
 @override
 String toString() {
-  return 'ProxyChainBinding(profileId: $profileId, chainId: $chainId, enabled: $enabled, isDefault: $isDefault, selectorName: $selectorName, order: $order)';
+  return 'ProxyChainBinding(profileId: $profileId, chainId: $chainId, enabled: $enabled, isDefault: $isDefault, selectorName: $selectorName, entryGroups: $entryGroups, order: $order)';
 }
 
 
@@ -827,7 +835,7 @@ abstract mixin class _$ProxyChainBindingCopyWith<$Res> implements $ProxyChainBin
   factory _$ProxyChainBindingCopyWith(_ProxyChainBinding value, $Res Function(_ProxyChainBinding) _then) = __$ProxyChainBindingCopyWithImpl;
 @override @useResult
 $Res call({
- int profileId, int chainId, bool enabled, bool isDefault, String? selectorName, int? order
+ int profileId, int chainId, bool enabled, bool isDefault, String? selectorName, List<String> entryGroups, int? order
 });
 
 
@@ -844,14 +852,15 @@ class __$ProxyChainBindingCopyWithImpl<$Res>
 
 /// Create a copy of ProxyChainBinding
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? profileId = null,Object? chainId = null,Object? enabled = null,Object? isDefault = null,Object? selectorName = freezed,Object? order = freezed,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? profileId = null,Object? chainId = null,Object? enabled = null,Object? isDefault = null,Object? selectorName = freezed,Object? entryGroups = null,Object? order = freezed,}) {
   return _then(_ProxyChainBinding(
 profileId: null == profileId ? _self.profileId : profileId // ignore: cast_nullable_to_non_nullable
 as int,chainId: null == chainId ? _self.chainId : chainId // ignore: cast_nullable_to_non_nullable
 as int,enabled: null == enabled ? _self.enabled : enabled // ignore: cast_nullable_to_non_nullable
 as bool,isDefault: null == isDefault ? _self.isDefault : isDefault // ignore: cast_nullable_to_non_nullable
 as bool,selectorName: freezed == selectorName ? _self.selectorName : selectorName // ignore: cast_nullable_to_non_nullable
-as String?,order: freezed == order ? _self.order : order // ignore: cast_nullable_to_non_nullable
+as String?,entryGroups: null == entryGroups ? _self._entryGroups : entryGroups // ignore: cast_nullable_to_non_nullable
+as List<String>,order: freezed == order ? _self.order : order // ignore: cast_nullable_to_non_nullable
 as int?,
   ));
 }

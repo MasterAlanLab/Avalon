@@ -44,6 +44,7 @@ class NodeExportService {
     Iterable<String>? nodeIds,
     Iterable<NodeAsset> assets = const [],
     NodeAssetManager? assetManager,
+    Iterable<Map<String, dynamic>> groups = const [],
   }) {
     final values = configs
         .map((config) => includeSecrets ? config : _redact(config))
@@ -67,6 +68,7 @@ class NodeExportService {
       includeZip: includeZip,
       assets: assets.toList(),
       assetManager: assetManager,
+      groups: groups.toList(),
     );
   }
 
@@ -76,6 +78,7 @@ class NodeExportService {
     required bool includeZip,
     List<NodeAsset> assets = const [],
     NodeAssetManager? assetManager,
+    List<Map<String, dynamic>> groups = const [],
   }) async {
     final effectiveRecords =
         records ??
@@ -98,7 +101,10 @@ class NodeExportService {
         );
       }
     }
-    final payload = <String, dynamic>{'proxies': configs};
+    final payload = <String, dynamic>{
+      'proxies': configs,
+      if (groups.isNotEmpty) 'proxy-groups': groups,
+    };
     final jsonText = const JsonEncoder.withIndent('  ').convert(payload);
     final yamlText = yaml.encode(payload);
     final uriText = uris.whereType<String>().join('\n');
@@ -106,7 +112,14 @@ class NodeExportService {
       utf8.encode(uriText.isEmpty ? yamlText : uriText),
     );
     final zipResult = includeZip
-        ? await _zip(effectiveRecords, configs, uris, assets, assetManager)
+        ? await _zip(
+            effectiveRecords,
+            configs,
+            uris,
+            assets,
+            assetManager,
+            groups,
+          )
         : null;
     issues.addAll(zipResult?.issues ?? const []);
     return NodeExportResult(
@@ -125,6 +138,7 @@ class NodeExportService {
     List<String?> uris,
     List<NodeAsset> assets,
     NodeAssetManager? assetManager,
+    List<Map<String, dynamic>> groups,
   ) async {
     final archive = Archive();
     final issues = <NodeIssue>[];
@@ -189,7 +203,10 @@ class NodeExportService {
         }
       }
     }
-    final zipPayload = <String, dynamic>{'proxies': zipConfigs};
+    final zipPayload = <String, dynamic>{
+      'proxies': zipConfigs,
+      if (groups.isNotEmpty) 'proxy-groups': groups,
+    };
     final zipJsonText = const JsonEncoder.withIndent('  ').convert(zipPayload);
     final zipYamlText = yaml.encode(zipPayload);
     final manifest = <String, dynamic>{
@@ -204,6 +221,15 @@ class NodeExportService {
             'assets': assetEntries[records[index].id] ?? const [],
           },
       ],
+      if (groups.isNotEmpty)
+        'groups': [
+          for (final group in groups)
+            {
+              'name': group['name'],
+              'type': group['type'],
+              'proxies': group['proxies'],
+            },
+        ],
     };
     void add(String path, List<int> bytes) {
       archive.addFile(ArchiveFile(path, bytes.length, bytes));
