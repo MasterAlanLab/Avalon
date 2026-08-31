@@ -305,6 +305,19 @@ jobs:
           version=$(echo "${{ github.ref_name }}" | sed 's/^v//')
           sed "s|VERSION|$version|g" ./.github/release_template.md >> release.md
 
+      - name: Generate release title
+        id: title
+        shell: bash
+        run: |
+          # jq 的 // 只在 JSON 解析成功且字段为 null 时兜底：接口挂掉返回空或 HTML 时不会生效，
+          # 因此这里显式处理失败，避免发布标题变成空字符串或整个步骤直接失败。
+          default_quote="Stay hungry, stay foolish."
+          quote=$(curl -sS --max-time 5 https://v1.hitokoto.cn/ 2>/dev/null \
+            | jq -r '.hitokoto // empty' 2>/dev/null || true)
+          # 只接受单行纯文本，防止远端内容注入额外的步骤输出或破坏标题引号
+          quote=$(printf '%s' "$quote" | tr -d '\r\n"' | cut -c1-80)
+          echo "quote=${quote:-$default_quote}" >> "$GITHUB_OUTPUT"
+
       - name: Generate sha256
         if: ${{ env.IS_STABLE == 'true' }}
         run: |
@@ -315,5 +328,6 @@ jobs:
         if: ${{ env.IS_STABLE == 'true' }}
         uses: softprops/action-gh-release@v2
         with:
+          name: ${{ github.ref_name }} -- "${{ steps.title.outputs.quote }}"
           files: ./dist/*
           body_path: './release.md'
