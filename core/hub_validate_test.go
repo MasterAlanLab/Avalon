@@ -106,6 +106,43 @@ proxy-groups:
 	}
 }
 
+// Pins the SOCKS naming contract the Dart codec depends on: mihomo registers
+// `socks5` only, so emitting a bare `socks` type breaks config apply at
+// runtime even though assembly-level tests would not notice.
+func TestHandleValidateConfigRejectsBareSocksType(t *testing.T) {
+	path := writeConfig(t, `
+proxies:
+  - name: NODE
+    type: socks
+    server: 127.0.0.1
+    port: 1080
+rules:
+  - MATCH,DIRECT
+`)
+	message := handleValidateConfig(path)
+	if !strings.Contains(message, "unsupport proxy type") {
+		t.Fatalf("expected a bare socks type to be rejected, got %q", message)
+	}
+}
+
+func TestHandleValidateConfigAcceptsSocks5WithVersion(t *testing.T) {
+	path := writeConfig(t, `
+proxies:
+  - name: NODE
+    type: socks5
+    server: 127.0.0.1
+    port: 1080
+    version: 4
+    username: u
+    password: p
+rules:
+  - MATCH,DIRECT
+`)
+	if message := handleValidateConfig(path); message != "" {
+		t.Fatalf("expected socks5 with a SOCKS4 version marker to be valid, got %q", message)
+	}
+}
+
 func TestHandleValidateConfigRejectsMissingFile(t *testing.T) {
 	path := filepath.Join(t.TempDir(), "missing.yaml")
 	if message := handleValidateConfig(path); message == "" {

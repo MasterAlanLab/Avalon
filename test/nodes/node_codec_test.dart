@@ -74,7 +74,7 @@ void main() {
           'hysteria2',
           'tuic',
           'anytls',
-          'socks',
+          'socks5',
         ]),
       );
     });
@@ -189,12 +189,86 @@ void main() {
       expect(draft.config['name'], '日本語节点');
     });
 
+    // Mihomo models these transports with different shapes:
+    //   HTTPOptions  -> path []string, headers map[string][]string
+    //   HTTP2Options -> host []string, path string
+    //   WSOptions    -> path string,   headers map[string]string
+    // Emitting the wrong shape produces a config the Core rejects at apply
+    // time, which assembly-level tests cannot see.
+    test('emits h2-opts with a list host and a plain path', () {
+      final registry = NodeCodecRegistry();
+      final draft = registry.parse(
+        'vless://11111111-2222-3333-4444-555555555555@HOST:443'
+        '?encryption=none&security=tls&type=h2&host=example.com&path=%2Fh2#H2',
+      );
+      expect(draft.issues.where((issue) => issue.isError), isEmpty);
+      expect(draft.config.containsKey('http-opts'), isFalse);
+      final opts = draft.config['h2-opts'] as Map;
+      expect(opts['host'], ['example.com']);
+      expect(opts['path'], '/h2');
+    });
+
+    test('emits http-opts with list path and list header values', () {
+      final registry = NodeCodecRegistry();
+      final draft = registry.parse(
+        'vless://11111111-2222-3333-4444-555555555555@HOST:443'
+        '?encryption=none&security=tls&type=http&host=example.com'
+        '&path=%2Fhttp#HTTP',
+      );
+      expect(draft.issues.where((issue) => issue.isError), isEmpty);
+      final opts = draft.config['http-opts'] as Map;
+      expect(opts['path'], ['/http']);
+      expect((opts['headers'] as Map)['Host'], ['example.com']);
+    });
+
+    test('keeps ws-opts headers as plain strings', () {
+      final registry = NodeCodecRegistry();
+      final draft = registry.parse(
+        'vless://11111111-2222-3333-4444-555555555555@HOST:443'
+        '?encryption=none&security=tls&type=ws&host=example.com&path=%2Fws#WS',
+      );
+      final opts = draft.config['ws-opts'] as Map;
+      expect(opts['path'], '/ws');
+      expect((opts['headers'] as Map)['Host'], 'example.com');
+    });
+
+    test('decodes base64 userinfo for SOCKS and HTTP links', () {
+      final registry = NodeCodecRegistry();
+      // base64('test:test') — the form many share links use.
+      final socks = registry.parse('socks5://dGVzdDp0ZXN0@HOST:1080#S');
+      expect(socks.issues.where((issue) => issue.isError), isEmpty);
+      expect(socks.config['username'], 'test');
+      expect(socks.config['password'], 'test');
+
+      final http = registry.parse('http://dGVzdDp0ZXN0@HOST:8080#H');
+      expect(http.config['username'], 'test');
+      expect(http.config['password'], 'test');
+    });
+
+    test('keeps a plain userinfo username that looks like base64', () {
+      final registry = NodeCodecRegistry();
+      // 'dXNlcg' decodes to 'user', which carries no separator, so it must be
+      // kept verbatim rather than reinterpreted as credentials.
+      final draft = registry.parse('socks5://dXNlcg@HOST:1080#S');
+      expect(draft.config['username'], 'dXNlcg');
+      expect(draft.config['password'], isNull);
+    });
+
+    test('prefers an explicit user:password over base64 decoding', () {
+      final registry = NodeCodecRegistry();
+      final draft = registry.parse('socks5://USER:PASSWORD@HOST:1080#S');
+      expect(draft.config['username'], 'USER');
+      expect(draft.config['password'], 'PASSWORD');
+    });
+
     test('keeps the SOCKS version across export and re-import', () {
       final registry = NodeCodecRegistry();
       for (final entry in {'socks4': 4, 'socks4a': '4a'}.entries) {
         final draft = registry.parse('${entry.key}://USER@HOST:1080#NODE');
         expect(draft.issues.where((issue) => issue.isError), isEmpty);
-        expect(draft.config['type'], 'socks');
+        // Mihomo rejects a bare `socks` type, so the codec emits `socks5` and
+        // carries the SOCKS4/4a variant in `version`.
+        expect(draft.config['type'], 'socks5');
         expect(draft.config['version'], entry.value);
 
         final exported = const SocksCodec().exportUri(draft.config)!;

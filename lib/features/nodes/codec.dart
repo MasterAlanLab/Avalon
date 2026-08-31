@@ -335,14 +335,30 @@ void _transportFields(
   final host = uri.queryParameters['host'] ?? uri.queryParameters['wsHost'];
   if (path != null || host != null) {
     final target = switch (network?.toLowerCase()) {
-      'http' || 'h2' => 'http-opts',
+      'http' => 'http-opts',
+      'h2' => 'h2-opts',
       'ws' || 'httpupgrade' || 'xhttp' => 'ws-opts',
       _ => 'ws-opts',
     };
-    config[target] = <String, dynamic>{
-      if (target == 'http-opts' && path != null) 'path': [path],
-      if (target != 'http-opts' && path != null) 'path': path,
-      if (host != null) 'headers': <String, dynamic>{'Host': host},
+    // Mihomo's shapes differ per transport: HTTPOptions takes `path` as a list
+    // and `headers` values as lists, HTTP2Options takes `host` as a list with a
+    // plain `path`, and WSOptions takes plain strings throughout.
+    config[target] = switch (target) {
+      'http-opts' => <String, dynamic>{
+        if (path != null) 'path': [path],
+        if (host != null)
+          'headers': <String, dynamic>{
+            'Host': [host],
+          },
+      },
+      'h2-opts' => <String, dynamic>{
+        'path': ?path,
+        if (host != null) 'host': [host],
+      },
+      _ => <String, dynamic>{
+        'path': ?path,
+        if (host != null) 'headers': <String, dynamic>{'Host': host},
+      },
     };
   }
   final serviceName = uri.queryParameters['serviceName'];
@@ -357,8 +373,10 @@ void _transportFields(
       uri.queryParameters['http-host'] ?? uri.queryParameters['httpHost'];
   if (httpHost != null && httpHost.isNotEmpty) {
     config['http-opts'] = <String, dynamic>{
-      'path': uri.queryParameters['path'] ?? '/',
-      'headers': <String, dynamic>{'Host': httpHost},
+      'path': [uri.queryParameters['path'] ?? '/'],
+      'headers': <String, dynamic>{
+        'Host': [httpHost],
+      },
     };
   }
   final seed = uri.queryParameters['seed'];
@@ -881,10 +899,18 @@ class VmessCodec implements NodeCodec {
         if (path != null) 'path': path,
         if (host != null) 'headers': <String, dynamic>{'Host': host},
       };
-    } else if (networkType == 'http' || networkType == 'h2') {
+    } else if (networkType == 'http') {
       config['http-opts'] = <String, dynamic>{
         if (path != null) 'path': [path],
-        if (host != null) 'headers': <String, dynamic>{'Host': host},
+        if (host != null)
+          'headers': <String, dynamic>{
+            'Host': [host],
+          },
+      };
+    } else if (networkType == 'h2') {
+      config['h2-opts'] = <String, dynamic>{
+        'path': ?path,
+        if (host != null) 'host': [host],
       };
     } else if (networkType == 'grpc') {
       config['grpc-opts'] = <String, dynamic>{
@@ -1036,8 +1062,16 @@ class VmessCodec implements NodeCodec {
         'path': (config['http-opts'] as Map)['path'].first,
       if (config['http-opts'] is Map &&
           (config['http-opts'] as Map)['headers'] is Map &&
-          (config['http-opts'] as Map)['headers']['Host'] != null)
-        'host': (config['http-opts'] as Map)['headers']['Host'],
+          _firstHeaderValue((config['http-opts'] as Map)['headers']['Host']) !=
+              null)
+        'host': _firstHeaderValue(
+          (config['http-opts'] as Map)['headers']['Host'],
+        ),
+      if (config['h2-opts'] is Map && (config['h2-opts'] as Map)['path'] != null)
+        'path': (config['h2-opts'] as Map)['path'],
+      if (config['h2-opts'] is Map &&
+          _firstHeaderValue((config['h2-opts'] as Map)['host']) != null)
+        'host': _firstHeaderValue((config['h2-opts'] as Map)['host']),
       if (config['grpc-opts'] is Map &&
           (config['grpc-opts'] as Map)['grpc-service-name'] != null)
         'path': (config['grpc-opts'] as Map)['grpc-service-name'],
@@ -1800,7 +1834,7 @@ class HttpCodec implements NodeCodec {
       uri,
       defaultPort: uri.scheme == 'https' ? 443 : 80,
     );
-    final credentials = _userinfoParts(uri);
+    final credentials = _credentialParts(uri);
     if (credentials.isNotEmpty) config['username'] = credentials.first;
     if (credentials.length > 1) config['password'] = credentials[1];
     config['username'] ??= uri.queryParameters['username'];
@@ -1884,12 +1918,15 @@ class SocksCodec implements NodeCodec {
   @override
   NodeDraft parse(String input) {
     final uri = Uri.parse(normalizeNodeUri(input));
-    final config = _base(_name(uri, 'socks'), 'socks', uri, defaultPort: 1080);
+    // Mihomo only registers `socks5`; a bare `socks` type is rejected by
+    // adapter.ParseProxy. SOCKS4/4a keep their variant in `version` below,
+    // which `_socksScheme` uses to restore the scheme on export.
+    final config = _base(_name(uri, 'socks'), 'socks5', uri, defaultPort: 1080);
     if (uri.scheme == 'socks4' || uri.scheme == 'socks4a') {
       config['version'] = uri.scheme == 'socks4' ? 4 : '4a';
     }
     if (uri.userInfo.isNotEmpty) {
-      final user = _userinfoParts(uri);
+      final user = _credentialParts(uri);
       config['username'] = user.first;
       if (user.length > 1) config['password'] = user[1];
     }
@@ -1957,6 +1994,21 @@ class SocksCodec implements NodeCodec {
   }
 }
 
+/// Userinfo split that also understands the widespread
+/// `scheme://base64(user:password)@host:port` form used by SOCKS and HTTP
+/// share links. The base64 branch only applies when the decoded value actually
+/// carries a separator, so a literal username that happens to be valid base64
+/// is left untouched.
+List<String> _credentialParts(Uri uri) {
+  final parts = _userinfoParts(uri);
+  if (parts.length != 1) return parts;
+  final decoded = _decodeBase64(parts.first);
+  if (decoded == null) return parts;
+  final separator = decoded.indexOf(':');
+  if (separator <= 0) return parts;
+  return [decoded.substring(0, separator), decoded.substring(separator + 1)];
+}
+
 String _socksScheme(Map<String, dynamic> config) {
   final type = config['type']?.toString().toLowerCase();
   if (type == 'socks4' || type == 'socks4a') return type!;
@@ -1964,6 +2016,18 @@ String _socksScheme(Map<String, dynamic> config) {
   if (version == '4') return 'socks4';
   if (version == '4a') return 'socks4a';
   return 'socks5';
+}
+
+/// Reads a header/host value that mihomo models as either a plain string
+/// (`ws-opts`) or a list of strings (`http-opts`, `h2-opts`).
+String? _firstHeaderValue(dynamic value) {
+  if (value == null) return null;
+  if (value is List) {
+    if (value.isEmpty) return null;
+    return value.first?.toString();
+  }
+  final text = value.toString();
+  return text.isEmpty ? null : text;
 }
 
 String? _decodeBase64(String value) {
