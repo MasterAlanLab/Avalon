@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1024" height="1024" viewBox="0 0 1024 1024">
+  <title>Avalon Gate app icon</title>
+  <rect width="1024" height="1024" rx="230" fill="#17191D"/>
+
+  <!-- A-gate: three linked route segments with a central opening. -->
+  <g fill="none" stroke="#E3A72F" stroke-width="84" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M285 752 L458 300"/>
+    <path d="M566 300 L739 752"/>
+    <path d="M370 552 H654"/>
+  </g>
+
+  <!-- Route endpoints / hops. -->
+  <g fill="#F3D58A" stroke="#E3A72F" stroke-width="12">
+    <circle cx="285" cy="752" r="24"/>
+    <circle cx="512" cy="238" r="26"/>
+    <circle cx="739" cy="752" r="24"/>
+  </g>
+  <circle cx="512" cy="238" r="10" fill="#FFF4D6"/>
+</svg>

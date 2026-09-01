@@ -1,4 +1,14 @@
-# Avalon
+<div align="center">
+  <img src="../assets_source/images/icon.svg" width="144" height="144" alt="Avalon Gate icon">
+  <h1>Avalon</h1>
+  <p><strong>Route · Connect · Control</strong></p>
+  <p>
+    <a href="https://github.com/MasterAlanLab/avalon/releases"><img src="https://img.shields.io/github/v/release/MasterAlanLab/avalon?display_name=tag&amp;style=flat-square&amp;label=Release&amp;color=E3A72F" alt="Latest release"></a>
+    <a href="https://github.com/MasterAlanLab/avalon/actions/workflows/build.yaml"><img src="https://img.shields.io/github/actions/workflow/status/MasterAlanLab/avalon/build.yaml?style=flat-square&amp;label=Build&amp;color=4E9B76" alt="Build status"></a>
+    <a href="../LICENSE"><img src="https://img.shields.io/badge/License-AGPL--3.0-17191D?style=flat-square" alt="AGPL-3.0 license"></a>
+    <img src="https://img.shields.io/badge/Platforms-Android%20%7C%20Windows%20%7C%20macOS%20%7C%20Linux-777D85?style=flat-square" alt="Supported platforms">
+  </p>
+</div>
 
 Android, Windows, macOS, Linux용 프록시 클라이언트입니다. [mihomo](https://github.com/MetaCubeX/mihomo) 코어를 기반으로 독립 노드, 구독 관리, 멀티홉 프록시 체인을 지원하며 Flutter로 개발되었습니다.
 

@@ -1,4 +1,14 @@
-# Avalon
+<div align="center">
+  <img src="assets_source/images/icon.svg" width="144" height="144" alt="Avalon Gate 图标">
+  <h1>Avalon</h1>
+  <p><strong>Route · Connect · Control</strong></p>
+  <p>
+    <a href="https://github.com/MasterAlanLab/avalon/releases"><img src="https://img.shields.io/github/v/release/MasterAlanLab/avalon?display_name=tag&amp;style=flat-square&amp;label=Release&amp;color=E3A72F" alt="最新版本"></a>
+    <a href="https://github.com/MasterAlanLab/avalon/actions/workflows/build.yaml"><img src="https://img.shields.io/github/actions/workflow/status/MasterAlanLab/avalon/build.yaml?style=flat-square&amp;label=Build&amp;color=4E9B76" alt="构建状态"></a>
+    <a href="LICENSE"><img src="https://img.shields.io/badge/License-AGPL--3.0-17191D?style=flat-square" alt="AGPL-3.0 许可证"></a>
+    <img src="https://img.shields.io/badge/Platforms-Android%20%7C%20Windows%20%7C%20macOS%20%7C%20Linux-777D85?style=flat-square" alt="支持平台">
+  </p>
+</div>
 
 Android、Windows、macOS 和 Linux 平台的代理客户端，基于 [mihomo](https://github.com/MetaCubeX/mihomo) 内核，支持独立节点、订阅管理和多跳代理链。使用 Flutter 编写。
 
