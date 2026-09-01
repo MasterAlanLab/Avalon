@@ -40,42 +40,39 @@ void main() {
         );
       });
 
-      for (final arch in ['amd64', 'arm64']) {
-        test('custom locales resolve from the $arch script: $workspace', () {
-          // The packager writes <output>/<package>/_exe.iss. Locale paths
-          // reach Inno Setup unchanged and are relative to that script.
-          final scriptDirectory = p.windows.join(
-            workspace,
-            options['output'] as String,
-            'Avalon-test-windows-$arch-setup',
-          );
-          final locales = (config['locales'] as YamlList).cast<YamlMap>();
-          final chinese = locales.singleWhere(
-            (locale) => locale['lang'] == 'zh',
-          );
-          final localePath = chinese['file'] as String;
-          final resolved = p.windows.normalize(
-            p.windows.join(scriptDirectory, localePath),
-          );
+      test('custom locales resolve from the generated script: $workspace', () {
+        // The packager writes <output>/<package>_exe.iss. Locale paths reach
+        // Inno Setup unchanged and are relative to the output directory.
+        final scriptDirectory = p.windows.join(
+          workspace,
+          options['output'] as String,
+        );
+        final locales = (config['locales'] as YamlList).cast<YamlMap>();
+        final chinese = locales.singleWhere(
+          (locale) => locale['lang'] == 'zh',
+        );
+        final localePath = chinese['file'] as String;
+        final resolved = p.windows.normalize(
+          p.windows.join(scriptDirectory, localePath),
+        );
 
-          expect(
-            resolved,
-            p.windows.join(
-              workspace,
-              'windows',
-              'packaging',
-              'exe',
-              'ChineseSimplified.isl',
-            ),
-          );
-          final relative = p.windows.relative(resolved, from: workspace);
-          expect(
-            File(p.joinAll(p.windows.split(relative))).existsSync(),
-            isTrue,
-            reason: 'The custom language file must exist in the checkout.',
-          );
-        });
-      }
+        expect(
+          resolved,
+          p.windows.join(
+            workspace,
+            'windows',
+            'packaging',
+            'exe',
+            'ChineseSimplified.isl',
+          ),
+        );
+        final relative = p.windows.relative(resolved, from: workspace);
+        expect(
+          File(p.joinAll(p.windows.split(relative))).existsSync(),
+          isTrue,
+          reason: 'The custom language file must exist in the checkout.',
+        );
+      });
     }
 
     test(
