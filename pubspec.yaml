@@ -4,7 +4,7 @@ homepage: https://github.com/MasterAlanLab/avalon
 repository: https://github.com/MasterAlanLab/avalon
 issue_tracker: https://github.com/MasterAlanLab/avalon/issues
 publish_to: 'none'
-version: 0.8.97+2026083101
+version: 1.0.0+2026090101
 environment:
   sdk: '>=3.8.0 <4.0.0'
 
