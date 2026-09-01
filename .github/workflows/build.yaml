@@ -118,28 +118,10 @@ jobs:
             os: ubuntu-22.04
             arch: amd64
           - platform: macos
-            os: macos-15-intel
-            arch: amd64
-          - platform: macos
             os: macos-latest
-            arch: arm64
-          - platform: windows
-            os: windows-11-arm
-            arch: arm64
-          - platform: linux
-            os: ubuntu-24.04-arm
             arch: arm64
 
     steps:
-      - name: Setup rust
-        if: startsWith(matrix.os, 'windows-11-arm')
-        shell: pwsh
-        run: |
-          Invoke-WebRequest -Uri "https://win.rustup.rs/aarch64" -OutFile rustup-init.exe
-          .\rustup-init.exe -y --default-toolchain stable
-          $cargoPath = "$env:USERPROFILE\.cargo\bin"
-          Add-Content $env:GITHUB_PATH $cargoPath
-
       - name: Checkout
         uses: actions/checkout@v6
         with:

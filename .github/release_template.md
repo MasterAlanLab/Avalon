@@ -34,7 +34,6 @@
             <td>macOS</td>
             <td>
                 <a href="https://github.com/MasterAlanLab/avalon/releases/download/vVERSION/Avalon-VERSION-macos-arm64.dmg"><img src="https://img.shields.io/badge/DMG-Apple%20Silicon-%23000000.svg?logo=apple"></a><br>
-                <a href="https://github.com/MasterAlanLab/avalon/releases/download/vVERSION/Avalon-VERSION-macos-amd64.dmg"><img src="https://img.shields.io/badge/DMG-Intel%20X64-%2300A9E0.svg?logo=apple"></a><br>
             </td>
         </tr>
         <tr>
