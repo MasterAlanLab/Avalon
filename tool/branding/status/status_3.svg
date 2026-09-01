@@ -1,8 +1,9 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="108" height="108" viewBox="0 0 108 108">
-  <title>Avalon status TUN</title>
-  <circle cx="54" cy="54" r="48" fill="none" stroke="#4E9B76" stroke-width="4"/>
-  <g fill="none" stroke="#E3A72F" stroke-width="10" stroke-linecap="round" stroke-linejoin="round">
-    <path d="M30 78 L47 32"/><path d="M61 32 L78 78"/><path d="M39 58 H69"/>
+<svg xmlns="http://www.w3.org/2000/svg" width="256" height="256" viewBox="0 0 1024 1024">
+  <circle cx="512" cy="512" r="452" fill="none" stroke="#4E9B76" stroke-width="28"/>
+  <g fill="none" stroke="#E3A72F" stroke-width="72" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M354 704 L454 350"/><path d="M570 350 L670 704"/>
   </g>
-  <g fill="#F3D58A" stroke="#E3A72F" stroke-width="2"><circle cx="30" cy="78" r="4"/><circle cx="54" cy="25" r="4"/><circle cx="78" cy="78" r="4"/></g>
+  <g fill="none" stroke="#E3A72F" stroke-width="54" stroke-linecap="round">
+    <path d="M407 586 H617"/><path d="M426 516 H598"/><path d="M446 446 H578"/>
+  </g>
 </svg>

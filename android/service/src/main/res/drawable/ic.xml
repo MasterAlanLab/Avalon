@@ -5,10 +5,10 @@
     android:viewportWidth="240"
     android:viewportHeight="240"
     tools:ignore="VectorRaster">
-    <path android:fillColor="#FFFFFF" android:pathData="M58,195 C49,192 44,182 48,172 L89,62 C93,51 104,46 114,50 C124,54 129,65 125,75 L84,184 C80,194 69,198 58,195 Z" />
-    <path android:fillColor="#FFFFFF" android:pathData="M182,195 C191,192 196,182 192,172 L151,62 C147,51 136,46 126,50 C116,54 111,65 115,75 L156,184 C160,194 171,198 182,195 Z" />
-    <path android:fillColor="#FFFFFF" android:pathData="M82,142 L82,142 C76,133 80,121 90,116 L150,116 C160,116 164,128 158,137 L158,137 C155,142 150,145 144,145 L96,145 C90,145 85,142 82,142 Z" />
-    <path android:fillColor="#FFFFFF" android:pathData="M120,37 A9,9 0,1 0,120,55 A9,9 0,1 0,120,37" />
-    <path android:fillColor="#FFFFFF" android:pathData="M56,174 A8,8 0,1 0,56,190 A8,8 0,1 0,56,174" />
-    <path android:fillColor="#FFFFFF" android:pathData="M184,174 A8,8 0,1 0,184,190 A8,8 0,1 0,184,174" />
+    <!-- Monochrome equivalent of the master ladder-gate mark. -->
+    <path android:fillColor="@android:color/transparent" android:strokeColor="#FFFFFF" android:strokeWidth="16.875" android:strokeLineCap="round" android:pathData="M82.969,164.063 L106.406,82.031" />
+    <path android:fillColor="@android:color/transparent" android:strokeColor="#FFFFFF" android:strokeWidth="16.875" android:strokeLineCap="round" android:pathData="M133.594,82.031 L157.031,164.063" />
+    <path android:fillColor="@android:color/transparent" android:strokeColor="#FFFFFF" android:strokeWidth="12.656" android:strokeLineCap="round" android:pathData="M95.391,137.344 L144.609,137.344" />
+    <path android:fillColor="@android:color/transparent" android:strokeColor="#FFFFFF" android:strokeWidth="12.656" android:strokeLineCap="round" android:pathData="M99.844,120.938 L140.156,120.938" />
+    <path android:fillColor="@android:color/transparent" android:strokeColor="#FFFFFF" android:strokeWidth="12.656" android:strokeLineCap="round" android:pathData="M104.531,104.531 L135.469,104.531" />
 </vector>
