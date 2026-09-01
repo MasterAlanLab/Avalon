@@ -53,7 +53,13 @@ app.*.map.json
 /android/core/**/cmake-build-*/
 /android/core/**/jniLibs/
 
-#Avalon
+# Signing material
+/AvalonSigning/
+*.jks
+*.keystore
+key.properties
+
+# Avalon
 /libclash/
 /android/app/src/main/jniLibs/
 /services/helper/target

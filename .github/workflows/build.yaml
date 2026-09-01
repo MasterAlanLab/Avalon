@@ -135,11 +135,23 @@ jobs:
           STORE_PASSWORD: ${{ secrets.STORE_PASSWORD }}
           KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
         run: |
-          if [ -z "$KEYSTORE" ]; then
-            echo "No release keystore configured, falling back to debug signing."
-            exit 0
+          missing=()
+          for name in KEYSTORE KEY_ALIAS STORE_PASSWORD KEY_PASSWORD; do
+            if [ -z "${!name}" ]; then
+              missing+=("$name")
+            fi
+          done
+          if [ "${#missing[@]}" -ne 0 ]; then
+            echo "::error::Missing Android signing secrets: ${missing[*]}"
+            exit 1
           fi
-          echo "$KEYSTORE" | base64 --decode > android/app/keystore.jks
+
+          printf '%s' "$KEYSTORE" | base64 --decode > android/app/keystore.jks
+          chmod 600 android/app/keystore.jks
+          keytool -list \
+            -keystore android/app/keystore.jks \
+            -storepass "$STORE_PASSWORD" \
+            -alias "$KEY_ALIAS" >/dev/null
           {
             echo "keyAlias=$KEY_ALIAS"
             echo "storePassword=$STORE_PASSWORD"
