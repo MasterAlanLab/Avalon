@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+    The Android 12 splash is visible while the Flutter engine creates its
+    first frame. Keep that hand-off visually continuous by showing only the
+    first short saffron stroke from splash_animation.svg, rather than the
+    completed launcher mark.
+-->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="108dp"
+    android:height="108dp"
+    android:viewportWidth="240"
+    android:viewportHeight="240">
+    <path
+        android:fillColor="@android:color/transparent"
+        android:strokeColor="#E3A72F"
+        android:strokeWidth="16.875"
+        android:strokeLineCap="round"
+        android:pathData="M82.969,164.063 L86.5,151.5" />
+</vector>
