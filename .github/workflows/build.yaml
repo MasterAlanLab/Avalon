@@ -23,6 +23,16 @@ jobs:
         run: bash .github/scripts/generate_release_notes_test.sh
 
       - name: Setup Flutter
+        id: setup-flutter
+        continue-on-error: true
+        uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          flutter-version: ${{ env.FLUTTER_VERSION }}
+          cache: true
+
+      - name: Retry Flutter setup
+        if: steps.setup-flutter.outcome == 'failure'
         uses: subosito/flutter-action@v2
         with:
           channel: stable
@@ -170,6 +180,16 @@ jobs:
         run: git config --global core.longpaths true
 
       - name: Setup Flutter
+        id: setup-flutter
+        continue-on-error: true
+        uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          flutter-version: ${{ env.FLUTTER_VERSION }}
+          cache: true
+
+      - name: Retry Flutter setup
+        if: steps.setup-flutter.outcome == 'failure'
         uses: subosito/flutter-action@v2
         with:
           channel: stable
