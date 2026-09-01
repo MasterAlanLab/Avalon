@@ -46,12 +46,4 @@
         </tr>
     </tbody>
 </table>
-
-
-</div>
-
-<div dir="ltr">
-
-**List of all changes:** [ChangeLog](https://github.com/MasterAlanLab/avalon/blob/main/CHANGELOG.md)
-
 </div>

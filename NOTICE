@@ -44,7 +44,7 @@ Branched from FlClash v0.8.96 in 2026. The significant changes are:
     (FlClashCore / FlClashHelperService -> AvalonCore / AvalonHelperService), and
     the custom URL scheme (flclash:// -> avalon://).
 
-A per-release summary of changes is kept in CHANGELOG.md.
+Per-release summaries of changes are published with each GitHub Release.
 
 --------------------------------------------------------------------------------
 Third-party components
