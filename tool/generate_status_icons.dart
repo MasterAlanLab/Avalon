@@ -4,6 +4,8 @@ import 'dart:typed_data';
 const sourceDir = 'tool/branding/status';
 const outputDir = 'assets/images/icon';
 const statusIconNames = ['status_1', 'status_2', 'status_3'];
+const statusPngSize = 256;
+const trayIcoSize = 32;
 
 Future<void> main() async {
   final rsvgConvert = await _findExecutable('rsvg-convert');
@@ -34,15 +36,15 @@ Future<void> main() async {
         rsvgConvert: rsvgConvert,
         source: source,
         output: png,
-        width: 108,
-        height: 108,
+        width: statusPngSize,
+        height: statusPngSize,
       );
       await _renderSvg(
         rsvgConvert: rsvgConvert,
         source: source,
         output: icoPng,
-        width: 32,
-        height: 32,
+        width: trayIcoSize,
+        height: trayIcoSize,
       );
       await ico.writeAsBytes(_buildIco(await icoPng.readAsBytes()));
 
