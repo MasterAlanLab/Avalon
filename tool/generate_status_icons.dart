@@ -1,7 +1,7 @@
 import 'dart:io';
 import 'dart:typed_data';
 
-const sourceDir = 'assets_source/images/icon';
+const sourceDir = 'tool/branding/status';
 const outputDir = 'assets/images/icon';
 const statusIconNames = ['status_1', 'status_2', 'status_3'];
 

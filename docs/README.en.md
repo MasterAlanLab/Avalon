@@ -1,5 +1,5 @@
 <div align="center">
-  <img src="../assets_source/images/icon.svg" width="144" height="144" alt="Avalon Gate icon">
+  <img src="../tool/branding/icon.svg" width="144" height="144" alt="Avalon Gate icon">
   <h1>Avalon</h1>
   <p><strong>Route · Connect · Control</strong></p>
   <p>
