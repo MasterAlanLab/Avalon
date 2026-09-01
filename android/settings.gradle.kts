@@ -12,6 +12,9 @@ pluginManagement {
 
     repositories {
         google()
+        // Use Google's Maven Central mirror before the canonical endpoint;
+        // GitHub-hosted runners can intermittently receive HTTP 403 there.
+        maven { url = uri("https://maven-central.storage-download.googleapis.com/maven2") }
         mavenCentral()
         gradlePluginPortal()
     }

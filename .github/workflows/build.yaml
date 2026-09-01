@@ -176,6 +176,14 @@ jobs:
           flutter-version: ${{ env.FLUTTER_VERSION }}
           cache: true
 
+      - name: Configure Gradle Maven mirror
+        if: startsWith(matrix.platform,'android')
+        shell: bash
+        run: |
+          mkdir -p "$HOME/.gradle/init.d"
+          cp .github/scripts/gradle-maven-mirror.init.gradle \
+            "$HOME/.gradle/init.d/avalon-maven-mirror.gradle"
+
       - name: Setup Xcode
         if: startsWith(matrix.platform,'macos')
         run: |

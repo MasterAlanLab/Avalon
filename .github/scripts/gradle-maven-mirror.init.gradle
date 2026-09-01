@@ -1,0 +1,27 @@
+// GitHub-hosted runners can occasionally receive HTTP 403 responses from
+// repo.maven.apache.org. Google hosts a read-only mirror of Maven Central.
+// The Android project configures the mirror itself; this init script applies
+// the same ordering to Flutter's included Gradle build.
+def mavenCentralMirror = uri('https://maven-central.storage-download.googleapis.com/maven2')
+
+gradle.settingsEvaluated { settings ->
+    def path = settings.settingsDir.toPath().toString().replace('\\', '/')
+    if (path.contains('/flutter_tools/gradle')) {
+        // Flutter's settings file has only google() and mavenCentral(). Clear
+        // that list so the mirror is tried before the rate-limited endpoint.
+        settings.dependencyResolutionManagement.repositories.clear()
+        settings.dependencyResolutionManagement.repositories {
+            google()
+            maven { url = mavenCentralMirror }
+            mavenCentral()
+        }
+
+        // Defining pluginManagement removes Gradle's implicit plugin portal;
+        // retain it for Flutter/Gradle plugins that are not in Maven Central.
+        settings.pluginManagement.repositories.clear()
+        settings.pluginManagement.repositories {
+            maven { url = mavenCentralMirror }
+            gradlePluginPortal()
+        }
+    }
+}

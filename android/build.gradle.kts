@@ -1,6 +1,9 @@
 allprojects {
     repositories {
         google()
+        // Keep dependency resolution working when Maven Central rate-limits a
+        // GitHub-hosted runner (the mirror contains the same Central artifacts).
+        maven { url = uri("https://maven-central.storage-download.googleapis.com/maven2") }
         mavenCentral()
     }
 }
