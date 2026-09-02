@@ -118,12 +118,21 @@ class HomePage extends ConsumerWidget {
                             (label) => label == navigationItem.label,
                           ),
                         );
-                        return PageActivityScope(
-                          isActive: isActive,
-                          child: ExcludeFocus(
-                            excluding: !isActive,
-                            child: child!,
-                          ),
+                        return ValueListenableBuilder<AppActivityState>(
+                          valueListenable: appActivity,
+                          builder: (_, activity, child) {
+                            return PageActivityScope(
+                              isActive: isActive,
+                              child: TickerMode(
+                                enabled: isActive && activity.isUiActive,
+                                child: ExcludeFocus(
+                                  excluding: !isActive,
+                                  child: child!,
+                                ),
+                              ),
+                            );
+                          },
+                          child: child,
                         );
                       },
                       child: view,

@@ -12,6 +12,9 @@ class _RunRequest {
 @Riverpod(keepAlive: true)
 class SetupAction extends _$SetupAction {
   Timer? _runtimeTimer;
+  Duration? _runtimeTimerInterval;
+  bool _trafficRequestInFlight = false;
+  bool _lastUiActive = appActivity.value.isUiActive;
   final _setupScheduler = SerialTaskScheduler();
   final _listenerScheduler = SerialTaskScheduler();
   _RunRequest? _latestRunRequest;
@@ -20,7 +23,44 @@ class SetupAction extends _$SetupAction {
   bool get _isRunning => _startTime != null && _startTime!.isBeforeNow;
 
   @override
-  void build() {}
+  void build() {
+    appActivity.addListener(_handleActivityChanged);
+    ref.onDispose(() {
+      appActivity.removeListener(_handleActivityChanged);
+      _runtimeTimer?.cancel();
+      _runtimeTimer = null;
+    });
+    ref.listen(
+      currentPageLabelProvider,
+      (_, _) {
+        _syncRuntimeTimer(
+          refreshNow: appActivity.value.isUiActive,
+        );
+      },
+      weak: false,
+      fireImmediately: false,
+    );
+    ref.listen(
+      appSettingProvider.select((state) => state.showTrayTitle),
+      (_, _) {
+        _syncRuntimeTimer(
+          refreshNow: appActivity.value.isUiActive,
+        );
+      },
+      weak: false,
+      fireImmediately: false,
+    );
+    ref.listen(
+      appSettingProvider.select((state) => state.dashboardWidgets),
+      (_, _) {
+        _syncRuntimeTimer(
+          refreshNow: appActivity.value.isUiActive,
+        );
+      },
+      weak: false,
+      fireImmediately: false,
+    );
+  }
 
   SetupParams get _setupParams {
     final selectedMap = ref.read(selectedMapProvider);
@@ -41,6 +81,7 @@ class SetupAction extends _$SetupAction {
   void _setLocalRunning(bool running) {
     _runtimeTimer?.cancel();
     _runtimeTimer = null;
+    _runtimeTimerInterval = null;
     if (!running) {
       _startTime = null;
       debouncer.cancel(FunctionTag.applyProfile);
@@ -49,16 +90,123 @@ class SetupAction extends _$SetupAction {
     }
 
     _startTime ??= DateTime.now();
-    _refreshRunningState();
-    _runtimeTimer = Timer.periodic(
-      const Duration(seconds: 1),
-      (_) => _refreshRunningState(),
+    if (appActivity.value.isUiActive) {
+      _updateRunTime();
+    }
+    _syncRuntimeTimer(refreshNow: appActivity.value.isUiActive);
+  }
+
+  bool get _dashboardNeedsTraffic {
+    if (ref.read(currentPageLabelProvider) != PageLabel.dashboard) {
+      return false;
+    }
+    final widgets = ref.read(appSettingProvider).dashboardWidgets;
+    return widgets.contains(DashboardWidget.networkSpeed) ||
+        widgets.contains(DashboardWidget.trafficUsage);
+  }
+
+  /// The tray speed title is the only consumer that outlives an inactive UI,
+  /// and it exists on macOS only. Elsewhere `showTrayTitle` must not keep the
+  /// background sampler alive, otherwise nothing consumes the samples.
+  @protected
+  bool get supportsTrayTitle => system.isMacOS;
+
+  bool get _trayNeedsTraffic {
+    if (!supportsTrayTitle) {
+      return false;
+    }
+    return ref.read(
+      appSettingProvider.select((state) => state.showTrayTitle),
     );
   }
 
+  bool get _needsTraffic {
+    if (appActivity.value.isUiActive) {
+      return _trayNeedsTraffic || _dashboardNeedsTraffic;
+    }
+    return _trayNeedsTraffic;
+  }
+
+  bool get _needsUiRuntime =>
+      appActivity.value.isUiActive &&
+      ref.read(currentPageLabelProvider) == PageLabel.dashboard;
+
+  Duration? get _runtimeInterval {
+    // Runtime and traffic sampling are UI telemetry; the proxy listener stays
+    // alive independently of this timer.
+    if (!_isRunning) {
+      return null;
+    }
+    if (_needsTraffic) {
+      return appActivity.value.isUiActive
+          ? const Duration(seconds: 1)
+          : const Duration(seconds: 5);
+    }
+    if (_needsUiRuntime) {
+      return const Duration(seconds: 1);
+    }
+    return null;
+  }
+
+  /// The timer period the current activity/consumer mix asks for, or null when
+  /// nothing needs a periodic tick. A non-null period does not imply traffic
+  /// sampling: the dashboard run-time counter also needs a tick.
+  @visibleForTesting
+  Duration? get telemetryInterval => _runtimeInterval;
+
+  /// Whether a tick currently issues traffic RPCs.
+  @visibleForTesting
+  bool get samplesTraffic => _needsTraffic;
+
+  void _handleActivityChanged() {
+    final isUiActive = appActivity.value.isUiActive;
+    final becameActive = isUiActive && !_lastUiActive;
+    _lastUiActive = isUiActive;
+    _syncRuntimeTimer(refreshNow: becameActive);
+  }
+
+  void _syncRuntimeTimer({bool refreshNow = false}) {
+    final interval = _runtimeInterval;
+    if (interval == null) {
+      _runtimeTimer?.cancel();
+      _runtimeTimer = null;
+      _runtimeTimerInterval = null;
+      return;
+    }
+
+    if (_runtimeTimer == null || _runtimeTimerInterval != interval) {
+      _runtimeTimer?.cancel();
+      _runtimeTimerInterval = interval;
+      _runtimeTimer = Timer.periodic(interval, (_) => _refreshRunningState());
+    }
+    if (refreshNow) {
+      _refreshRunningState();
+    }
+  }
+
   void _refreshRunningState() {
-    _updateRunTime();
-    unawaited(ref.read(commonActionProvider.notifier).updateTraffic());
+    if (!_isRunning) {
+      return;
+    }
+    if (appActivity.value.isUiActive) {
+      _updateRunTime();
+    }
+    if (_needsTraffic) {
+      unawaited(_refreshTraffic());
+    }
+  }
+
+  Future<void> _refreshTraffic() async {
+    // A slow Core response must not create a second in-flight sample.
+    if (_trafficRequestInFlight || !_isRunning || !_needsTraffic) {
+      return;
+    }
+    _trafficRequestInFlight = true;
+    try {
+      await ref.read(commonActionProvider.notifier).updateTraffic();
+    } finally {
+      _trafficRequestInFlight = false;
+    }
   }
 
   void _updateRunTime() {

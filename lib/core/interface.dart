@@ -85,19 +85,22 @@ abstract class CoreHandlerInterface with CoreInterface {
     Object? arguments,
     Duration? timeout,
   }) async {
+    final invoke = () => invokeMethod<T>(
+      method: method,
+      arguments: arguments,
+      timeout: timeout,
+    );
+    if (method == CoreMethod.getTraffic ||
+        method == CoreMethod.getTotalTraffic) {
+      return await invoke();
+    }
     return await utils.handleWatch(
       onStart: () {
         commonPrint.log(
           'Invoke method ${method.name} ${DateTime.now()} $arguments',
         );
       },
-      function: () async {
-        return invokeMethod<T>(
-          method: method,
-          arguments: arguments,
-          timeout: timeout,
-        );
-      },
+      function: invoke,
       onEnd: (result, elapsedMilliseconds) {
         commonPrint.log(
           'Invoke method ${method.name} completed in ${elapsedMilliseconds}ms',

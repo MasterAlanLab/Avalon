@@ -169,9 +169,20 @@ class ApplicationState extends ConsumerState<Application> {
           ],
           builder: (_, child) {
             return AppEnvManager(
-              child: _buildApp(
-                child: _buildPlatformState(
-                  child: _buildState(child: _buildPlatformApp(child: child!)),
+              child: ValueListenableBuilder<AppActivityState>(
+                valueListenable: appActivity,
+                builder: (_, activity, child) {
+                  return TickerMode(
+                    enabled: activity.isUiActive,
+                    child: child!,
+                  );
+                },
+                child: _buildApp(
+                  child: _buildPlatformState(
+                    child: _buildState(
+                      child: _buildPlatformApp(child: child!),
+                    ),
+                  ),
                 ),
               ),
             );

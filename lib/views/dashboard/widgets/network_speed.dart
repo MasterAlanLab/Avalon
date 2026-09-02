@@ -45,48 +45,56 @@ class _NetworkSpeedState extends State<NetworkSpeed> {
       child: RepaintBoundary(
         child: CommonCard(
           onPressed: () {},
-          child: Consumer(
-            builder: (_, ref, _) {
-              final traffics = ref.watch(trafficsProvider).list;
-              return Column(
-                children: [
-                  Padding(
-                    padding: baseInfoEdgeInsets.copyWith(bottom: 0),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Flexible(
-                          child: InfoHeader(
-                            padding: EdgeInsets.zero,
-                            info: Info(
-                              label: appLocalizations.networkSpeed,
-                              iconData: Icons.speed_sharp,
+          child: ValueListenableBuilder<AppActivityState>(
+            valueListenable: appActivity,
+            builder: (_, activity, _) {
+              if (!activity.isUiActive) {
+                return const SizedBox.shrink();
+              }
+              return Consumer(
+                builder: (_, ref, _) {
+                  final traffics = ref.watch(trafficsProvider).list;
+                  return Column(
+                    children: [
+                      Padding(
+                        padding: baseInfoEdgeInsets.copyWith(bottom: 0),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Flexible(
+                              child: InfoHeader(
+                                padding: EdgeInsets.zero,
+                                info: Info(
+                                  label: appLocalizations.networkSpeed,
+                                  iconData: Icons.speed_sharp,
+                                ),
+                              ),
                             ),
-                          ),
+                            const SizedBox(width: 8),
+                            Text(
+                              _getLastTraffic(traffics).speedText,
+                              style: context.textTheme.bodySmall?.copyWith(
+                                color: color,
+                              ),
+                            ),
+                          ],
                         ),
-                        const SizedBox(width: 8),
-                        Text(
-                          _getLastTraffic(traffics).speedText,
-                          style: context.textTheme.bodySmall?.copyWith(
-                            color: color,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                  Flexible(
-                    child: Padding(
-                      padding: const EdgeInsets.all(
-                        16,
-                      ).copyWith(bottom: 0, left: 0, right: 0),
-                      child: LineChart(
-                        gradient: true,
-                        color: Theme.of(context).colorScheme.primary,
-                        points: _getPoints(traffics),
                       ),
-                    ),
-                  ),
-                ],
+                      Flexible(
+                        child: Padding(
+                          padding: const EdgeInsets.all(
+                            16,
+                          ).copyWith(bottom: 0, left: 0, right: 0),
+                          child: LineChart(
+                            gradient: true,
+                            color: Theme.of(context).colorScheme.primary,
+                            points: _getPoints(traffics),
+                          ),
+                        ),
+                      ),
+                    ],
+                  );
+                },
               );
             },
           ),

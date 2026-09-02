@@ -15,11 +15,22 @@ class LogsView extends ConsumerStatefulWidget {
   ConsumerState<LogsView> createState() => _LogsViewState();
 }
 
-class _LogsViewState extends ConsumerState<LogsView> {
+class _LogsViewState extends ConsumerState<LogsView>
+    with ActiveSnapshotMixin<LogsView> {
   final _logsStateNotifier = ValueNotifier<LogsState>(const LogsState());
   late ScrollController _scrollController;
 
   List<Log> _logs = [];
+
+  @override
+  void onSnapshotSuspended() {
+    throttler.cancel(FunctionTag.logs);
+  }
+
+  @override
+  void onSnapshotResumed() {
+    updateLogsThrottler();
+  }
 
   @override
   void initState() {
@@ -27,16 +38,12 @@ class _LogsViewState extends ConsumerState<LogsView> {
     _logs = ref.read(logsProvider).list;
     _scrollController = ScrollController(initialScrollOffset: double.maxFinite);
     _logsStateNotifier.value = _logsStateNotifier.value.copyWith(logs: _logs);
-    ref.listenManual(logsProvider.select((state) => VM(state.list)), (
-      prev,
-      next,
-    ) {
-      if (prev != next) {
-        final isEquality = logListEquality.equals(prev?.a, next.a);
-        if (!isEquality) {
-          _logs = next.a;
-          updateLogsThrottler();
-        }
+    ref.listenManual(logsProvider, (_, next) {
+      // The bounded provider list stays current while the view is hidden; only
+      // the UI commit and its list diffing are deferred.
+      _logs = next.list;
+      if (isSnapshotActive) {
+        updateLogsThrottler();
       }
     });
   }
@@ -83,7 +90,7 @@ class _LogsViewState extends ConsumerState<LogsView> {
 
   void updateLogsThrottler() {
     throttler.call(FunctionTag.logs, () {
-      if (!mounted) {
+      if (!mounted || !isSnapshotActive) {
         return;
       }
       final isEquality = logListEquality.equals(
@@ -94,7 +101,7 @@ class _LogsViewState extends ConsumerState<LogsView> {
         return;
       }
       WidgetsBinding.instance.addPostFrameCallback((_) {
-        if (mounted) {
+        if (mounted && isSnapshotActive) {
           _logsStateNotifier.value = _logsStateNotifier.value.copyWith(
             logs: _logs,
           );

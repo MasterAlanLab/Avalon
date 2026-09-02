@@ -69,6 +69,7 @@ class Window {
   }
 
   Future<void> show() async {
+    appActivity.setWindowState(visible: true, focused: true);
     render?.resume();
     await windowManager.show();
     await windowManager.focus();
@@ -90,7 +91,8 @@ class Window {
   }
 
   Future<void> hide() async {
-    render?.pause();
+    appActivity.setWindowState(visible: false, focused: false);
+    render?.pause(delay: Render.hiddenPauseDelay);
     await windowManager.hide();
     await windowManager.setSkipTaskbar(true);
   }

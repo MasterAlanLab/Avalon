@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:avalon/common/activity.dart';
 import 'package:avalon/common/print.dart';
 import 'package:avalon/enum/enum.dart';
 import 'package:avalon/widgets/inherited.dart';
@@ -21,11 +22,13 @@ mixin ActivePollingMixin<T extends StatefulWidget>
 
   Future<void> poll(PollGuard isCurrent);
 
-  bool get canPoll => mounted && _isForeground && _isPageActive;
+  bool get canPoll =>
+      mounted && _isForeground && _isPageActive && appActivity.value.isUiActive;
 
   @override
   void initState() {
     super.initState();
+    appActivity.addListener(_handleActivityChanged);
     WidgetsBinding.instance.addObserver(this);
     final lifecycleState = WidgetsBinding.instance.lifecycleState;
     _isForeground =
@@ -59,8 +62,13 @@ mixin ActivePollingMixin<T extends StatefulWidget>
     _syncPolling();
   }
 
+  void _handleActivityChanged() {
+    _syncPolling();
+  }
+
   @override
   void dispose() {
+    appActivity.removeListener(_handleActivityChanged);
     WidgetsBinding.instance.removeObserver(this);
     _isForeground = false;
     stopPolling();

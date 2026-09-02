@@ -16,12 +16,23 @@ class RequestsView extends ConsumerStatefulWidget {
   ConsumerState<RequestsView> createState() => _RequestsViewState();
 }
 
-class _RequestsViewState extends ConsumerState<RequestsView> {
+class _RequestsViewState extends ConsumerState<RequestsView>
+    with ActiveSnapshotMixin<RequestsView> {
   final _requestsStateNotifier = ValueNotifier<TrackerInfosState>(
     const TrackerInfosState(),
   );
   List<TrackerInfo> _requests = [];
   late final ScrollController _scrollController;
+
+  @override
+  void onSnapshotSuspended() {
+    throttler.cancel(FunctionTag.requests);
+  }
+
+  @override
+  void onSnapshotResumed() {
+    updateRequestsThrottler();
+  }
 
   void _onSearch(String value) {
     _requestsStateNotifier.value = _requestsStateNotifier.value.copyWith(
@@ -43,12 +54,13 @@ class _RequestsViewState extends ConsumerState<RequestsView> {
     _requestsStateNotifier.value = _requestsStateNotifier.value.copyWith(
       trackerInfos: _requests,
     );
-    ref.listenManual(requestsProvider.select((state) => VM(state.list)), (
-      prev,
-      next,
-    ) {
-      _requests = next.a;
-      updateRequestsThrottler();
+    ref.listenManual(requestsProvider, (_, next) {
+      // The bounded provider list stays current while the view is hidden; only
+      // the UI commit and its list diffing are deferred.
+      _requests = next.list;
+      if (isSnapshotActive) {
+        updateRequestsThrottler();
+      }
     });
   }
 
@@ -61,7 +73,7 @@ class _RequestsViewState extends ConsumerState<RequestsView> {
 
   void updateRequestsThrottler() {
     throttler.call(FunctionTag.requests, () {
-      if (!mounted) {
+      if (!mounted || !isSnapshotActive) {
         return;
       }
       final isEquality = trackerInfoListEquality.equals(
@@ -72,7 +84,7 @@ class _RequestsViewState extends ConsumerState<RequestsView> {
         return;
       }
       WidgetsBinding.instance.addPostFrameCallback((_) {
-        if (mounted) {
+        if (mounted && isSnapshotActive) {
           _requestsStateNotifier.value = _requestsStateNotifier.value.copyWith(
             trackerInfos: _requests,
           );

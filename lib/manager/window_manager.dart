@@ -40,6 +40,23 @@ class _WindowContainerState extends ConsumerState<WindowManager>
     });
     windowExtManager.addListener(this);
     windowManager.addListener(this);
+    unawaited(_syncWindowActivity());
+  }
+
+  Future<void> _syncWindowActivity() async {
+    try {
+      final initialActivity = appActivity.value;
+      final visible = await windowManager.isVisible();
+      final focused = visible && await windowManager.isFocused();
+      final currentActivity = appActivity.value;
+      if (currentActivity.windowVisible != initialActivity.windowVisible ||
+          currentActivity.windowFocused != initialActivity.windowFocused) {
+        return;
+      }
+      appActivity.setWindowState(visible: visible, focused: focused);
+    } catch (_) {
+      // Keep the optimistic initial activity state if the native query fails.
+    }
   }
 
   @override
@@ -52,7 +69,17 @@ class _WindowContainerState extends ConsumerState<WindowManager>
   void onWindowFocus() {
     super.onWindowFocus();
     commonPrint.log('focus');
+    appActivity.setWindowState(visible: true, focused: true);
     render?.resume();
+  }
+
+  @override
+  void onWindowBlur() {
+    super.onWindowBlur();
+    commonPrint.log('blur');
+    // Losing focus only gates telemetry and tickers. The window can still be
+    // on screen and scrollable, so frames keep flowing until it is hidden.
+    appActivity.setWindowFocused(false);
   }
 
   @override
@@ -86,13 +113,15 @@ class _WindowContainerState extends ConsumerState<WindowManager>
   void onWindowMinimize() async {
     ref.read(storeActionProvider.notifier).savePreferencesDebounce();
     commonPrint.log('minimize');
-    render?.pause();
+    appActivity.setWindowState(visible: false, focused: false);
+    render?.pause(delay: Render.hiddenPauseDelay);
     super.onWindowMinimize();
   }
 
   @override
   void onWindowRestore() {
     commonPrint.log('restore');
+    appActivity.setWindowState(visible: true, focused: true);
     render?.resume();
     super.onWindowRestore();
   }
