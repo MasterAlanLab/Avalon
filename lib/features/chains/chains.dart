@@ -238,8 +238,12 @@ class DialerChainCompiler {
       terminals.add(generatedNames.last);
     });
 
+    // Generated proxy names stay namespaced because they are implementation
+    // details, while the selector is exposed on the proxies page. Keep that
+    // user-facing selector aligned with the chain name.
+    final selectorName = request.name.trim();
     final groupName = _allocateName(
-      '${request.generatedPrefix}_${_segment(request.name)}_selector',
+      selectorName.isEmpty ? 'chain' : selectorName,
       usedNames,
     );
     return ChainCompileResult(

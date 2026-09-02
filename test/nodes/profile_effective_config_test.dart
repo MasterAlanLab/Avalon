@@ -315,6 +315,7 @@ void main() {
             },
           );
       final selector = artifact.chainResults.single.generatedGroups.first.name;
+      expect(selector, chain.name);
       expect(membersOf(artifact, 'PROXY'), [selector]);
       expect(
         artifact.diagnostics.map((item) => item.code),

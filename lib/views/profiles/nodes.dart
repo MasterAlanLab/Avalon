@@ -222,7 +222,7 @@ class _Toolbar extends StatelessWidget {
             icon: const Icon(Icons.add_circle_outline),
             label: Text(context.appLocalizations.createNode),
           ),
-          FilledButton.tonalIcon(
+          OutlinedButton.icon(
             onPressed: onImport,
             icon: const Icon(Icons.add),
             label: Text(context.appLocalizations.importNode),
@@ -288,7 +288,7 @@ class _NodeEmpty extends StatelessWidget {
                 icon: const Icon(Icons.add_circle_outline),
                 label: Text(context.appLocalizations.createNode),
               ),
-              FilledButton.icon(
+              OutlinedButton.icon(
                 onPressed: onImport,
                 icon: const Icon(Icons.add),
                 label: Text(context.appLocalizations.importNode),

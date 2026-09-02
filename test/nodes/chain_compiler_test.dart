@@ -32,7 +32,30 @@ void main() {
     expect(result.generatedProxies[names[0]]?['dialer-proxy'], isNull);
     expect(result.generatedProxies[names[1]]?['dialer-proxy'], names[0]);
     expect(result.generatedProxies[names[2]]?['dialer-proxy'], names[1]);
+    expect(result.generatedGroups.single.name, 'route');
     expect(result.generatedGroups.single.proxies, [names[2]]);
+  });
+
+  test('uses the chain name for its user-facing selector', () {
+    final result = DialerChainCompiler().compile(
+      ChainCompileRequest(
+        name: '上海链路',
+        hops: const [ChainHop(target: ChainTarget.node('node'))],
+        nodes: {'node': _node('NODE')},
+        generatedPrefix: '__avalon_chain_200',
+      ),
+    );
+
+    expect(result.isValid, isTrue);
+    expect(result.generatedGroups.single.name, '上海链路');
+    expect(
+      result.generatedGroups.single.name,
+      isNot(startsWith('__avalon_chain_')),
+    );
+    expect(
+      result.generatedProxies.keys.single,
+      startsWith('__avalon_chain_200_'),
+    );
   });
 
   test('expands groups and enforces branch limit', () {
