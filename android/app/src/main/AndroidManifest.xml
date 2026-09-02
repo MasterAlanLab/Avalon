@@ -45,6 +45,16 @@
                 android:name="io.flutter.embedding.android.NormalTheme"
                 android:resource="@style/NormalTheme" />
 
+            <!--
+                Deep links are handled by app_links (see lib/common/link.dart),
+                not by Flutter routing. Leaving the engine's own handling on
+                makes it push the incoming URI as a named route, which this app
+                has no generator for, so warm-start links were lost.
+            -->
+            <meta-data
+                android:name="flutter_deeplinking_enabled"
+                android:value="false" />
+
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
