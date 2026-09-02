@@ -4859,16 +4859,6 @@ class AppLocalizations {
     );
   }
 
-  /// `Update existing`
-  String get updateExisting {
-    return Intl.message(
-      'Update existing',
-      name: 'updateExisting',
-      desc: '',
-      args: [],
-    );
-  }
-
   /// `Create copy`
   String get createCopy {
     return Intl.message('Create copy', name: 'createCopy', desc: '', args: []);

@@ -5,14 +5,9 @@ import 'package:flutter/material.dart';
 import 'dialog.dart';
 
 class NodeImportSelection {
-  const NodeImportSelection({
-    required this.indexes,
-    required this.createCopy,
-    required this.bind,
-  });
+  const NodeImportSelection({required this.indexes, required this.bind});
 
   final List<int> indexes;
-  final bool createCopy;
   final bool bind;
 }
 
@@ -38,7 +33,6 @@ class _NodeImportPreviewState extends State<NodeImportPreview> {
       if (widget.result.drafts[index].issues.every((issue) => !issue.isError))
         index,
   };
-  bool createCopy = false;
   late bool bind = widget.bind;
 
   @override
@@ -57,7 +51,6 @@ class _NodeImportPreviewState extends State<NodeImportPreview> {
               : () => Navigator.of(context).pop(
                   NodeImportSelection(
                     indexes: selected.toList()..sort(),
-                    createCopy: createCopy,
                     bind: bind && widget.profileId != null,
                   ),
                 ),
@@ -95,26 +88,6 @@ class _NodeImportPreviewState extends State<NodeImportPreview> {
                   subtitle: details.isEmpty ? null : Text(details),
                 );
               },
-            ),
-          ),
-          RadioGroup<bool>(
-            groupValue: createCopy,
-            onChanged: (value) => setState(() => createCopy = value ?? false),
-            child: Row(
-              children: [
-                Expanded(
-                  child: RadioListTile<bool>(
-                    value: false,
-                    title: Text(context.appLocalizations.updateExisting),
-                  ),
-                ),
-                Expanded(
-                  child: RadioListTile<bool>(
-                    value: true,
-                    title: Text(context.appLocalizations.createCopy),
-                  ),
-                ),
-              ],
             ),
           ),
           if (widget.profileId != null)

@@ -600,7 +600,6 @@
   "exportZip": "ZIP",
   "exportDiagnostics": "Диагностика",
   "importPreview": "Предпросмотр импорта",
-  "updateExisting": "Обновить существующий",
   "createCopy": "Создать копию",
   "bindCurrentProfile": "Привязать текущий профиль",
   "attachAsset": "Прикрепить ресурс",

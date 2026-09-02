@@ -56,7 +56,8 @@ class _NodeLibraryViewState extends ConsumerState<NodeLibraryView> {
       ),
       profileId: profileId,
       bind: selection.bind,
-      createCopy: selection.createCopy,
+      // Importing always adds; re-importing the same link yields a copy.
+      createCopy: true,
     );
     if (selection.bind && profileId != null) {
       ref.read(setupActionProvider.notifier).applyProfileDebounce();

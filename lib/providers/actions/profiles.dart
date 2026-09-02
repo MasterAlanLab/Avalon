@@ -301,7 +301,6 @@ rules:
     String text, {
     int? profileId,
     bool bind = false,
-    bool createCopy = false,
   }) async {
     final dispatcher = NodeInputDispatcher();
     final input = dispatcher.importText(text, source: 'manual');
@@ -310,23 +309,16 @@ rules:
       await addProfileFormURL(subscriptionUrl);
       return null;
     }
-    return _previewAndCommitNodes(
-      input,
-      profileId: profileId,
-      bind: bind,
-      createCopy: createCopy,
-    );
+    return _previewAndCommitNodes(input, profileId: profileId, bind: bind);
   }
 
   Future<NodeImportCommitResult?> _previewAndCommitNodes(
     NodeImportResult input, {
     int? profileId,
     bool bind = false,
-    bool createCopy = false,
   }) async {
     var selected = input;
     var effectiveBind = bind;
-    var effectiveCreateCopy = createCopy;
     if (input.drafts.isNotEmpty) {
       final selection = await globalState.showCommonDialog<NodeImportSelection>(
         child: NodeImportPreview(
@@ -343,7 +335,6 @@ rules:
         subscriptionUrl: input.subscriptionUrl,
       );
       effectiveBind = selection.bind;
-      effectiveCreateCopy = selection.createCopy;
     }
     final result = await globalState.loadingRun(
       tag: LoadingTag.profiles,
@@ -351,7 +342,9 @@ rules:
         selected,
         profileId: profileId,
         bind: effectiveBind,
-        createCopy: effectiveCreateCopy,
+        // Importing always adds; re-importing the same link yields a copy
+        // rather than asking the user to pick between overwrite and copy.
+        createCopy: true,
       ),
       title: currentAppLocalizations.addProfile,
     );

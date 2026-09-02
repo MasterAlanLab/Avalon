@@ -34,11 +34,16 @@ NodeImportResult _result() {
   );
 }
 
+/// Captures what the preview pops, so tests can assert the payload it hands
+/// back to the import action.
+NodeImportSelection? popped;
+
 Future<void> pumpPreview(
   WidgetTester tester, {
   int? profileId,
   bool bind = true,
 }) async {
+  popped = null;
   tester.view.physicalSize = const Size(900, 900);
   tester.view.devicePixelRatio = 1;
   addTearDown(tester.view.resetPhysicalSize);
@@ -71,16 +76,31 @@ Future<void> pumpPreview(
           globalState.theme = CommonTheme.of(context, 1);
           return child!;
         },
-        home: Scaffold(
-          body: NodeImportPreview(
-            result: _result(),
-            profileId: profileId,
-            bind: bind,
+        home: Builder(
+          builder: (context) => Scaffold(
+            body: TextButton(
+              onPressed: () async {
+                popped = await Navigator.of(context)
+                    .push<NodeImportSelection>(
+                      MaterialPageRoute(
+                        builder: (_) => Scaffold(
+                          body: NodeImportPreview(
+                            result: _result(),
+                            profileId: profileId,
+                            bind: bind,
+                          ),
+                        ),
+                      ),
+                    );
+              },
+              child: const Text('open preview'),
+            ),
           ),
         ),
       ),
     ),
   );
+  await tester.tap(find.text('open preview'));
   await tester.pumpAndSettle();
 }
 
@@ -106,19 +126,26 @@ void main() {
     expect(find.byType(CheckboxListTile), findsNWidgets(2));
   });
 
-  testWidgets('offers both duplicate strategies with update as default', (
-    tester,
-  ) async {
+  testWidgets('never asks how to handle duplicates', (tester) async {
     await pumpPreview(tester, profileId: 1);
 
-    final radios = tester
-        .widgetList<RadioListTile<bool>>(find.byType(RadioListTile<bool>))
-        .toList();
-    expect(radios.map((item) => item.value), [false, true]);
-    expect(
-      tester.widget<RadioGroup<bool>>(find.byType(RadioGroup<bool>)).groupValue,
-      isFalse,
-    );
+    // Importing always adds; a re-imported link becomes a copy, so there is
+    // no overwrite-or-copy question to answer.
+    expect(find.byType(RadioListTile<bool>), findsNothing);
+    expect(find.byType(RadioGroup<bool>), findsNothing);
+  });
+
+  testWidgets('returns the kept drafts and the bind choice', (tester) async {
+    await pumpPreview(tester, profileId: 1);
+
+    // Drop the second draft, keep the bind toggle on.
+    await tester.tap(find.byType(CheckboxListTile).at(1));
+    await tester.pumpAndSettle();
+    await tester.tap(find.byType(FilledButton));
+    await tester.pumpAndSettle();
+
+    expect(popped?.indexes, [0]);
+    expect(popped?.bind, isTrue);
   });
 
   testWidgets('disables the import action once nothing is selected', (

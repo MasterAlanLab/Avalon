@@ -600,7 +600,6 @@
   "exportZip": "ZIP",
   "exportDiagnostics": "诊断信息",
   "importPreview": "导入预览",
-  "updateExisting": "更新现有节点",
   "createCopy": "创建副本",
   "bindCurrentProfile": "绑定当前配置",
   "attachAsset": "附加资产",
