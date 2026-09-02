@@ -4849,29 +4849,9 @@ class AppLocalizations {
     );
   }
 
-  /// `Import preview`
-  String get importPreview {
-    return Intl.message(
-      'Import preview',
-      name: 'importPreview',
-      desc: '',
-      args: [],
-    );
-  }
-
   /// `Create copy`
   String get createCopy {
     return Intl.message('Create copy', name: 'createCopy', desc: '', args: []);
-  }
-
-  /// `Bind current profile`
-  String get bindCurrentProfile {
-    return Intl.message(
-      'Bind current profile',
-      name: 'bindCurrentProfile',
-      desc: '',
-      args: [],
-    );
   }
 
   /// `Attach asset`

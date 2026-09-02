@@ -15,7 +15,6 @@ import 'package:avalon/plugins/service.dart';
 import 'package:avalon/providers/providers.dart';
 import 'package:avalon/providers/actions/system_exit.dart';
 import 'package:avalon/state.dart';
-import 'package:avalon/widgets/node_import_preview.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:path/path.dart' as p;

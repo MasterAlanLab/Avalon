@@ -214,9 +214,6 @@ class MessageLookup extends MessageLookupByLibrary {
       "Affected by the system, this status may not always be accurate.",
     ),
     "bind": MessageLookupByLibrary.simpleMessage("Bind"),
-    "bindCurrentProfile": MessageLookupByLibrary.simpleMessage(
-      "Bind current profile",
-    ),
     "blacklistMode": MessageLookupByLibrary.simpleMessage("Blacklist mode"),
     "branchLimit": MessageLookupByLibrary.simpleMessage("Branch limit"),
     "bypassDomain": MessageLookupByLibrary.simpleMessage("Bypass domain"),
@@ -521,7 +518,6 @@ class MessageLookup extends MessageLookupByLibrary {
     "importFile": MessageLookupByLibrary.simpleMessage("Import from file"),
     "importFromURL": MessageLookupByLibrary.simpleMessage("Import from URL"),
     "importNode": MessageLookupByLibrary.simpleMessage("Import node"),
-    "importPreview": MessageLookupByLibrary.simpleMessage("Import preview"),
     "importSuccess": MessageLookupByLibrary.simpleMessage("Node imported"),
     "importUrl": MessageLookupByLibrary.simpleMessage("Import from URL"),
     "includeAllProxies": MessageLookupByLibrary.simpleMessage(

@@ -166,9 +166,6 @@ class MessageLookup extends MessageLookupByLibrary {
       "システムの影響により、この状態は必ずしも正確とは限りません。",
     ),
     "bind": MessageLookupByLibrary.simpleMessage("バインド"),
-    "bindCurrentProfile": MessageLookupByLibrary.simpleMessage(
-      "現在のプロファイルにバインド",
-    ),
     "blacklistMode": MessageLookupByLibrary.simpleMessage("ブラックリストモード"),
     "branchLimit": MessageLookupByLibrary.simpleMessage("分岐上限"),
     "bypassDomain": MessageLookupByLibrary.simpleMessage("バイパスドメイン"),
@@ -421,7 +418,6 @@ class MessageLookup extends MessageLookupByLibrary {
     "importFile": MessageLookupByLibrary.simpleMessage("ファイルからインポート"),
     "importFromURL": MessageLookupByLibrary.simpleMessage("URLからインポート"),
     "importNode": MessageLookupByLibrary.simpleMessage("ノードをインポート"),
-    "importPreview": MessageLookupByLibrary.simpleMessage("インポートプレビュー"),
     "importSuccess": MessageLookupByLibrary.simpleMessage("ノードをインポートしました"),
     "importUrl": MessageLookupByLibrary.simpleMessage("URLからインポート"),
     "includeAllProxies": MessageLookupByLibrary.simpleMessage("すべてのプロキシを含める"),

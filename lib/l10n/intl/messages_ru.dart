@@ -215,9 +215,6 @@ class MessageLookup extends MessageLookupByLibrary {
       "Из-за особенностей системы этот статус не всегда может быть точным.",
     ),
     "bind": MessageLookupByLibrary.simpleMessage("Привязать"),
-    "bindCurrentProfile": MessageLookupByLibrary.simpleMessage(
-      "Привязать текущий профиль",
-    ),
     "blacklistMode": MessageLookupByLibrary.simpleMessage(
       "Режим черного списка",
     ),
@@ -538,9 +535,6 @@ class MessageLookup extends MessageLookupByLibrary {
     "importFile": MessageLookupByLibrary.simpleMessage("Импорт из файла"),
     "importFromURL": MessageLookupByLibrary.simpleMessage("Импорт из URL"),
     "importNode": MessageLookupByLibrary.simpleMessage("Импорт узла"),
-    "importPreview": MessageLookupByLibrary.simpleMessage(
-      "Предпросмотр импорта",
-    ),
     "importSuccess": MessageLookupByLibrary.simpleMessage("Узел импортирован"),
     "importUrl": MessageLookupByLibrary.simpleMessage("Импорт по URL"),
     "includeAllProxies": MessageLookupByLibrary.simpleMessage(

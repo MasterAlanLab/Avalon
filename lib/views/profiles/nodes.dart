@@ -45,26 +45,22 @@ class _NodeLibraryViewState extends ConsumerState<NodeLibraryView> {
       return;
     }
     final profileId = ref.read(currentProfileIdProvider);
-    final selection = await globalState.showCommonDialog<NodeImportSelection>(
-      child: NodeImportPreview(result: result, profileId: profileId),
-    );
-    if (!mounted || selection == null || selection.indexes.isEmpty) return;
+    // Valid drafts go straight in; commit skips the ones that failed to parse
+    // and returns their issues.
     final committed = await const NodeLibraryService().commit(
-      NodeImportResult(
-        drafts: [for (final index in selection.indexes) result.drafts[index]],
-        kind: result.kind,
-      ),
+      result,
       profileId: profileId,
-      bind: selection.bind,
-      // Importing always adds; re-importing the same link yields a copy.
+      bind: profileId != null,
       createCopy: true,
     );
-    if (selection.bind && profileId != null) {
+    if (profileId != null) {
       ref.read(setupActionProvider.notifier).applyProfileDebounce();
     }
     if (mounted) {
       context.showNotifier(
-        context.appLocalizations.nodeImportCount(committed.all.length),
+        committed.issues.isEmpty
+            ? context.appLocalizations.nodeImportCount(committed.all.length)
+            : committed.issues.map((issue) => issue.message).join('\n'),
       );
     }
   }

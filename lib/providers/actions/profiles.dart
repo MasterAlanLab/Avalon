@@ -115,7 +115,7 @@ class ProfilesAction extends _$ProfilesAction {
       globalState.navigatorKey.currentState?.popUntil((route) => route.isFirst);
       ref.read(currentPageLabelProvider.notifier).toProfiles();
       final profileId = ref.read(currentProfileIdProvider);
-      await _previewAndCommitNodes(
+      await _commitNodes(
         nodeInput,
         profileId: profileId,
         bind: profileId != null,
@@ -309,41 +309,23 @@ rules:
       await addProfileFormURL(subscriptionUrl);
       return null;
     }
-    return _previewAndCommitNodes(input, profileId: profileId, bind: bind);
+    return _commitNodes(input, profileId: profileId, bind: bind);
   }
 
-  Future<NodeImportCommitResult?> _previewAndCommitNodes(
+  /// Commits every valid draft straight away. Importing a link means "add
+  /// this", so there is nothing to preview or choose: drafts that fail to
+  /// parse are reported as issues, and a re-imported link becomes a copy.
+  Future<NodeImportCommitResult?> _commitNodes(
     NodeImportResult input, {
     int? profileId,
     bool bind = false,
   }) async {
-    var selected = input;
-    var effectiveBind = bind;
-    if (input.drafts.isNotEmpty) {
-      final selection = await globalState.showCommonDialog<NodeImportSelection>(
-        child: NodeImportPreview(
-          result: input,
-          profileId: profileId,
-          bind: bind,
-        ),
-      );
-      if (selection == null || selection.indexes.isEmpty) return null;
-      selected = NodeImportResult(
-        drafts: [for (final index in selection.indexes) input.drafts[index]],
-        kind: input.kind,
-        issues: input.issues,
-        subscriptionUrl: input.subscriptionUrl,
-      );
-      effectiveBind = selection.bind;
-    }
     final result = await globalState.loadingRun(
       tag: LoadingTag.profiles,
       () => const NodeLibraryService().commit(
-        selected,
+        input,
         profileId: profileId,
-        bind: effectiveBind,
-        // Importing always adds; re-importing the same link yields a copy
-        // rather than asking the user to pick between overwrite and copy.
+        bind: bind,
         createCopy: true,
       ),
       title: currentAppLocalizations.addProfile,
@@ -354,7 +336,7 @@ rules:
     } else if (result.all.isNotEmpty) {
       globalState.showNotifier(currentAppLocalizations.importSuccess);
     }
-    if (effectiveBind && profileId == ref.read(currentProfileIdProvider)) {
+    if (bind && profileId == ref.read(currentProfileIdProvider)) {
       ref.read(setupActionProvider.notifier).applyProfileDebounce();
     }
     return result;
