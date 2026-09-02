@@ -22,6 +22,7 @@ class CommonScaffold extends StatefulWidget {
   final List<Widget>? actions;
   final bool? centerTitle;
   final Widget? floatingActionButton;
+  final FloatingActionButtonLocation? floatingActionButtonLocation;
   final bool? isTV;
   final AppBarEditState? editState;
   final AppBarSearchState? searchState;
@@ -40,6 +41,7 @@ class CommonScaffold extends StatefulWidget {
     this.isLoading = false,
     this.searchState,
     this.floatingActionButton,
+    this.floatingActionButtonLocation,
     this.isTV,
     this.onKeywordsUpdate,
     this.resizeToAvoidBottomInset,
@@ -386,6 +388,7 @@ class CommonScaffoldState extends State<CommonScaffold> {
               child: widget.floatingActionButton,
             )
           : null,
+      floatingActionButtonLocation: widget.floatingActionButtonLocation,
     );
   }
 }

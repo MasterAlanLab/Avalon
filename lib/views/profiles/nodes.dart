@@ -16,74 +16,83 @@ class NodeLibraryView extends ConsumerStatefulWidget {
   ConsumerState<NodeLibraryView> createState() => _NodeLibraryViewState();
 }
 
+/// Prompts for node data and imports it. Top-level so the Profiles scaffold
+/// can drive it from the tab's floating action button.
+Future<void> importNodeAction(BuildContext context, WidgetRef ref) async {
+  final input = await globalState.showCommonDialog<String>(
+    child: InputDialog(
+      title: context.appLocalizations.importNode,
+      labelText: context.appLocalizations.nodeInput,
+      hintText: context.appLocalizations.nodeInputHint,
+      value: '',
+      keyboardType: TextInputType.multiline,
+      validator: (value) => value == null || value.trim().isEmpty
+          ? context.appLocalizations.emptyTip('').trim()
+          : null,
+    ),
+  );
+  if (!context.mounted || input == null || input.trim().isEmpty) return;
+  final result = NodeInputDispatcher().importText(input, source: 'manual');
+  if (result.drafts.isEmpty) {
+    context.showNotifier(
+      result.issues.isEmpty
+          ? context.appLocalizations.nodeImportNoDraft
+          : result.issues.map((issue) => issue.message).join('\n'),
+    );
+    return;
+  }
+  final profileId = ref.read(currentProfileIdProvider);
+  // Valid drafts go straight in; commit skips the ones that failed to parse
+  // and returns their issues.
+  final committed = await const NodeLibraryService().commit(
+    result,
+    profileId: profileId,
+    bind: profileId != null,
+    createCopy: true,
+  );
+  if (profileId != null) {
+    ref.read(setupActionProvider.notifier).applyProfileDebounce();
+  }
+  if (context.mounted) {
+    context.showNotifier(
+      committed.issues.isEmpty
+          ? context.appLocalizations.nodeImportCount(committed.all.length)
+          : committed.issues.map((issue) => issue.message).join('\n'),
+    );
+  }
+}
+
+/// Opens the node form and stores what it returns.
+Future<void> createNodeAction(BuildContext context) async {
+  final config = await globalState.showCommonDialog<Map<String, dynamic>>(
+    child: const _NodeFormDialog(),
+  );
+  if (!context.mounted || config == null) return;
+  final drafts = NodeInputDispatcher().parseRaw(config);
+  final draft = drafts.firstOrNull;
+  if (draft == null || draft.issues.any((issue) => issue.isError)) {
+    context.showNotifier(
+      drafts
+          .expand((item) => item.issues)
+          .map((item) => item.message)
+          .join('\n'),
+    );
+    return;
+  }
+  await const NodeLibraryService().commit(NodeImportResult(drafts: [draft]));
+  if (context.mounted) {
+    context.showNotifier(context.appLocalizations.importSuccess);
+  }
+}
+
 class _NodeLibraryViewState extends ConsumerState<NodeLibraryView> {
   String type = '';
   String source = '';
   String status = '';
 
-  Future<void> _import() async {
-    final input = await globalState.showCommonDialog<String>(
-      child: InputDialog(
-        title: context.appLocalizations.importNode,
-        labelText: context.appLocalizations.nodeInput,
-        hintText: context.appLocalizations.nodeInputHint,
-        value: '',
-        keyboardType: TextInputType.multiline,
-        validator: (value) => value == null || value.trim().isEmpty
-            ? context.appLocalizations.emptyTip('').trim()
-            : null,
-      ),
-    );
-    if (!mounted || input == null || input.trim().isEmpty) return;
-    final result = NodeInputDispatcher().importText(input, source: 'manual');
-    if (result.drafts.isEmpty) {
-      context.showNotifier(
-        result.issues.isEmpty
-            ? context.appLocalizations.nodeImportNoDraft
-            : result.issues.map((issue) => issue.message).join('\n'),
-      );
-      return;
-    }
-    final profileId = ref.read(currentProfileIdProvider);
-    // Valid drafts go straight in; commit skips the ones that failed to parse
-    // and returns their issues.
-    final committed = await const NodeLibraryService().commit(
-      result,
-      profileId: profileId,
-      bind: profileId != null,
-      createCopy: true,
-    );
-    if (profileId != null) {
-      ref.read(setupActionProvider.notifier).applyProfileDebounce();
-    }
-    if (mounted) {
-      context.showNotifier(
-        committed.issues.isEmpty
-            ? context.appLocalizations.nodeImportCount(committed.all.length)
-            : committed.issues.map((issue) => issue.message).join('\n'),
-      );
-    }
-  }
+  Future<void> _import() => importNodeAction(context, ref);
 
-  Future<void> _create() async {
-    final config = await globalState.showCommonDialog<Map<String, dynamic>>(
-      child: const _NodeFormDialog(),
-    );
-    if (!mounted || config == null) return;
-    final drafts = NodeInputDispatcher().parseRaw(config);
-    final draft = drafts.firstOrNull;
-    if (draft == null || draft.issues.any((issue) => issue.isError)) {
-      context.showNotifier(
-        drafts
-            .expand((item) => item.issues)
-            .map((item) => item.message)
-            .join('\n'),
-      );
-      return;
-    }
-    await const NodeLibraryService().commit(NodeImportResult(drafts: [draft]));
-    if (mounted) context.showNotifier(context.appLocalizations.importSuccess);
-  }
+  Future<void> _create() => createNodeAction(context);
 
   @override
   Widget build(BuildContext context) {
@@ -135,8 +144,6 @@ class _NodeLibraryViewState extends ConsumerState<NodeLibraryView> {
                     onType: (value) => setState(() => type = value),
                     onSource: (value) => setState(() => source = value),
                     onStatus: (value) => setState(() => status = value),
-                    onImport: _import,
-                    onCreate: _create,
                   );
                 }
                 final node = visible[index - 1];
@@ -164,8 +171,6 @@ class _Toolbar extends StatelessWidget {
     required this.onType,
     required this.onSource,
     required this.onStatus,
-    required this.onImport,
-    required this.onCreate,
   });
 
   final List<String> types;
@@ -176,8 +181,6 @@ class _Toolbar extends StatelessWidget {
   final ValueChanged<String> onType;
   final ValueChanged<String> onSource;
   final ValueChanged<String> onStatus;
-  final VoidCallback onImport;
-  final VoidCallback onCreate;
 
   @override
   Widget build(BuildContext context) {
@@ -213,16 +216,6 @@ class _Toolbar extends StatelessWidget {
               _ => context.appLocalizations.localOverride,
             },
             onChanged: onStatus,
-          ),
-          OutlinedButton.icon(
-            onPressed: onCreate,
-            icon: const Icon(Icons.add_circle_outline),
-            label: Text(context.appLocalizations.createNode),
-          ),
-          OutlinedButton.icon(
-            onPressed: onImport,
-            icon: const Icon(Icons.add),
-            label: Text(context.appLocalizations.importNode),
           ),
         ],
       ),

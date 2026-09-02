@@ -15,25 +15,27 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+/// Prompts for a chain name and opens its hop editor. Top-level so the
+/// Profiles scaffold can drive it from the tab's floating action button.
+Future<void> createChainAction(BuildContext context, int? profileId) async {
+  final name = await globalState.showCommonDialog<String>(
+    child: InputDialog(
+      title: context.appLocalizations.createChain,
+      labelText: context.appLocalizations.name,
+      value: '',
+      validator: (value) => value == null || value.trim().isEmpty
+          ? context.appLocalizations.emptyTip('').trim()
+          : null,
+    ),
+  );
+  if (!context.mounted || name == null || name.trim().isEmpty) return;
+  final chain = await const ChainLibraryService().create(name: name);
+  if (!context.mounted) return;
+  await const ChainLibraryView()._editHops(context, chain, profileId);
+}
+
 class ChainLibraryView extends ConsumerWidget {
   const ChainLibraryView({super.key});
-
-  Future<void> _create(BuildContext context, int? profileId) async {
-    final name = await globalState.showCommonDialog<String>(
-      child: InputDialog(
-        title: context.appLocalizations.createChain,
-        labelText: context.appLocalizations.name,
-        value: '',
-        validator: (value) => value == null || value.trim().isEmpty
-            ? context.appLocalizations.emptyTip('').trim()
-            : null,
-      ),
-    );
-    if (!context.mounted || name == null || name.trim().isEmpty) return;
-    final chain = await const ChainLibraryService().create(name: name);
-    if (!context.mounted) return;
-    await _editHops(context, chain, profileId);
-  }
 
   Future<void> _editHops(
     BuildContext context,
@@ -91,7 +93,7 @@ class ChainLibraryView extends ConsumerWidget {
         if (chains.isEmpty) {
           return Center(
             child: FilledButton.icon(
-              onPressed: () => _create(context, profileId),
+              onPressed: () => createChainAction(context, profileId),
               icon: const Icon(Icons.add),
               label: Text(context.appLocalizations.createChain),
             ),
@@ -109,17 +111,6 @@ class ChainLibraryView extends ConsumerWidget {
             };
             return Column(
               children: [
-                Padding(
-                  padding: const EdgeInsets.fromLTRB(12, 12, 12, 4),
-                  child: Align(
-                    alignment: Alignment.centerRight,
-                    child: FilledButton.tonalIcon(
-                      onPressed: () => _create(context, profileId),
-                      icon: const Icon(Icons.add),
-                      label: Text(context.appLocalizations.createChain),
-                    ),
-                  ),
-                ),
                 Expanded(
                   child: ReorderableListView.builder(
                     buildDefaultDragHandles: false,

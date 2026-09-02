@@ -22,13 +22,33 @@ class ProfilesView extends StatefulWidget {
   State<ProfilesView> createState() => _ProfilesViewState();
 }
 
-class _ProfilesViewState extends State<ProfilesView> {
+class _ProfilesViewState extends State<ProfilesView>
+    with SingleTickerProviderStateMixin {
   Function? applyConfigDebounce;
   bool _isUpdating = false;
+  late final TabController _tabController;
 
   @override
   void initState() {
     super.initState();
+    // Each tab owns its own action, so the scaffold rebuilds its FAB on every
+    // tab change rather than showing one button for all three.
+    _tabController = TabController(length: 3, vsync: this)
+      ..addListener(_handleTabChanged);
+  }
+
+  @override
+  void dispose() {
+    _tabController.removeListener(_handleTabChanged);
+    _tabController.dispose();
+    super.dispose();
+  }
+
+  void _handleTabChanged() {
+    if (_tabController.indexIsChanging) {
+      return;
+    }
+    setState(() {});
   }
 
   void _handleShowAddExtendPage() {
@@ -95,104 +115,141 @@ class _ProfilesViewState extends State<ProfilesView> {
         : [];
   }
 
-  Widget _buildFAB() {
-    return CommonFloatingActionButton(
-      onPressed: _handleShowAddExtendPage,
-      icon: const Icon(Icons.add),
-      label: context.appLocalizations.addProfile,
-    );
+  Widget _buildFAB(WidgetRef ref) {
+    final appLocalizations = context.appLocalizations;
+    switch (_tabController.index) {
+      case 1:
+        // centerFloat hands the row the full width, so the edge inset the
+        // end-aligned slot would have applied has to be added back.
+        return Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 16),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              CommonFloatingActionButton(
+                onPressed: () => createNodeAction(context),
+                icon: const Icon(Icons.add_circle_outline),
+                label: appLocalizations.createNode,
+              ),
+              CommonFloatingActionButton(
+                onPressed: () => importNodeAction(context, ref),
+                icon: const Icon(Icons.add),
+                label: appLocalizations.importNode,
+              ),
+            ],
+          ),
+        );
+      case 2:
+        return CommonFloatingActionButton(
+          onPressed: () =>
+              createChainAction(context, ref.read(currentProfileIdProvider)),
+          icon: const Icon(Icons.add),
+          label: appLocalizations.createChain,
+        );
+      default:
+        return CommonFloatingActionButton(
+          onPressed: _handleShowAddExtendPage,
+          icon: const Icon(Icons.add),
+          label: appLocalizations.addProfile,
+        );
+    }
   }
+
+  /// The two node buttons need the full width to sit at opposite edges, which
+  /// the default end-aligned slot cannot give them.
+  FloatingActionButtonLocation? get _fabLocation => _tabController.index == 1
+      ? FloatingActionButtonLocation.centerFloat
+      : null;
 
   @override
   Widget build(BuildContext context) {
-    return DefaultTabController(
-      length: 3,
-      child: Consumer(
-        builder: (_, ref, _) {
-          final appLocalizations = context.appLocalizations;
-          final isLoading = ref.watch(loadingProvider(LoadingTag.profiles));
-          final state = ref.watch(profilesStateProvider);
-          final spacing = 14.mAp;
-          return CommonScaffold(
-            isLoading: isLoading,
-            title: appLocalizations.profiles,
-            floatingActionButton: _buildFAB(),
-            actions: _buildActions(state.profiles),
-            body: Column(
-              children: [
-                TabBar(
-                  tabs: [
-                    Tab(text: appLocalizations.profiles),
-                    Tab(text: appLocalizations.nodes),
-                    Tab(text: appLocalizations.chains),
+    return Consumer(
+      builder: (_, ref, _) {
+        final appLocalizations = context.appLocalizations;
+        final isLoading = ref.watch(loadingProvider(LoadingTag.profiles));
+        final state = ref.watch(profilesStateProvider);
+        final spacing = 14.mAp;
+        return CommonScaffold(
+          isLoading: isLoading,
+          title: appLocalizations.profiles,
+          floatingActionButton: _buildFAB(ref),
+          floatingActionButtonLocation: _fabLocation,
+          actions: _buildActions(state.profiles),
+          body: Column(
+            children: [
+              TabBar(
+                controller: _tabController,
+                tabs: [
+                  Tab(text: appLocalizations.profiles),
+                  Tab(text: appLocalizations.nodes),
+                  Tab(text: appLocalizations.chains),
+                ],
+              ),
+              Expanded(
+                child: TabBarView(
+                  controller: _tabController,
+                  children: [
+                    state.profiles.isEmpty
+                        ? NullStatus(
+                            label: appLocalizations.nullProfileDesc,
+                            illustration: const ProfileEmptyIllustration(),
+                          )
+                        : LayoutBuilder(
+                            builder: (_, constraints) {
+                              const horizontalPadding = 16.0;
+                              final columns = utils.getProfilesColumns(
+                                constraints.maxWidth - horizontalPadding * 2,
+                              );
+                              return Align(
+                                alignment: Alignment.topCenter,
+                                child: SingleChildScrollView(
+                                  key: profilesStoreKey,
+                                  padding: const EdgeInsets.only(
+                                    left: horizontalPadding,
+                                    right: horizontalPadding,
+                                    top: 16,
+                                    bottom: 88,
+                                  ),
+                                  child: Grid(
+                                    mainAxisSpacing: spacing,
+                                    crossAxisSpacing: spacing,
+                                    crossAxisCount: columns,
+                                    children: [
+                                      for (
+                                        int i = 0;
+                                        i < state.profiles.length;
+                                        i++
+                                      )
+                                        GridItem(
+                                          child: ProfileItem(
+                                            profile: state.profiles[i],
+                                            groupValue: state.currentProfileId,
+                                            onChanged: (profileId) {
+                                              ref
+                                                      .read(
+                                                        currentProfileIdProvider
+                                                            .notifier,
+                                                      )
+                                                      .value =
+                                                  profileId;
+                                            },
+                                          ),
+                                        ),
+                                    ],
+                                  ),
+                                ),
+                              );
+                            },
+                          ),
+                    const NodeLibraryView(),
+                    const ChainLibraryView(),
                   ],
                 ),
-                Expanded(
-                  child: TabBarView(
-                    children: [
-                      state.profiles.isEmpty
-                          ? NullStatus(
-                              label: appLocalizations.nullProfileDesc,
-                              illustration: const ProfileEmptyIllustration(),
-                            )
-                          : LayoutBuilder(
-                              builder: (_, constraints) {
-                                const horizontalPadding = 16.0;
-                                final columns = utils.getProfilesColumns(
-                                  constraints.maxWidth - horizontalPadding * 2,
-                                );
-                                return Align(
-                                  alignment: Alignment.topCenter,
-                                  child: SingleChildScrollView(
-                                    key: profilesStoreKey,
-                                    padding: const EdgeInsets.only(
-                                      left: horizontalPadding,
-                                      right: horizontalPadding,
-                                      top: 16,
-                                      bottom: 88,
-                                    ),
-                                    child: Grid(
-                                      mainAxisSpacing: spacing,
-                                      crossAxisSpacing: spacing,
-                                      crossAxisCount: columns,
-                                      children: [
-                                        for (
-                                          int i = 0;
-                                          i < state.profiles.length;
-                                          i++
-                                        )
-                                          GridItem(
-                                            child: ProfileItem(
-                                              profile: state.profiles[i],
-                                              groupValue:
-                                                  state.currentProfileId,
-                                              onChanged: (profileId) {
-                                                ref
-                                                        .read(
-                                                          currentProfileIdProvider
-                                                              .notifier,
-                                                        )
-                                                        .value =
-                                                    profileId;
-                                              },
-                                            ),
-                                          ),
-                                      ],
-                                    ),
-                                  ),
-                                );
-                              },
-                            ),
-                      const NodeLibraryView(),
-                      const ChainLibraryView(),
-                    ],
-                  ),
-                ),
-              ],
-            ),
-          );
-        },
-      ),
+              ),
+            ],
+          ),
+        );
+      },
     );
   }
 }
