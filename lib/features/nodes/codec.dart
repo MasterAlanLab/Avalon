@@ -21,9 +21,6 @@ class NodeCodecRegistry {
         _codecs['socks4'] = codec;
         _codecs['socks4a'] = codec;
       }
-      if (codec is HttpCodec) {
-        _codecs['https'] = codec;
-      }
     }
   }
 
@@ -31,43 +28,6 @@ class NodeCodecRegistry {
 
   NodeCodec? operator [](String scheme) => _codecs[scheme.toLowerCase()];
   Iterable<NodeCodec> get codecs => _codecs.values;
-
-  bool isHttpProxyUri(String input) {
-    final uri = Uri.tryParse(normalizeNodeUri(input));
-    if (uri == null || (uri.scheme != 'http' && uri.scheme != 'https')) {
-      return false;
-    }
-    if (_hasExplicitPort(input) || uri.userInfo.isNotEmpty) return true;
-    const proxyKeys = {
-      'proxy',
-      'proxy-type',
-      'username',
-      'password',
-      'tls',
-      'sni',
-      'servername',
-      'skip-cert-verify',
-      'insecure',
-    };
-    return uri.queryParameters.keys.any(proxyKeys.contains);
-  }
-
-  bool _hasExplicitPort(String input) {
-    final value = normalizeNodeUri(input);
-    final separator = value.indexOf('://');
-    if (separator < 0) return false;
-    final authority = value
-        .substring(separator + 3)
-        .split(RegExp(r'[/\\?#]'))
-        .first;
-    final at = authority.lastIndexOf('@');
-    final hostPort = at < 0 ? authority : authority.substring(at + 1);
-    if (hostPort.startsWith('[')) {
-      final closing = hostPort.indexOf(']');
-      return closing >= 0 && hostPort.substring(closing + 1).startsWith(':');
-    }
-    return hostPort.contains(':');
-  }
 
   NodeDraft parse(String input) {
     final normalizedInput = normalizeNodeUri(input);
@@ -220,7 +180,6 @@ final List<NodeCodec> defaultNodeCodecs = [
   Hysteria2Codec(),
   TuicCodec(),
   AnyTlsCodec(),
-  HttpCodec(),
   SocksCodec(),
 ];
 
@@ -1816,98 +1775,6 @@ class AnyTlsCodec implements NodeCodec {
       config['password']?.toString() ?? '',
       query,
     );
-  }
-}
-
-class HttpCodec implements NodeCodec {
-  const HttpCodec();
-
-  @override
-  String get scheme => 'http';
-
-  @override
-  NodeDraft parse(String input) {
-    final uri = Uri.parse(normalizeNodeUri(input));
-    final config = _base(
-      _name(uri, 'http'),
-      'http',
-      uri,
-      defaultPort: uri.scheme == 'https' ? 443 : 80,
-    );
-    final credentials = _credentialParts(uri);
-    if (credentials.isNotEmpty) config['username'] = credentials.first;
-    if (credentials.length > 1) config['password'] = credentials[1];
-    config['username'] ??= uri.queryParameters['username'];
-    config['password'] ??= uri.queryParameters['password'];
-    if (uri.scheme == 'https' || _parseBool(uri.queryParameters['tls'] ?? '')) {
-      config['tls'] = true;
-    }
-    final insecure =
-        uri.queryParameters['skip-cert-verify'] ??
-        uri.queryParameters['insecure'];
-    if (insecure != null) config['skip-cert-verify'] = _parseBool(insecure);
-    final sni = uri.queryParameters['sni'] ?? uri.queryParameters['servername'];
-    if (sni != null && sni.isNotEmpty) config['sni'] = sni;
-    final headers = uri.queryParameters['headers'];
-    if (headers != null && headers.isNotEmpty) {
-      final value = _decodeStructuredValue(headers);
-      if (value is Map) config['headers'] = Map<String, dynamic>.from(value);
-    }
-    _commonFields(config, uri);
-    return NodeDraft(
-      config: config,
-      format: NodeInputKind.uri,
-      source: input,
-      metadata: _unknownQuery(uri, {
-        'proxy',
-        'proxy-type',
-        'username',
-        'password',
-        'tls',
-        'sni',
-        'servername',
-        'skip-cert-verify',
-        'insecure',
-        'headers',
-        'udp',
-        'tfo',
-        'mptcp',
-        'ip-version',
-        'interface-name',
-        'routing-mark',
-        'dialer-proxy',
-      }),
-    );
-  }
-
-  @override
-  String? exportUri(Map<String, dynamic> config) {
-    if (config['type']?.toString().toLowerCase() != scheme) return null;
-    final query = <String, String>{
-      if (config['skip-cert-verify'] == true) 'insecure': '1',
-      if (config['sni'] != null) 'sni': config['sni'].toString(),
-      if (config['servername'] != null && config['sni'] == null)
-        'sni': config['servername'].toString(),
-      if (config['headers'] is Map)
-        'headers': _encodeStructuredValue(config['headers']),
-    };
-    _appendCommonQuery(query, config);
-    final tls = config['tls'] == true;
-    final username = config['username']?.toString();
-    final password = config['password']?.toString();
-    final user = username == null
-        ? ''
-        : '${Uri.encodeComponent(username)}${password == null ? '' : ':${Uri.encodeComponent(password)}'}@';
-    final params = (query.entries.toList()..sort((a, b) => a.key.compareTo(b.key)))
-        .map(
-          (entry) =>
-              '${Uri.encodeQueryComponent(entry.key)}=${Uri.encodeQueryComponent(entry.value)}',
-        )
-        .join('&');
-    final name = config['name'] == null
-        ? ''
-        : '#${Uri.encodeComponent(config['name'].toString())}';
-    return '${tls ? 'https' : 'http'}://$user${_hostPort(config)}${params.isEmpty ? '' : '?$params'}$name';
   }
 }
 

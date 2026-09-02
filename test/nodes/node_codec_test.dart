@@ -232,17 +232,23 @@ void main() {
       expect((opts['headers'] as Map)['Host'], 'example.com');
     });
 
-    test('decodes base64 userinfo for SOCKS and HTTP links', () {
+    test('decodes base64 userinfo for SOCKS links', () {
       final registry = NodeCodecRegistry();
       // base64('test:test') — the form many share links use.
       final socks = registry.parse('socks5://dGVzdDp0ZXN0@HOST:1080#S');
       expect(socks.issues.where((issue) => issue.isError), isEmpty);
       expect(socks.config['username'], 'test');
       expect(socks.config['password'], 'test');
+    });
 
+    test('rejects http links as an unsupported node scheme', () {
+      final registry = NodeCodecRegistry();
       final http = registry.parse('http://dGVzdDp0ZXN0@HOST:8080#H');
-      expect(http.config['username'], 'test');
-      expect(http.config['password'], 'test');
+      expect(http.config, isEmpty);
+      expect(
+        http.issues.map((issue) => issue.code),
+        contains('unsupported-scheme'),
+      );
     });
 
     test('keeps a plain userinfo username that looks like base64', () {
@@ -340,32 +346,50 @@ void main() {
       expect(anytls.config['idle-session-timeout'], '30s');
     });
 
-    test('routes HTTP proxy URIs separately from subscriptions', () {
+    test('treats every http(s) URI as a subscription, never a node', () {
       final dispatcher = NodeInputDispatcher();
+
       final subscription = dispatcher.importText('https://HOST/sub');
       expect(subscription.subscriptionUrl, 'https://HOST/sub');
       expect(subscription.drafts, isEmpty);
 
-      final result = dispatcher.importText(
+      // An explicit port used to be read as an HTTP proxy node, which broke
+      // subscription links served on a non-default port.
+      final withPort = dispatcher.importText('https://HOST:8443/link/abc');
+      expect(withPort.subscriptionUrl, 'https://HOST:8443/link/abc');
+      expect(withPort.drafts, isEmpty);
+
+      // Credentials and proxy-shaped query keys must not resurrect that path.
+      final proxyShaped = dispatcher.importText(
         'https://user:p%40ss@HOST:8443?proxy=1&sni=proxy.example',
       );
-      expect(result.subscriptionUrl, isNull);
-      expect(result.drafts.single.config, {
-        'name': 'http_host',
-        'type': 'http',
-        'server': 'host',
-        'port': 8443,
-        'username': 'user',
-        'password': 'p@ss',
-        'tls': true,
-        'sni': 'proxy.example',
-      });
-      final uri = const HttpCodec().exportUri(result.drafts.single.config)!;
-      expect(uri, startsWith('https://user:p%40ss@host:8443'));
+      expect(
+        proxyShaped.subscriptionUrl,
+        'https://user:p%40ss@HOST:8443?proxy=1&sni=proxy.example',
+      );
+      expect(proxyShaped.drafts, isEmpty);
 
-      final explicit = dispatcher.importText('http://HOST:8080');
-      expect(explicit.drafts.single.config['type'], 'http');
-      expect(explicit.drafts.single.config['port'], 8080);
+      final bare = dispatcher.importText('http://HOST:8080');
+      expect(bare.subscriptionUrl, 'http://HOST:8080');
+      expect(bare.drafts, isEmpty);
+    });
+
+    test('drops http and https from the node codec registry', () {
+      final registry = NodeCodecRegistry();
+      expect(registry['http'], isNull);
+      expect(registry['https'], isNull);
+
+      // Raw Mihomo configs may still carry `type: http` proxies; only the URI
+      // codec is gone.
+      final raw = NodeInputDispatcher().importText('''
+proxies:
+  - name: RAW-HTTP
+    type: http
+    server: example.com
+    port: 8080
+''');
+      expect(raw.drafts.single.config['type'], 'http');
+      expect(raw.drafts.single.config['server'], 'example.com');
     });
 
     test('parses YAML, JSON, base64 and preserves unknown fields', () {

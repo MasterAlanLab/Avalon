@@ -22,9 +22,10 @@ class NodeInputDispatcher {
       );
     }
     final uri = Uri.tryParse(text);
-    if (uri != null &&
-        (uri.scheme == 'http' || uri.scheme == 'https') &&
-        !registry.isHttpProxyUri(text)) {
+    // http(s) is never a node scheme, so any such URI is a subscription. This
+    // is what keeps subscription links with an explicit port from being read
+    // as proxy nodes.
+    if (uri != null && (uri.scheme == 'http' || uri.scheme == 'https')) {
       return NodeImportResult(
         kind: NodeInputKind.subscription,
         subscriptionUrl: text,
