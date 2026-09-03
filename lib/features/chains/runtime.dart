@@ -198,6 +198,11 @@ class ProfileEffectiveConfigService {
         final raw = sourceProxies[index];
         if (raw is! Map) continue;
         final original = _copyMap(raw);
+        // 订阅直接带过来的 proxies 不经过节点库，也就走不到
+        // effectiveStoredNodeConfig 的兜底。省略 udp 的订阅会以完全相同的方式
+        // 泄漏，所以这里同样补齐；provider 若真想关掉会显式写 udp: false，
+        // 那种情况 applyDefaultUdp 不覆盖。
+        applyDefaultUdp(original);
         final name = original['name']?.toString();
         if (name == null || name.isEmpty) {
           materializedSourceProxies.add(original);

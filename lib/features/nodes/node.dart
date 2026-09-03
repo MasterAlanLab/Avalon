@@ -174,10 +174,55 @@ dynamic _sortValue(dynamic value) {
   return value;
 }
 
+/// mihomo 中 UDP 能力由配置里 `udp` 字段决定的出站类型。
+///
+/// 这些类型在 `adapter/outbound/*.go` 把 UDP 声明成
+/// ``UDP bool `proxy:"udp,omitempty"` ``，配置里缺这个键时取零值 false。而
+/// `tunnel/tunnel.go` 的 match() 在规则命中、但出站不支持 UDP 时会跳过该条规则
+/// 继续往下找，规则用尽就回落到 `proxies["DIRECT"]`——UDP 会带着真实地址从物理
+/// 网卡直连出去。WebRTC 的 STUN 探测和 QUIC 走的都是这条路，泄漏的是真实公网
+/// 地址，而且没有任何报错。
+///
+/// 分享链接（vless:// vmess:// 等）普遍不带 udp 参数，只有 Clash YAML 格式的
+/// 订阅才会写，所以这里统一补 true。服务端真的不支持 UDP 时结果是拨号失败，
+/// 而不是静默直连——这正是我们要的失败方式。
+///
+/// 不在此列的两类：hysteria/hysteria2/tuic/shadowquic 本身就是 UDP 协议，内核
+/// 直接把 udp 置 true，不看这个键；http/ssh 恒为 false，补了也没用。
+const udpOptionProxyTypes = <String>{
+  'anytls',
+  'gost-relay',
+  'masque',
+  'mieru',
+  'openvpn',
+  'snell',
+  'socks5',
+  'ss',
+  'ssr',
+  'tailscale',
+  'trojan',
+  'trusttunnel',
+  'vless',
+  'vmess',
+  'wireguard',
+};
+
+/// 给 [config] 补上默认的 `udp: true`。
+///
+/// 只作用于 [udpOptionProxyTypes] 里的类型，且原本没写过这个键。在合并 overlay
+/// 之前调用，这样用户显式设的 `udp: false` 和显式删除都仍然生效。
+void applyDefaultUdp(Map<String, dynamic> config) {
+  if (config.containsKey('udp')) return;
+  final type = config['type']?.toString().trim().toLowerCase();
+  if (type == null || !udpOptionProxyTypes.contains(type)) return;
+  config['udp'] = true;
+}
+
 Map<String, dynamic> effectiveNodeConfig(ProxyNodeRecord record) {
   final source = record.sourceSnapshot == null
       ? <String, dynamic>{...record.config}
       : deepCopyMap(record.sourceSnapshot!);
+  applyDefaultUdp(source);
   final merged = deepMergeNode(source, record.overlay);
   final remove = record.overlay['remove'];
   if (remove is Iterable) {
@@ -193,6 +238,7 @@ Map<String, dynamic> effectiveStoredNodeConfig(stored.ProxyNode node) {
   final base = snapshot == null
       ? _asObjectMap(node.config)
       : _asObjectMap(snapshot);
+  applyDefaultUdp(base);
   final merged = deepMergeNode(base, _asObjectMap(node.overlaySet));
   for (final path in node.overlayRemove) {
     _removePath(merged, path);

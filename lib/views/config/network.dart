@@ -378,7 +378,11 @@ class NetworkListView extends StatelessWidget {
         title: appLocalizations.options,
         items: [
           if (system.isDesktop) const TUNItem(),
-          if (system.isDesktop) const TunStrictRouteItem(),
+          // strict-route 只有 Linux 和 Windows 有实现：sing-tun 在 tun_linux.go
+          // 里加 unreachable 规则、在 tun_windows.go 里装 WFP 过滤，而
+          // tun_darwin.go 从头到尾没有读过这个字段。在 macOS 上摆出这个开关
+          // 等于向用户承诺一个并不存在的防护。
+          if (system.isWindows || system.isLinux) const TunStrictRouteItem(),
           if (system.isDesktop) const TunIpv6Item(),
           if (system.isMacOS) const AutoSetSystemDnsItem(),
           const TunStackItem(),

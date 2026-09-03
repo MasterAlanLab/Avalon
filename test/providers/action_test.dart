@@ -593,6 +593,39 @@ void main() {
 
       expect(container.read(autoSetSystemDnsStateProvider).a, isFalse);
     });
+
+    test('turns the tun switch off when authorization fails', () async {
+      late _AuthorizationSetupAction setupAction;
+      final container = ProviderContainer(
+        overrides: [
+          setupActionProvider.overrideWith(() {
+            setupAction = _AuthorizationSetupAction([AuthorizeCode.error]);
+            return setupAction;
+          }),
+        ],
+      );
+      addTearDown(container.dispose);
+      container
+          .read(patchClashConfigProvider.notifier)
+          .update((state) => state.copyWith.tun(enable: true));
+      container.read(setupActionProvider);
+
+      await setupAction.requestAdmin(true);
+
+      // 内核收到的是 tun.enable=false，界面上的开关不能还亮着。
+      expect(container.read(patchClashConfigProvider).tun.enable, isFalse);
+
+      // 再打开一次：这个生命周期内不重复弹授权，但开关同样要被关回去，不能停在
+      // 一个和内核配置矛盾的状态上。
+      container
+          .read(patchClashConfigProvider.notifier)
+          .update((state) => state.copyWith.tun(enable: true));
+
+      await setupAction.requestAdmin(true);
+
+      expect(setupAction.authorizationRequestCount, 1);
+      expect(container.read(patchClashConfigProvider).tun.enable, isFalse);
+    });
   });
 }
 

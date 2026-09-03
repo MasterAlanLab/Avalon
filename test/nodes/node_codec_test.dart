@@ -22,6 +22,41 @@ void main() {
       expect(uri, contains('pbk=PUBLIC_KEY'));
     });
 
+    // 分享链接几乎从不带 udp 参数，而内核缺这个键时按不支持 UDP 处理：规则命中
+    // 后会被跳过，最终回落到 DIRECT，UDP 带着真实地址直连出去。
+    test('defaults udp to true for share links that omit it', () {
+      final vless = NodeCodecRegistry().parse(
+        'vless://UUID@HOST:443?encryption=none&security=reality&sni=SNI&pbk=PUBLIC_KEY&sid=SHORT_ID&type=tcp#NODE',
+      );
+      expect(vless.config['udp'], isTrue);
+
+      final trojan = NodeCodecRegistry().parse(
+        'trojan://PASSWORD@HOST:443?sni=SNI#NODE',
+      );
+      expect(trojan.config['udp'], isTrue);
+
+      final socks = NodeCodecRegistry().parse('socks5://HOST:1080#NODE');
+      expect(socks.config['type'], 'socks5');
+      expect(socks.config['udp'], isTrue);
+    });
+
+    test('keeps an explicit udp=false from the share link', () {
+      final draft = NodeCodecRegistry().parse(
+        'vless://UUID@HOST:443?encryption=none&type=tcp&udp=false#NODE',
+      );
+      expect(draft.config['udp'], isFalse);
+    });
+
+    // hysteria2/tuic 本身就是 UDP 协议，内核直接把 udp 置 true，配置里没有这个
+    // 键；补上去只会让节点编辑器显示一个内核根本不看的字段。
+    test('leaves udp unset for protocols the core does not gate on it', () {
+      final hysteria2 = NodeCodecRegistry().parse(
+        'hysteria2://PASSWORD@HOST:443?sni=SNI#NODE',
+      );
+      expect(hysteria2.config['type'], 'hysteria2');
+      expect(hysteria2.config.containsKey('udp'), isFalse);
+    });
+
     test('normalizes copied escaped VLESS links', () {
       final draft = NodeCodecRegistry().parse(
         r'vless\://00000000-0000-4000-8000-000000000001\@192.0.2.1:443?encryption=none\&amp;flow=xtls-rprx-vision\&security=reality\&sni=example.com\&fp=chrome\&pbk=AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA\&sid=0123456789abcdef\&type=tcp\&headerType=none#test-reality',

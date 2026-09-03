@@ -100,9 +100,135 @@ void main() {
         );
 
     expect(artifact.isValid, isTrue);
+    // udp 是补齐的：订阅直接带过来的 proxies 不经过节点库，省略 udp 的订阅会和
+    // 分享链接导入的节点一样掉进 DIRECT 回落。
     expect(artifact.config['proxies'], [
-      {'name': 'Map node', 'type': 'socks5', 'server': 'HOST', 'port': 1080},
+      {
+        'name': 'Map node',
+        'type': 'socks5',
+        'server': 'HOST',
+        'port': 1080,
+        'udp': true,
+      },
     ]);
+  });
+
+  test('leaves an explicit udp flag on profile proxies alone', () async {
+    final artifact =
+        await ProfileEffectiveConfigService(
+          store: store,
+          nodeStorePath: Directory.systemTemp.path,
+        ).assemble(
+          profileId: 1,
+          profileConfig: const {
+            'proxies': [
+              {
+                'name': 'Opted out',
+                'type': 'socks5',
+                'server': 'HOST',
+                'port': 1080,
+                'udp': false,
+              },
+              {
+                'name': 'Native',
+                'type': 'hysteria2',
+                'server': 'HOST',
+                'port': 443,
+                'password': 'PASSWORD',
+              },
+            ],
+          },
+        );
+
+    expect(artifact.isValid, isTrue);
+    final proxies = {
+      for (final proxy in artifact.config['proxies'] as List)
+        (proxy as Map)['name']: proxy,
+    };
+    expect(proxies['Opted out']!['udp'], isFalse);
+    expect(proxies['Native']!.containsKey('udp'), isFalse);
+  });
+
+  // 内核在配置缺 `udp` 时按不支持 UDP 处理，规则命中后会被跳过并回落到 DIRECT，
+  // UDP 就带着真实地址从物理网卡直连出去。存量节点（分享链接导入时还没有补齐
+  // 默认值的那些）只能靠生成阶段兜住。
+  test('fills in udp for stored nodes that omit it', () async {
+    const profile = Profile(
+      id: 1,
+      label: 'Profile',
+      autoUpdateDuration: Duration.zero,
+    );
+    const gated = ProxyNode(
+      id: 100,
+      displayName: 'Gated',
+      type: 'vless',
+      config: {
+        'name': 'Gated',
+        'type': 'vless',
+        'server': 'HOST',
+        'port': 443,
+        'uuid': 'UUID',
+      },
+      fingerprint: 'gated',
+    );
+    const optedOut = ProxyNode(
+      id: 101,
+      displayName: 'OptedOut',
+      type: 'vless',
+      config: {
+        'name': 'OptedOut',
+        'type': 'vless',
+        'server': 'HOST',
+        'port': 443,
+        'uuid': 'UUID',
+        'udp': false,
+      },
+      fingerprint: 'opted-out',
+    );
+    const native = ProxyNode(
+      id: 102,
+      displayName: 'Native',
+      type: 'hysteria2',
+      config: {
+        'name': 'Native',
+        'type': 'hysteria2',
+        'server': 'HOST',
+        'port': 443,
+        'password': 'PASSWORD',
+      },
+      fingerprint: 'native',
+    );
+    await store.profilesDao.putAll([profile.toCompanion()]);
+    await store.restore(
+      const [],
+      const [],
+      const [],
+      const [],
+      const [],
+      proxyNodes: const [gated, optedOut, native],
+      proxyNodeBindings: const [
+        ProxyNodeBinding(profileId: 1, nodeId: 100),
+        ProxyNodeBinding(profileId: 1, nodeId: 101),
+        ProxyNodeBinding(profileId: 1, nodeId: 102),
+      ],
+    );
+
+    final artifact =
+        await ProfileEffectiveConfigService(
+          store: store,
+          nodeStorePath: Directory.systemTemp.path,
+        ).assemble(profileId: 1, profileConfig: const {'proxies': []});
+
+    expect(artifact.isValid, isTrue);
+    final proxies = {
+      for (final proxy in artifact.config['proxies'] as List)
+        (proxy as Map)['name']: proxy,
+    };
+    expect(proxies['Gated']!['udp'], isTrue);
+    // 用户显式关掉的仍然是关掉的。
+    expect(proxies['OptedOut']!['udp'], isFalse);
+    // hysteria2 的 UDP 能力不看这个键，别塞一个内核不读的字段进去。
+    expect(proxies['Native']!.containsKey('udp'), isFalse);
   });
 
   test('reports missing assets only when a node is used', () async {

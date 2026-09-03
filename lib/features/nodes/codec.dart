@@ -542,6 +542,9 @@ void _commonFields(Map<String, dynamic> config, Uri uri) {
     boolKeys: {'udp', 'tfo', 'mptcp'},
     stringKeys: {'ip-version', 'interface-name', 'dialer-proxy'},
   );
+  // 分享链接极少带 udp 参数，缺了内核就按不支持 UDP 处理并回落到直连。写进配置
+  // 而不是只靠生成时兜底，是为了让节点编辑器里能看见、导出分享链接时能带上。
+  applyDefaultUdp(config);
 }
 
 void _appendCommonQuery(

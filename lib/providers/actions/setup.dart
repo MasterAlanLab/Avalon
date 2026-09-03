@@ -558,6 +558,11 @@ class SetupAction extends _$SetupAction {
     }
     final authorizationState = ref.read(authorizedTunEnableProvider);
     if (authorizationState != TunAuthorizationState.none) {
+      // 本次生命周期里已经问过了，不再重复弹授权。但如果那次是失败的，开关不能
+      // 停在开着的状态上：内核收到的一直是 tun.enable=false。
+      if (authorizationState == TunAuthorizationState.unauthorized) {
+        _disableTunSwitch();
+      }
       return true;
     }
 
@@ -576,8 +581,30 @@ class SetupAction extends _$SetupAction {
         authorizationNotifier.value = TunAuthorizationState.authorized;
         return true;
       case AuthorizeCode.error:
+        // 授权失败后授权状态停在 unauthorized，_getEffectiveTunEnable 会把
+        // tun.enable 改写成 false 下发给内核。开关如果还亮着，用户会以为流量走了
+        // 虚拟网卡，实际只有系统代理在跑，UDP 全部裸奔——而这个状态从界面上完全
+        // 观测不到。把开关关回去，让它和内核拿到的配置一致。
+        commonPrint.log(
+          'tun authorization failed, falling back to system proxy only',
+          logLevel: LogLevel.error,
+        );
+        _disableTunSwitch();
         return true;
     }
+  }
+
+  /// 把 TUN 开关关回去，使界面与内核实际拿到的 `tun.enable` 一致。
+  ///
+  /// 已经是关闭状态时不写入，避免多触发一次配置下发。开关变化会再走一遍
+  /// updateConfig，那一遍 `enableTun` 是 false，[requestAdmin] 第一行就返回，
+  /// 不会打转。
+  void _disableTunSwitch() {
+    final notifier = ref.read(patchClashConfigProvider.notifier);
+    if (!ref.read(patchClashConfigProvider).tun.enable) {
+      return;
+    }
+    notifier.update((state) => state.copyWith.tun(enable: false));
   }
 
   Future<_SetupTaskResult> _setupConfig({

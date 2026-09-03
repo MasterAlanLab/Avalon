@@ -377,8 +377,10 @@ class DialerChainCompiler {
       'tuic',
       'wireguard',
     }.contains(type);
+    // 这里不再看 `udp`：applyDefaultUdp 之后它对绝大多数类型恒为 true，再拿它当
+    // 信号会让每一条多跳链路都挂上这条警告。真正需要提醒的是「UDP 是这一跳的
+    // 传输本身」（hasUdpTransport）、UoT，以及显式关掉 UDP 的情况。
     final explicitUdp =
-        _isTrue(config['udp']) ||
         _isTrue(config['udp-over-tcp']) ||
         _isTrue(config['udp_over_tcp']) ||
         config['network']?.toString().toLowerCase() == 'udp';

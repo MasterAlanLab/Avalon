@@ -280,4 +280,28 @@ void main() {
       ]),
     );
   });
+
+  // applyDefaultUdp 之后 `udp: true` 是绝大多数节点的默认值，不再是一个信号。
+  // 拿它当警告条件会让每一条多跳链路都挂上 udp-chain-compatibility。
+  test('a plain relay hop with the default udp flag raises no warning', () {
+    final result = DialerChainCompiler().compile(
+      ChainCompileRequest(
+        name: 'route',
+        hops: const [
+          ChainHop(target: ChainTarget.node('entry')),
+          ChainHop(target: ChainTarget.node('relay')),
+        ],
+        nodes: {
+          'entry': {..._node('ENTRY', type: 'vless'), 'udp': true},
+          'relay': {..._node('RELAY', type: 'vless'), 'udp': true},
+        },
+      ),
+    );
+
+    expect(result.isValid, isTrue);
+    expect(
+      result.diagnostics.map((item) => item.code),
+      isNot(contains('udp-chain-compatibility')),
+    );
+  });
 }

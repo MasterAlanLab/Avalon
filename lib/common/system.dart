@@ -60,7 +60,9 @@ class System {
   }
 
   Future<bool> checkIsAdmin() async {
-    final corePath = appPath.corePath.replaceAll(' ', '\\\\ ');
+    // 不要转义空格：下面是 Process.run 直接传 argv，不过 shell，转义后 stat 会
+    // 拿到一个带反斜杠的路径而找不到文件，于是被误判成未授权。
+    final corePath = appPath.corePath;
     if (system.isWindows) {
       return await windowsHelperClient.readiness() ==
           WindowsHelperReadiness.ready;
