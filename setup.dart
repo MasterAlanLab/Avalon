@@ -115,6 +115,25 @@ Map<String, String> createBuildEnvironment(String env) {
   return {'APP_ENV': env};
 }
 
+/// Environment overrides for the `flutter_distributor` child process.
+///
+/// [hdiutilShimDir] is prepended to [parentPath] so appdmg resolves the retrying
+/// `hdiutil` shim instead of the system one while building the macOS dmg.
+Map<String, String> createPackagingEnvironment({
+  String? androidArch,
+  String? hdiutilShimDir,
+  String? parentPath,
+}) {
+  return {
+    if (androidArch != null) 'ANDROID_ARCH': androidArch,
+    if (hdiutilShimDir != null)
+      'PATH': [
+        hdiutilShimDir,
+        if (parentPath != null && parentPath.isNotEmpty) parentPath,
+      ].join(':'),
+  };
+}
+
 String _getTargets(String platform, String arch, String? customTargets) {
   if (customTargets != null) return customTargets;
   if (platform == 'linux' && arch == 'amd64') return 'deb,appimage,rpm';
@@ -172,6 +191,10 @@ Future<int> _package(
     return activateResult.exitCode;
   }
 
+  final hdiutilShimDir = platform == 'macos'
+      ? await _prepareHdiutilShim(rootDir)
+      : null;
+
   final process = await Process.start(
     'flutter_distributor',
     [
@@ -188,7 +211,11 @@ Future<int> _package(
       ...descriptionArgs,
     ],
     includeParentEnvironment: true,
-    environment: {'ANDROID_ARCH': ?androidArch},
+    environment: createPackagingEnvironment(
+      androidArch: androidArch,
+      hdiutilShimDir: hdiutilShimDir,
+      parentPath: Platform.environment['PATH'],
+    ),
     runInShell: Platform.isWindows,
   );
 
@@ -230,6 +257,24 @@ Future<int> _ensureDependencies(String platform, String arch) async {
     default:
       return 0;
   }
+}
+
+/// Makes the bundled `hdiutil` shim executable and returns the directory to put
+/// in front of the packaging PATH, or null when it is missing.
+Future<String?> _prepareHdiutilShim(String rootDir) async {
+  final shimDir = p.join(rootDir, 'tool', 'macos_hdiutil_shim');
+  final shim = File(p.join(shimDir, 'hdiutil'));
+  if (!shim.existsSync()) {
+    stderr.writeln('hdiutil shim not found at ${shim.path}, skipping.');
+    return null;
+  }
+  final result = await Process.run('chmod', ['+x', shim.path]);
+  if (result.exitCode != 0) {
+    stderr.write(result.stderr);
+    stderr.writeln('Could not make the hdiutil shim executable, skipping.');
+    return null;
+  }
+  return shimDir;
 }
 
 Future<int> _ensureMacosDependencies() async {

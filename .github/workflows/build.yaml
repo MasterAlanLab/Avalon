@@ -22,6 +22,10 @@ jobs:
         shell: bash
         run: bash .github/scripts/generate_release_notes_test.sh
 
+      - name: Test macOS hdiutil shim
+        shell: bash
+        run: bash tool/macos_hdiutil_shim/hdiutil_test.sh
+
       - name: Setup Flutter
         id: setup-flutter
         continue-on-error: true

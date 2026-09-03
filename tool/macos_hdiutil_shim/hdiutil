@@ -1,0 +1,65 @@
+#!/bin/bash
+# PATH shim prepended by setup.dart while packaging the macOS dmg target.
+#
+# flutter_distributor packages the dmg with appdmg, and appdmg aborts the whole
+# run when `hdiutil detach <mountpoint>` of its temporary volume exits non-zero.
+# On CI runners that detach is flaky: the volume is still held by a background
+# process ("Resource busy"), or it has already gone away by the time the detach
+# runs ("No such file or directory"). Neither case means the image is bad, so
+# retry the detach and treat an already-unmounted target as success.
+#
+# Every other hdiutil invocation is passed straight through.
+set -u
+
+# AVALON_REAL_HDIUTIL and AVALON_HDIUTIL_RETRY_DELAY are only overridden by
+# hdiutil_test.sh.
+real_hdiutil="${AVALON_REAL_HDIUTIL:-/usr/bin/hdiutil}"
+retry_delay="${AVALON_HDIUTIL_RETRY_DELAY:-3}"
+
+if [ "${1:-}" != "detach" ]; then
+  exec "$real_hdiutil" "$@"
+fi
+
+# appdmg calls `hdiutil detach <mountpoint>`; take the first non-flag operand.
+target=''
+for arg in "${@:2}"; do
+  case "$arg" in
+    -*) ;;
+    *)
+      if [ -z "$target" ]; then
+        target="$arg"
+      fi
+      ;;
+  esac
+done
+
+already_detached() {
+  [ -n "$target" ] && [ ! -e "$target" ]
+}
+
+for attempt in 1 2 3 4 5; do
+  if already_detached; then
+    exit 0
+  fi
+
+  if [ "$attempt" -le 2 ]; then
+    if "$real_hdiutil" "$@"; then
+      exit 0
+    fi
+  else
+    # The volume stayed busy across the graceful attempts. Flush pending writes
+    # before forcing it out so the image content is still complete.
+    sync
+    if "$real_hdiutil" "$@" -force; then
+      exit 0
+    fi
+  fi
+
+  sleep "$retry_delay"
+done
+
+if already_detached; then
+  exit 0
+fi
+
+exit 1
