@@ -232,6 +232,64 @@ void main() {
       expect((opts['headers'] as Map)['Host'], 'example.com');
     });
 
+    test('routes XHTTP transport fields to xhttp-opts', () {
+      final registry = NodeCodecRegistry();
+      final draft = registry.parse(
+        'vless://11111111-2222-3333-4444-555555555555@HOST:443'
+        '?encryption=none&security=reality&sni=www.example.org&fp=chrome'
+        '&pbk=PBK&sid=0123'
+        '&type=xhttp&path=%2Fmypath&mode=packet-up&host=cdn.example.com'
+        '#XHTTP',
+      );
+      expect(draft.issues.where((issue) => issue.isError), isEmpty);
+      expect(draft.config['network'], 'xhttp');
+      // 内核只从 xhttp-opts 读 XHTTP 参数，塞进 ws-opts 会丢 path/mode。
+      expect(draft.config.containsKey('ws-opts'), isFalse);
+      expect(draft.config['xhttp-opts'], {
+        'path': '/mypath',
+        'host': 'cdn.example.com',
+        'mode': 'packet-up',
+      });
+
+      final round = registry.parse(const VlessCodec().exportUri(draft.config)!);
+      expect(round.issues.where((issue) => issue.isError), isEmpty);
+      expect(round.config['network'], 'xhttp');
+      expect(round.config['xhttp-opts'], draft.config['xhttp-opts']);
+    });
+
+    test('routes VMess XHTTP transport fields to xhttp-opts', () {
+      final registry = NodeCodecRegistry();
+      final payload = base64Url.encode(
+        utf8.encode(
+          jsonEncode({
+            'v': '2',
+            'ps': 'XHTTP',
+            'add': 'HOST',
+            'port': 443,
+            'id': '11111111-2222-3333-4444-555555555555',
+            'aid': 0,
+            'net': 'xhttp',
+            'tls': 'tls',
+            'host': 'cdn.example.com',
+            'path': '/mypath',
+            'mode': 'packet-up',
+          }),
+        ),
+      );
+      final draft = registry.parse('vmess://$payload');
+      expect(draft.issues.where((issue) => issue.isError), isEmpty);
+      expect(draft.config['network'], 'xhttp');
+      expect(draft.config.containsKey('ws-opts'), isFalse);
+      expect(draft.config['xhttp-opts'], {
+        'path': '/mypath',
+        'host': 'cdn.example.com',
+        'mode': 'packet-up',
+      });
+
+      final round = registry.parse(const VmessCodec().exportUri(draft.config)!);
+      expect(round.config['xhttp-opts'], draft.config['xhttp-opts']);
+    });
+
     test('decodes base64 userinfo for SOCKS links', () {
       final registry = NodeCodecRegistry();
       // base64('test:test') — the form many share links use.

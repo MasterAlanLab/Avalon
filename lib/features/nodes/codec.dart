@@ -292,11 +292,22 @@ void _transportFields(
   if (network != null && network.isNotEmpty) config['network'] = network;
   final path = uri.queryParameters['path'];
   final host = uri.queryParameters['host'] ?? uri.queryParameters['wsHost'];
-  if (path != null || host != null) {
+  final mode = uri.queryParameters['mode'];
+  if (network?.toLowerCase() == 'xhttp') {
+    // Mihomo reads XHTTP transport settings from `xhttp-opts` only
+    // (XHTTPOptions in adapter/outbound/vless.go), and its `host` is a plain
+    // field rather than a header. Reusing `ws-opts` drops `path` and `mode` and
+    // lets `host` fall back to the TLS servername, which breaks the node.
+    final xhttpOpts = <String, dynamic>{
+      'path': ?path,
+      'host': ?host,
+      'mode': ?mode,
+    };
+    if (xhttpOpts.isNotEmpty) config['xhttp-opts'] = xhttpOpts;
+  } else if (path != null || host != null) {
     final target = switch (network?.toLowerCase()) {
       'http' => 'http-opts',
       'h2' => 'h2-opts',
-      'ws' || 'httpupgrade' || 'xhttp' => 'ws-opts',
       _ => 'ws-opts',
     };
     // Mihomo's shapes differ per transport: HTTPOptions takes `path` as a list
@@ -434,6 +445,12 @@ void _appendTlsTransportQuery(
     if (headers is Map && headers['Host'] != null) {
       query['host'] = headers['Host'].toString();
     }
+  }
+  final xhttp = config['xhttp-opts'];
+  if (xhttp is Map) {
+    if (xhttp['path'] != null) query['path'] = xhttp['path'].toString();
+    if (xhttp['host'] != null) query['host'] = xhttp['host'].toString();
+    if (xhttp['mode'] != null) query['mode'] = xhttp['mode'].toString();
   }
   final grpc = config['grpc-opts'];
   if (grpc is Map && grpc['grpc-service-name'] != null) {
@@ -851,9 +868,16 @@ class VmessCodec implements NodeCodec {
     final networkType = network?.toString().toLowerCase();
     final host = map['host'];
     final path = map['path'];
-    if (networkType == 'ws' ||
-        networkType == 'httpupgrade' ||
-        networkType == 'xhttp') {
+    final mode = map['mode'];
+    if (networkType == 'xhttp') {
+      // See _transportFields: mihomo takes XHTTP settings from `xhttp-opts`.
+      final xhttpOpts = <String, dynamic>{
+        'path': ?path,
+        'host': ?host,
+        'mode': ?mode,
+      };
+      if (xhttpOpts.isNotEmpty) config['xhttp-opts'] = xhttpOpts;
+    } else if (networkType == 'ws' || networkType == 'httpupgrade') {
       config['ws-opts'] = <String, dynamic>{
         if (path != null) 'path': path,
         if (host != null) 'headers': <String, dynamic>{'Host': host},
@@ -1034,6 +1058,15 @@ class VmessCodec implements NodeCodec {
       if (config['grpc-opts'] is Map &&
           (config['grpc-opts'] as Map)['grpc-service-name'] != null)
         'path': (config['grpc-opts'] as Map)['grpc-service-name'],
+      if (config['xhttp-opts'] is Map &&
+          (config['xhttp-opts'] as Map)['path'] != null)
+        'path': (config['xhttp-opts'] as Map)['path'],
+      if (config['xhttp-opts'] is Map &&
+          (config['xhttp-opts'] as Map)['host'] != null)
+        'host': (config['xhttp-opts'] as Map)['host'],
+      if (config['xhttp-opts'] is Map &&
+          (config['xhttp-opts'] as Map)['mode'] != null)
+        'mode': (config['xhttp-opts'] as Map)['mode'],
       if (quic is Map && quic['security'] != null)
         'quicSecurity': quic['security'],
       if (quic is Map && quic['key'] != null) 'key': quic['key'],
