@@ -36,13 +36,6 @@ class ApplicationState extends ConsumerState<Application> {
     },
   );
 
-  ColorScheme _getAppColorScheme({
-    required Brightness brightness,
-    int? primaryColor,
-  }) {
-    return ref.read(genColorSchemeProvider(brightness));
-  }
-
   @override
   void initState() {
     super.initState();
@@ -179,9 +172,7 @@ class ApplicationState extends ConsumerState<Application> {
                 },
                 child: _buildApp(
                   child: _buildPlatformState(
-                    child: _buildState(
-                      child: _buildPlatformApp(child: child!),
-                    ),
+                    child: _buildState(child: _buildPlatformApp(child: child!)),
                   ),
                 ),
               ),
@@ -195,18 +186,14 @@ class ApplicationState extends ConsumerState<Application> {
           theme: ThemeData(
             useMaterial3: true,
             pageTransitionsTheme: _pageTransitionsTheme,
-            colorScheme: _getAppColorScheme(
-              brightness: Brightness.light,
-              primaryColor: themeProps.primaryColor,
-            ),
+            colorScheme: ref.read(genColorSchemeProvider(Brightness.light)),
           ),
           darkTheme: ThemeData(
             useMaterial3: true,
             pageTransitionsTheme: _pageTransitionsTheme,
-            colorScheme: _getAppColorScheme(
-              brightness: Brightness.dark,
-              primaryColor: themeProps.primaryColor,
-            ).toPureBlack(themeProps.pureBlack),
+            colorScheme: ref
+                .read(genColorSchemeProvider(Brightness.dark))
+                .toPureBlack(themeProps.pureBlack),
           ),
           home: child!,
         );

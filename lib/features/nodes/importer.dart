@@ -4,8 +4,6 @@ import 'codec.dart';
 import 'node.dart';
 import 'raw.dart';
 
-typedef NodeImporter = NodeInputDispatcher;
-
 class NodeInputDispatcher {
   NodeInputDispatcher({NodeCodecRegistry? registry, RawMihomoCodec? rawCodec})
     : registry = registry ?? NodeCodecRegistry(),
@@ -66,9 +64,6 @@ class NodeInputDispatcher {
       kind: _looksJson(text) ? NodeInputKind.json : NodeInputKind.yaml,
     );
   }
-
-  NodeImportResult importUri(String uri, {String? source}) =>
-      importText(uri, source: source);
 
   List<NodeDraft> parseRaw(Object value, {String? source}) =>
       rawCodec.parse(value, source: source);

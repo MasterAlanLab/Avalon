@@ -110,13 +110,9 @@ extension LogLevelExt on LogLevel {
   }
 }
 
-enum TransportProtocol { udp, tcp }
-
 enum TrafficUnit { B, KB, MB, GB, TB }
 
 enum NavigationItemMode { mobile, desktop, more }
-
-enum Network { tcp, udp }
 
 enum ProxiesSortType { none, delay, name }
 
@@ -432,8 +428,6 @@ extension RuleActionExt on RuleAction {
   }
 }
 
-enum OverrideRuleType { override, added }
-
 enum OverwriteType { standard, script, custom }
 
 enum RuleTarget {
@@ -445,8 +439,6 @@ enum RuleTarget {
 }
 
 enum RestoreStrategy { compatible, override }
-
-enum CacheTag { logs, rules, requests, proxiesList }
 
 enum Language { yaml, javaScript, json }
 

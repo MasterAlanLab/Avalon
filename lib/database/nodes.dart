@@ -98,10 +98,6 @@ class ProxyNodesDao extends DatabaseAccessor<Database>
         .getSingleOrNull();
   }
 
-  Future<ProxyNode?> getByFingerprint(String fingerprint) async {
-    return (await getAllByFingerprint(fingerprint)).firstOrNull;
-  }
-
   Future<List<ProxyNode>> getAllByFingerprint(String fingerprint) async {
     final stmt = select(proxyNodes)
       ..where((t) => t.fingerprint.equals(fingerprint))

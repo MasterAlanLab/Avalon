@@ -8,7 +8,6 @@ import 'package:avalon/common/common.dart';
 import 'package:avalon/enum/enum.dart';
 import 'package:avalon/models/models.dart';
 import 'package:avalon/state.dart';
-import 'package:flutter/cupertino.dart';
 
 class Request {
   late final Dio dio;
@@ -56,17 +55,6 @@ class Request {
       options: Options(responseType: ResponseType.plain),
     );
     return response;
-  }
-
-  Future<MemoryImage?> getImage(String url) async {
-    if (url.isEmpty) return null;
-    final response = await dio.get<Uint8List>(
-      url,
-      options: Options(responseType: ResponseType.bytes),
-    );
-    final data = response.data;
-    if (data == null) return null;
-    return MemoryImage(data);
   }
 
   Future<Map<String, dynamic>?> checkForUpdate() async {

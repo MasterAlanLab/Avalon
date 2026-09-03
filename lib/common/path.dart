@@ -125,19 +125,9 @@ class AppPath {
     return join(path, '$fileName.js');
   }
 
-  Future<String> getIconsCacheDir() async {
-    final directory = await cacheDir.future;
-    return join(directory.path, 'icons');
-  }
-
   Future<String> getProvidersRootPath() async {
     final directory = await profilesPath;
     return join(directory, 'providers');
-  }
-
-  Future<String> getProvidersDirPath(String id) async {
-    final directory = await profilesPath;
-    return join(directory, 'providers', id);
   }
 
   Future<String> getProvidersFilePath(

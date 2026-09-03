@@ -55,17 +55,6 @@ class HiddenBarScrollBehavior extends BaseScrollBehavior {
   }
 }
 
-class ShowBarScrollBehavior extends BaseScrollBehavior {
-  @override
-  Widget buildScrollbar(
-    BuildContext context,
-    Widget child,
-    ScrollableDetails details,
-  ) {
-    return CommonScrollBar(controller: details.controller, child: child);
-  }
-}
-
 class NextClampingScrollPhysics extends ClampingScrollPhysics {
   const NextClampingScrollPhysics({super.parent});
 

@@ -70,8 +70,6 @@ class ChainPath {
 
   final List<String> targets;
   final List<String> generatedNames;
-
-  String get terminalName => generatedNames.last;
 }
 
 class ChainGeneratedGroup {
@@ -106,11 +104,6 @@ class ChainCompileResult {
   final List<ChainDiagnostic> diagnostics;
 
   bool get isValid => diagnostics.every((item) => !item.isError);
-
-  Map<String, String> get generatedNameMap => {
-    for (final entry in generatedProxies.entries)
-      entry.key: entry.value['name']?.toString() ?? entry.key,
-  };
 }
 
 class DialerChainCompiler {
@@ -538,8 +531,6 @@ class ChainPreview {
   final Map<String, String> generatedNodeIds;
 
   bool get isValid => diagnostics.every((item) => !item.isError);
-
-  bool get hasWarnings => diagnostics.any((item) => !item.isError);
 }
 
 class EffectiveConfigAssembler {

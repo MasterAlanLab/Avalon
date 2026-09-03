@@ -151,26 +151,6 @@ class NodeLibraryService {
     ).safeDelete(recursive: true);
   }
 
-  Future<void> saveOverlay(
-    int nodeId, {
-    required Map<String, Object?> set,
-    required List<String> remove,
-  }) async {
-    final node = await get(nodeId);
-    if (node == null) return;
-    await store.proxyNodesDao.put(
-      node.copyWith(
-        overlaySet: _asObjectMap(set),
-        overlayRemove: List.unmodifiable(remove),
-        updatedAt: DateTime.now(),
-      ),
-    );
-    final updated = await get(nodeId);
-    if (updated != null) {
-      await _pruneAssets(nodeId, effectiveStoredNodeConfig(updated));
-    }
-  }
-
   Future<void> updateConfig(
     int nodeId,
     NodeDraft draft, {

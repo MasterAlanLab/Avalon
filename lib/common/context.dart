@@ -69,25 +69,6 @@ extension BuildContextExtension on BuildContext {
   TextTheme get textTheme => Theme.of(this).textTheme;
 
   AppLocalizations get appLocalizations => AppLocalizations.of(this);
-
-  T? findLastStateOfType<T extends State>() {
-    T? state;
-
-    void visitor(Element element) {
-      if (!element.mounted) {
-        return;
-      }
-      if (element is StatefulElement) {
-        if (element.state is T) {
-          state = element.state as T;
-        }
-      }
-      element.visitChildren(visitor);
-    }
-
-    visitor(this as Element);
-    return state;
-  }
 }
 
 class BackHandleInherited extends InheritedWidget {

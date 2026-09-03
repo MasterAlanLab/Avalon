@@ -14,8 +14,6 @@ import 'package:avalon/widgets/widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-typedef UpdatingMap = Map<String, bool>;
-
 class ProvidersView extends ConsumerStatefulWidget {
   const ProvidersView({super.key});
 

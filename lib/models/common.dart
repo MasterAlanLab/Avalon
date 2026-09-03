@@ -431,36 +431,6 @@ abstract class ColorSchemes with _$ColorSchemes {
   }) = _ColorSchemes;
 }
 
-extension ColorSchemesExt on ColorSchemes {
-  ColorScheme getColorSchemeForBrightness(
-    Brightness brightness,
-    DynamicSchemeVariant schemeVariant,
-  ) {
-    if (brightness == Brightness.dark) {
-      return darkColorScheme != null
-          ? ColorScheme.fromSeed(
-              seedColor: darkColorScheme!.primary,
-              brightness: Brightness.dark,
-              dynamicSchemeVariant: schemeVariant,
-            )
-          : ColorScheme.fromSeed(
-              seedColor: const Color(defaultPrimaryColor),
-              brightness: Brightness.dark,
-              dynamicSchemeVariant: schemeVariant,
-            );
-    }
-    return lightColorScheme != null
-        ? ColorScheme.fromSeed(
-            seedColor: lightColorScheme!.primary,
-            dynamicSchemeVariant: schemeVariant,
-          )
-        : ColorScheme.fromSeed(
-            seedColor: const Color(defaultPrimaryColor),
-            dynamicSchemeVariant: schemeVariant,
-          );
-  }
-}
-
 @freezed
 abstract class IpInfo with _$IpInfo {
   const factory IpInfo({required String ip, required String countryCode}) =
@@ -648,15 +618,6 @@ extension ScriptExt on Script {
       await file.create(recursive: true);
     }
     await file.writeAsString(content);
-    return copyWith(lastUpdateTime: DateTime.now());
-  }
-
-  Future<Script> saveWithPath(String copyPath) async {
-    final file = File(await path);
-    if (!await file.exists()) {
-      await file.create(recursive: true);
-    }
-    await File(copyPath).copy(copyPath);
     return copyWith(lastUpdateTime: DateTime.now());
   }
 }

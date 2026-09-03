@@ -28,7 +28,6 @@ class GlobalState {
   final navigatorKey = GlobalKey<NavigatorState>();
   late final String appEnv;
   late final PackageInfo packageInfo;
-  Function? updateCurrentDelayDebounce;
   late Measure measure;
   late CommonTheme theme;
   Color accentColor = const Color(defaultPrimaryColor);

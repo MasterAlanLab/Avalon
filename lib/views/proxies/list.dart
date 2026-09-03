@@ -12,8 +12,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'card.dart';
 import 'common.dart';
 
-typedef GroupNameProxiesMap = Map<String, List<Proxy>>;
-
 class ProxiesListView extends StatefulWidget {
   const ProxiesListView({super.key});
 

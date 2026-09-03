@@ -69,23 +69,4 @@ extension OffsetExt on Offset {
   double getMainAxisOffset(Axis direction) {
     return direction == Axis.vertical ? dy : dx;
   }
-
-  bool less(Offset offset) {
-    if (dy < offset.dy) {
-      return true;
-    }
-    if (dy == offset.dy && dx < offset.dx) {
-      return true;
-    }
-    return false;
-  }
-}
-
-extension RectExt on Rect {
-  bool doRectIntersect(Rect rect) {
-    return left < rect.right &&
-        right > rect.left &&
-        top < rect.bottom &&
-        bottom > rect.top;
-  }
 }

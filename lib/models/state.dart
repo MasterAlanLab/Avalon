@@ -1,4 +1,3 @@
-import 'package:collection/collection.dart';
 import 'package:avalon/enum/enum.dart';
 import 'package:flutter/material.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
@@ -224,24 +223,6 @@ extension PackageListSelectorStateExt on PackageListSelectorState {
               (isFilterNonInternetApp ? item.internet == true : true),
         )
         .toList();
-  }
-
-  List<Package> getSortList(List<String> selectedList) {
-    final sort = accessControlProps.sort;
-
-    return list.sorted((a, b) {
-      final isSelectA = selectedList.contains(a.packageName);
-      final isSelectB = selectedList.contains(b.packageName);
-
-      if (isSelectA != isSelectB) {
-        return isSelectA ? -1 : 1;
-      }
-      return switch (sort) {
-        AccessSortType.none => 0,
-        AccessSortType.name => a.label.compareTo(b.label),
-        AccessSortType.time => b.lastUpdateTime.compareTo(a.lastUpdateTime),
-      };
-    });
   }
 }
 

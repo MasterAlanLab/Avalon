@@ -46,22 +46,6 @@ class NodeDraft {
 
   String get name => config['name']?.toString() ?? '';
   String get type => config['type']?.toString().toLowerCase() ?? '';
-
-  stored.ProxyNode toStored({required int id, stored.ProxyNodeSource? source}) {
-    final now = DateTime.now();
-    return stored.ProxyNode(
-      id: id,
-      displayName: name.isEmpty ? '$type node' : name,
-      type: type,
-      config: _asObjectMap(config),
-      sourceSnapshot: source == null ? null : _asObjectMap(config),
-      source: source,
-      metadata: _asObjectMap(metadata),
-      fingerprint: fingerprint,
-      createdAt: now,
-      updatedAt: now,
-    );
-  }
 }
 
 class ProxyNodeRecord {

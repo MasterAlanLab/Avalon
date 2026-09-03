@@ -9,8 +9,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 
-typedef OnSelected = void Function(int index);
-
 class HomePage extends ConsumerWidget {
   const HomePage({super.key});
 

@@ -24,7 +24,6 @@ class ProfilesView extends StatefulWidget {
 
 class _ProfilesViewState extends State<ProfilesView>
     with SingleTickerProviderStateMixin {
-  Function? applyConfigDebounce;
   bool _isUpdating = false;
   late final TabController _tabController;
 

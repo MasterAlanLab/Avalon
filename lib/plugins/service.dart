@@ -1,6 +1,5 @@
 import 'dart:async';
 import 'dart:convert';
-import 'dart:isolate';
 
 import 'package:avalon/common/common.dart';
 import 'package:avalon/core/event.dart';
@@ -17,7 +16,6 @@ abstract mixin class ServiceListener {
 class Service {
   static Service? _instance;
   late MethodChannel methodChannel;
-  ReceivePort? receiver;
 
   final ObserverList<ServiceListener> _listeners =
       ObserverList<ServiceListener>();

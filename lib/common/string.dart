@@ -36,16 +36,6 @@ extension StringExtension on String {
     return substring(safeStart, safeEnd);
   }
 
-  List<int> get encodeUtf16LeWithBom {
-    final byteData = ByteData(length * 2);
-    final bom = [0xFF, 0xFE];
-    for (int i = 0; i < length; i++) {
-      final int charCode = codeUnitAt(i);
-      byteData.setUint16(i * 2, charCode, Endian.little);
-    }
-    return bom + byteData.buffer.asUint8List();
-  }
-
   Uint8List? get getBase64 {
     final regExp = RegExp(r'base64,(.*)');
     final match = regExp.firstMatch(this);

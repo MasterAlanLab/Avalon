@@ -179,22 +179,4 @@ void main() {
       expect('  hello  '.takeFirstValid([]), 'hello');
     });
   });
-
-  group('StringExtension.encodeUtf16LeWithBom', () {
-    test('starts with BOM', () {
-      final encoded = 'A'.encodeUtf16LeWithBom;
-      expect(encoded[0], 0xFF);
-      expect(encoded[1], 0xFE);
-    });
-
-    test('encodes ASCII correctly', () {
-      final encoded = 'AB'.encodeUtf16LeWithBom;
-      // BOM + 'A' (0x41 0x00) + 'B' (0x42 0x00)
-      expect(encoded.length, 2 + 4); // 2 BOM + 2 chars * 2 bytes
-      expect(encoded[2], 0x41);
-      expect(encoded[3], 0x00);
-      expect(encoded[4], 0x42);
-      expect(encoded[5], 0x00);
-    });
-  });
 }
