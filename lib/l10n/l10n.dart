@@ -309,6 +309,21 @@ class AppLocalizations {
     );
   }
 
+  /// `TUN IPv6`
+  String get tunIpv6 {
+    return Intl.message('TUN IPv6', name: 'tunIpv6', desc: '', args: []);
+  }
+
+  /// `Let the virtual adapter carry IPv6. Keeps IPv6 inside the tunnel, but direct traffic then depends on the host having a working IPv6 uplink`
+  String get tunIpv6Desc {
+    return Intl.message(
+      'Let the virtual adapter carry IPv6. Keeps IPv6 inside the tunnel, but direct traffic then depends on the host having a working IPv6 uplink',
+      name: 'tunIpv6Desc',
+      desc: '',
+      args: [],
+    );
+  }
+
   /// `Minimize on exit`
   String get minimizeOnExit {
     return Intl.message(

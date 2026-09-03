@@ -2058,7 +2058,7 @@ as bool?,
 /// @nodoc
 mixin _$Tun {
 
- bool get enable; String get device;@JsonKey(name: 'auto-route') bool get autoRoute;@JsonKey(name: 'strict-route') bool get strictRoute; TunStack get stack;@JsonKey(name: 'dns-hijack') List<String> get dnsHijack;@JsonKey(name: 'route-address') List<String> get routeAddress;@JsonKey(name: 'inet6-address') List<String> get inet6Address;
+ bool get enable; String get device;@JsonKey(name: 'auto-route') bool get autoRoute;@JsonKey(name: 'strict-route') bool get strictRoute; TunStack get stack;@JsonKey(name: 'dns-hijack') List<String> get dnsHijack;@JsonKey(name: 'route-address') List<String> get routeAddress; bool get ipv6;@JsonKey(name: 'inet6-address') List<String> get inet6Address;
 /// Create a copy of Tun
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -2071,16 +2071,16 @@ $TunCopyWith<Tun> get copyWith => _$TunCopyWithImpl<Tun>(this as Tun, _$identity
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is Tun&&(identical(other.enable, enable) || other.enable == enable)&&(identical(other.device, device) || other.device == device)&&(identical(other.autoRoute, autoRoute) || other.autoRoute == autoRoute)&&(identical(other.strictRoute, strictRoute) || other.strictRoute == strictRoute)&&(identical(other.stack, stack) || other.stack == stack)&&const DeepCollectionEquality().equals(other.dnsHijack, dnsHijack)&&const DeepCollectionEquality().equals(other.routeAddress, routeAddress)&&const DeepCollectionEquality().equals(other.inet6Address, inet6Address));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is Tun&&(identical(other.enable, enable) || other.enable == enable)&&(identical(other.device, device) || other.device == device)&&(identical(other.autoRoute, autoRoute) || other.autoRoute == autoRoute)&&(identical(other.strictRoute, strictRoute) || other.strictRoute == strictRoute)&&(identical(other.stack, stack) || other.stack == stack)&&const DeepCollectionEquality().equals(other.dnsHijack, dnsHijack)&&const DeepCollectionEquality().equals(other.routeAddress, routeAddress)&&(identical(other.ipv6, ipv6) || other.ipv6 == ipv6)&&const DeepCollectionEquality().equals(other.inet6Address, inet6Address));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,enable,device,autoRoute,strictRoute,stack,const DeepCollectionEquality().hash(dnsHijack),const DeepCollectionEquality().hash(routeAddress),const DeepCollectionEquality().hash(inet6Address));
+int get hashCode => Object.hash(runtimeType,enable,device,autoRoute,strictRoute,stack,const DeepCollectionEquality().hash(dnsHijack),const DeepCollectionEquality().hash(routeAddress),ipv6,const DeepCollectionEquality().hash(inet6Address));
 
 @override
 String toString() {
-  return 'Tun(enable: $enable, device: $device, autoRoute: $autoRoute, strictRoute: $strictRoute, stack: $stack, dnsHijack: $dnsHijack, routeAddress: $routeAddress, inet6Address: $inet6Address)';
+  return 'Tun(enable: $enable, device: $device, autoRoute: $autoRoute, strictRoute: $strictRoute, stack: $stack, dnsHijack: $dnsHijack, routeAddress: $routeAddress, ipv6: $ipv6, inet6Address: $inet6Address)';
 }
 
 
@@ -2091,7 +2091,7 @@ abstract mixin class $TunCopyWith<$Res>  {
   factory $TunCopyWith(Tun value, $Res Function(Tun) _then) = _$TunCopyWithImpl;
 @useResult
 $Res call({
- bool enable, String device,@JsonKey(name: 'auto-route') bool autoRoute,@JsonKey(name: 'strict-route') bool strictRoute, TunStack stack,@JsonKey(name: 'dns-hijack') List<String> dnsHijack,@JsonKey(name: 'route-address') List<String> routeAddress,@JsonKey(name: 'inet6-address') List<String> inet6Address
+ bool enable, String device,@JsonKey(name: 'auto-route') bool autoRoute,@JsonKey(name: 'strict-route') bool strictRoute, TunStack stack,@JsonKey(name: 'dns-hijack') List<String> dnsHijack,@JsonKey(name: 'route-address') List<String> routeAddress, bool ipv6,@JsonKey(name: 'inet6-address') List<String> inet6Address
 });
 
 
@@ -2108,7 +2108,7 @@ class _$TunCopyWithImpl<$Res>
 
 /// Create a copy of Tun
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? enable = null,Object? device = null,Object? autoRoute = null,Object? strictRoute = null,Object? stack = null,Object? dnsHijack = null,Object? routeAddress = null,Object? inet6Address = null,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? enable = null,Object? device = null,Object? autoRoute = null,Object? strictRoute = null,Object? stack = null,Object? dnsHijack = null,Object? routeAddress = null,Object? ipv6 = null,Object? inet6Address = null,}) {
   return _then(_self.copyWith(
 enable: null == enable ? _self.enable : enable // ignore: cast_nullable_to_non_nullable
 as bool,device: null == device ? _self.device : device // ignore: cast_nullable_to_non_nullable
@@ -2117,7 +2117,8 @@ as bool,strictRoute: null == strictRoute ? _self.strictRoute : strictRoute // ig
 as bool,stack: null == stack ? _self.stack : stack // ignore: cast_nullable_to_non_nullable
 as TunStack,dnsHijack: null == dnsHijack ? _self.dnsHijack : dnsHijack // ignore: cast_nullable_to_non_nullable
 as List<String>,routeAddress: null == routeAddress ? _self.routeAddress : routeAddress // ignore: cast_nullable_to_non_nullable
-as List<String>,inet6Address: null == inet6Address ? _self.inet6Address : inet6Address // ignore: cast_nullable_to_non_nullable
+as List<String>,ipv6: null == ipv6 ? _self.ipv6 : ipv6 // ignore: cast_nullable_to_non_nullable
+as bool,inet6Address: null == inet6Address ? _self.inet6Address : inet6Address // ignore: cast_nullable_to_non_nullable
 as List<String>,
   ));
 }
@@ -2203,10 +2204,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( bool enable,  String device, @JsonKey(name: 'auto-route')  bool autoRoute, @JsonKey(name: 'strict-route')  bool strictRoute,  TunStack stack, @JsonKey(name: 'dns-hijack')  List<String> dnsHijack, @JsonKey(name: 'route-address')  List<String> routeAddress, @JsonKey(name: 'inet6-address')  List<String> inet6Address)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( bool enable,  String device, @JsonKey(name: 'auto-route')  bool autoRoute, @JsonKey(name: 'strict-route')  bool strictRoute,  TunStack stack, @JsonKey(name: 'dns-hijack')  List<String> dnsHijack, @JsonKey(name: 'route-address')  List<String> routeAddress,  bool ipv6, @JsonKey(name: 'inet6-address')  List<String> inet6Address)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _Tun() when $default != null:
-return $default(_that.enable,_that.device,_that.autoRoute,_that.strictRoute,_that.stack,_that.dnsHijack,_that.routeAddress,_that.inet6Address);case _:
+return $default(_that.enable,_that.device,_that.autoRoute,_that.strictRoute,_that.stack,_that.dnsHijack,_that.routeAddress,_that.ipv6,_that.inet6Address);case _:
   return orElse();
 
 }
@@ -2224,10 +2225,10 @@ return $default(_that.enable,_that.device,_that.autoRoute,_that.strictRoute,_tha
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( bool enable,  String device, @JsonKey(name: 'auto-route')  bool autoRoute, @JsonKey(name: 'strict-route')  bool strictRoute,  TunStack stack, @JsonKey(name: 'dns-hijack')  List<String> dnsHijack, @JsonKey(name: 'route-address')  List<String> routeAddress, @JsonKey(name: 'inet6-address')  List<String> inet6Address)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( bool enable,  String device, @JsonKey(name: 'auto-route')  bool autoRoute, @JsonKey(name: 'strict-route')  bool strictRoute,  TunStack stack, @JsonKey(name: 'dns-hijack')  List<String> dnsHijack, @JsonKey(name: 'route-address')  List<String> routeAddress,  bool ipv6, @JsonKey(name: 'inet6-address')  List<String> inet6Address)  $default,) {final _that = this;
 switch (_that) {
 case _Tun():
-return $default(_that.enable,_that.device,_that.autoRoute,_that.strictRoute,_that.stack,_that.dnsHijack,_that.routeAddress,_that.inet6Address);case _:
+return $default(_that.enable,_that.device,_that.autoRoute,_that.strictRoute,_that.stack,_that.dnsHijack,_that.routeAddress,_that.ipv6,_that.inet6Address);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -2244,10 +2245,10 @@ return $default(_that.enable,_that.device,_that.autoRoute,_that.strictRoute,_tha
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( bool enable,  String device, @JsonKey(name: 'auto-route')  bool autoRoute, @JsonKey(name: 'strict-route')  bool strictRoute,  TunStack stack, @JsonKey(name: 'dns-hijack')  List<String> dnsHijack, @JsonKey(name: 'route-address')  List<String> routeAddress, @JsonKey(name: 'inet6-address')  List<String> inet6Address)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( bool enable,  String device, @JsonKey(name: 'auto-route')  bool autoRoute, @JsonKey(name: 'strict-route')  bool strictRoute,  TunStack stack, @JsonKey(name: 'dns-hijack')  List<String> dnsHijack, @JsonKey(name: 'route-address')  List<String> routeAddress,  bool ipv6, @JsonKey(name: 'inet6-address')  List<String> inet6Address)?  $default,) {final _that = this;
 switch (_that) {
 case _Tun() when $default != null:
-return $default(_that.enable,_that.device,_that.autoRoute,_that.strictRoute,_that.stack,_that.dnsHijack,_that.routeAddress,_that.inet6Address);case _:
+return $default(_that.enable,_that.device,_that.autoRoute,_that.strictRoute,_that.stack,_that.dnsHijack,_that.routeAddress,_that.ipv6,_that.inet6Address);case _:
   return null;
 
 }
@@ -2259,7 +2260,7 @@ return $default(_that.enable,_that.device,_that.autoRoute,_that.strictRoute,_tha
 @JsonSerializable()
 
 class _Tun implements Tun {
-  const _Tun({this.enable = false, this.device = appName, @JsonKey(name: 'auto-route') this.autoRoute = false, @JsonKey(name: 'strict-route') this.strictRoute = true, this.stack = TunStack.mixed, @JsonKey(name: 'dns-hijack') final  List<String> dnsHijack = const ['any:53'], @JsonKey(name: 'route-address') final  List<String> routeAddress = const [], @JsonKey(name: 'inet6-address') final  List<String> inet6Address = const ['fdfe:dcba:9876::1/126']}): _dnsHijack = dnsHijack,_routeAddress = routeAddress,_inet6Address = inet6Address;
+  const _Tun({this.enable = false, this.device = appName, @JsonKey(name: 'auto-route') this.autoRoute = false, @JsonKey(name: 'strict-route') this.strictRoute = true, this.stack = TunStack.mixed, @JsonKey(name: 'dns-hijack') final  List<String> dnsHijack = const ['any:53'], @JsonKey(name: 'route-address') final  List<String> routeAddress = const [], this.ipv6 = true, @JsonKey(name: 'inet6-address') final  List<String> inet6Address = const ['fdfe:dcba:9876::1/126']}): _dnsHijack = dnsHijack,_routeAddress = routeAddress,_inet6Address = inet6Address;
   factory _Tun.fromJson(Map<String, dynamic> json) => _$TunFromJson(json);
 
 @override@JsonKey() final  bool enable;
@@ -2281,6 +2282,7 @@ class _Tun implements Tun {
   return EqualUnmodifiableListView(_routeAddress);
 }
 
+@override@JsonKey() final  bool ipv6;
  final  List<String> _inet6Address;
 @override@JsonKey(name: 'inet6-address') List<String> get inet6Address {
   if (_inet6Address is EqualUnmodifiableListView) return _inet6Address;
@@ -2302,16 +2304,16 @@ Map<String, dynamic> toJson() {
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _Tun&&(identical(other.enable, enable) || other.enable == enable)&&(identical(other.device, device) || other.device == device)&&(identical(other.autoRoute, autoRoute) || other.autoRoute == autoRoute)&&(identical(other.strictRoute, strictRoute) || other.strictRoute == strictRoute)&&(identical(other.stack, stack) || other.stack == stack)&&const DeepCollectionEquality().equals(other._dnsHijack, _dnsHijack)&&const DeepCollectionEquality().equals(other._routeAddress, _routeAddress)&&const DeepCollectionEquality().equals(other._inet6Address, _inet6Address));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _Tun&&(identical(other.enable, enable) || other.enable == enable)&&(identical(other.device, device) || other.device == device)&&(identical(other.autoRoute, autoRoute) || other.autoRoute == autoRoute)&&(identical(other.strictRoute, strictRoute) || other.strictRoute == strictRoute)&&(identical(other.stack, stack) || other.stack == stack)&&const DeepCollectionEquality().equals(other._dnsHijack, _dnsHijack)&&const DeepCollectionEquality().equals(other._routeAddress, _routeAddress)&&(identical(other.ipv6, ipv6) || other.ipv6 == ipv6)&&const DeepCollectionEquality().equals(other._inet6Address, _inet6Address));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,enable,device,autoRoute,strictRoute,stack,const DeepCollectionEquality().hash(_dnsHijack),const DeepCollectionEquality().hash(_routeAddress),const DeepCollectionEquality().hash(_inet6Address));
+int get hashCode => Object.hash(runtimeType,enable,device,autoRoute,strictRoute,stack,const DeepCollectionEquality().hash(_dnsHijack),const DeepCollectionEquality().hash(_routeAddress),ipv6,const DeepCollectionEquality().hash(_inet6Address));
 
 @override
 String toString() {
-  return 'Tun(enable: $enable, device: $device, autoRoute: $autoRoute, strictRoute: $strictRoute, stack: $stack, dnsHijack: $dnsHijack, routeAddress: $routeAddress, inet6Address: $inet6Address)';
+  return 'Tun(enable: $enable, device: $device, autoRoute: $autoRoute, strictRoute: $strictRoute, stack: $stack, dnsHijack: $dnsHijack, routeAddress: $routeAddress, ipv6: $ipv6, inet6Address: $inet6Address)';
 }
 
 
@@ -2322,7 +2324,7 @@ abstract mixin class _$TunCopyWith<$Res> implements $TunCopyWith<$Res> {
   factory _$TunCopyWith(_Tun value, $Res Function(_Tun) _then) = __$TunCopyWithImpl;
 @override @useResult
 $Res call({
- bool enable, String device,@JsonKey(name: 'auto-route') bool autoRoute,@JsonKey(name: 'strict-route') bool strictRoute, TunStack stack,@JsonKey(name: 'dns-hijack') List<String> dnsHijack,@JsonKey(name: 'route-address') List<String> routeAddress,@JsonKey(name: 'inet6-address') List<String> inet6Address
+ bool enable, String device,@JsonKey(name: 'auto-route') bool autoRoute,@JsonKey(name: 'strict-route') bool strictRoute, TunStack stack,@JsonKey(name: 'dns-hijack') List<String> dnsHijack,@JsonKey(name: 'route-address') List<String> routeAddress, bool ipv6,@JsonKey(name: 'inet6-address') List<String> inet6Address
 });
 
 
@@ -2339,7 +2341,7 @@ class __$TunCopyWithImpl<$Res>
 
 /// Create a copy of Tun
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? enable = null,Object? device = null,Object? autoRoute = null,Object? strictRoute = null,Object? stack = null,Object? dnsHijack = null,Object? routeAddress = null,Object? inet6Address = null,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? enable = null,Object? device = null,Object? autoRoute = null,Object? strictRoute = null,Object? stack = null,Object? dnsHijack = null,Object? routeAddress = null,Object? ipv6 = null,Object? inet6Address = null,}) {
   return _then(_Tun(
 enable: null == enable ? _self.enable : enable // ignore: cast_nullable_to_non_nullable
 as bool,device: null == device ? _self.device : device // ignore: cast_nullable_to_non_nullable
@@ -2348,7 +2350,8 @@ as bool,strictRoute: null == strictRoute ? _self.strictRoute : strictRoute // ig
 as bool,stack: null == stack ? _self.stack : stack // ignore: cast_nullable_to_non_nullable
 as TunStack,dnsHijack: null == dnsHijack ? _self._dnsHijack : dnsHijack // ignore: cast_nullable_to_non_nullable
 as List<String>,routeAddress: null == routeAddress ? _self._routeAddress : routeAddress // ignore: cast_nullable_to_non_nullable
-as List<String>,inet6Address: null == inet6Address ? _self._inet6Address : inet6Address // ignore: cast_nullable_to_non_nullable
+as List<String>,ipv6: null == ipv6 ? _self.ipv6 : ipv6 // ignore: cast_nullable_to_non_nullable
+as bool,inet6Address: null == inet6Address ? _self._inet6Address : inet6Address // ignore: cast_nullable_to_non_nullable
 as List<String>,
   ));
 }

@@ -335,6 +335,10 @@ abstract class MakeRealProfileState with _$MakeRealProfileState {
     required int profileId,
     required Map<String, dynamic> rawConfig,
     required PatchClashConfig realPatchConfig,
+    // 虚拟网卡是否接管 IPv6。桌面端由 TUN + TUN IPv6 两个开关决定，Android 上虚拟
+    // 网卡由 VpnService 建立（tun.enable 恒为 false），改由 VPN 的 IPv6 开关决定，
+    // 所以这里由调用方算好再传进来，任务本身不判断平台。
+    @Default(false) bool tunTakesIpv6,
     required bool overrideDns,
     required bool appendSystemDns,
     required List<ProxyGroup> proxyGroups,

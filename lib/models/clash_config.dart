@@ -223,6 +223,11 @@ abstract class Tun with _$Tun {
     @Default(TunStack.mixed) TunStack stack,
     @JsonKey(name: 'dns-hijack') @Default(['any:53']) List<String> dnsHijack,
     @JsonKey(name: 'route-address') @Default([]) List<String> routeAddress,
+    // 虚拟网卡是否接管 IPv6。关闭时不下发 inet6-address，IPv6 不进隧道；打开时
+    // 需要同时把全局 ipv6 置为 true，否则内核会清空 inet6-address。
+    // 默认打开：不接管会让 IPv6 绕过隧道泄漏真实地址，而接管带来的「直连流量依赖
+    // 本机 IPv6 出口」风险在 mihomo 上不成立 —— 它会还原域名重新解析并双栈竞速。
+    @Default(true) bool ipv6,
     @JsonKey(name: 'inet6-address')
     @Default(['fdfe:dcba:9876::1/126'])
     List<String> inet6Address,

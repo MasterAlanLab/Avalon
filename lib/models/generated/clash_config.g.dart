@@ -177,6 +177,7 @@ _Tun _$TunFromJson(Map<String, dynamic> json) => _Tun(
           ?.map((e) => e as String)
           .toList() ??
       const [],
+  ipv6: json['ipv6'] as bool? ?? true,
   inet6Address:
       (json['inet6-address'] as List<dynamic>?)
           ?.map((e) => e as String)
@@ -192,6 +193,7 @@ Map<String, dynamic> _$TunToJson(_Tun instance) => <String, dynamic>{
   'stack': _$TunStackEnumMap[instance.stack]!,
   'dns-hijack': instance.dnsHijack,
   'route-address': instance.routeAddress,
+  'ipv6': instance.ipv6,
   'inet6-address': instance.inet6Address,
 };
 

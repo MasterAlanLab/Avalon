@@ -37,6 +37,8 @@
   "tunDesc": "仅在管理员模式生效",
   "strictRoute": "严格路由",
   "strictRouteDesc": "阻断绕过虚拟网卡的流量，防止 DNS 与 WebRTC 泄漏。可能影响虚拟机与局域网访问",
+  "tunIpv6": "TUN IPv6",
+  "tunIpv6Desc": "让虚拟网卡接管 IPv6。IPv6 流量不再绕过隧道，但直连流量将依赖本机可用的 IPv6 出口",
   "minimizeOnExit": "退出时最小化",
   "minimizeOnExitDesc": "修改系统默认退出事件",
   "autoLaunch": "自启动",

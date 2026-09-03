@@ -791,6 +791,10 @@ class MessageLookup extends MessageLookupByLibrary {
     "trafficUsage": MessageLookupByLibrary.simpleMessage("流量统计"),
     "tun": MessageLookupByLibrary.simpleMessage("虚拟网卡"),
     "tunDesc": MessageLookupByLibrary.simpleMessage("仅在管理员模式生效"),
+    "tunIpv6": MessageLookupByLibrary.simpleMessage("TUN IPv6"),
+    "tunIpv6Desc": MessageLookupByLibrary.simpleMessage(
+      "让虚拟网卡接管 IPv6。IPv6 流量不再绕过隧道，但直连流量将依赖本机可用的 IPv6 出口",
+    ),
     "turnOff": MessageLookupByLibrary.simpleMessage("关闭"),
     "turnOn": MessageLookupByLibrary.simpleMessage("开启"),
     "unbind": MessageLookupByLibrary.simpleMessage("解除绑定"),

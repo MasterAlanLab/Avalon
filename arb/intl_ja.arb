@@ -37,6 +37,8 @@
   "tunDesc": "管理者モードでのみ有効",
   "strictRoute": "厳格ルーティング",
   "strictRouteDesc": "仮想アダプターを迂回する通信を遮断し、DNS と WebRTC の漏洩を防ぎます。仮想マシンや LAN アクセスに影響する場合があります",
+  "tunIpv6": "TUN IPv6",
+  "tunIpv6Desc": "仮想アダプターに IPv6 を担当させます。IPv6 がトンネルを迂回しなくなりますが、直結通信は本機に有効な IPv6 接続があることが前提になります",
   "minimizeOnExit": "終了時に最小化",
   "minimizeOnExitDesc": "システムの終了イベントを変更",
   "autoLaunch": "自動起動",

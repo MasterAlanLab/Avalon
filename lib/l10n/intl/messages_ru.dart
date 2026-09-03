@@ -1178,6 +1178,10 @@ class MessageLookup extends MessageLookupByLibrary {
     "tunDesc": MessageLookupByLibrary.simpleMessage(
       "действительно только в режиме администратора",
     ),
+    "tunIpv6": MessageLookupByLibrary.simpleMessage("TUN IPv6"),
+    "tunIpv6Desc": MessageLookupByLibrary.simpleMessage(
+      "Позволяет виртуальному адаптеру принимать IPv6. IPv6 больше не идёт в обход туннеля, но прямые соединения начинают зависеть от рабочего IPv6 на хосте",
+    ),
     "turnOff": MessageLookupByLibrary.simpleMessage("Выключить"),
     "turnOn": MessageLookupByLibrary.simpleMessage("Включить"),
     "unbind": MessageLookupByLibrary.simpleMessage("Отвязать"),

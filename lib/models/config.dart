@@ -151,7 +151,9 @@ abstract class VpnProps with _$VpnProps {
   const factory VpnProps({
     @Default(true) bool enable,
     @Default(true) bool systemProxy,
-    @Default(false) bool ipv6,
+    // 与桌面端的 tun.ipv6 同义：VpnService 是否接管 IPv6。打开时内核的全局 ipv6
+    // 也会跟着打开，否则 ::/0 指向了虚拟网卡而内核不解析 AAAA，等于接管了没人用。
+    @Default(true) bool ipv6,
     @Default(true) bool allowBypass,
     @Default(false) bool dnsHijacking,
     @Default(defaultAccessControlProps) AccessControlProps accessControlProps,

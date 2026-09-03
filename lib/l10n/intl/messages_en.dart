@@ -1107,6 +1107,10 @@ class MessageLookup extends MessageLookupByLibrary {
     "tunDesc": MessageLookupByLibrary.simpleMessage(
       "only effective in administrator mode",
     ),
+    "tunIpv6": MessageLookupByLibrary.simpleMessage("TUN IPv6"),
+    "tunIpv6Desc": MessageLookupByLibrary.simpleMessage(
+      "Let the virtual adapter carry IPv6. Keeps IPv6 inside the tunnel, but direct traffic then depends on the host having a working IPv6 uplink",
+    ),
     "turnOff": MessageLookupByLibrary.simpleMessage("Turn Off"),
     "turnOn": MessageLookupByLibrary.simpleMessage("Turn On"),
     "unbind": MessageLookupByLibrary.simpleMessage("Unbind"),

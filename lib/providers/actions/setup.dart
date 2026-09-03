@@ -327,11 +327,20 @@ class SetupAction extends _$SetupAction {
         return;
       }
       final effectiveTunEnable = _getEffectiveTunEnable(updateParams.tun.enable);
+      // 与 makeRealProfileTask 保持一致：不接管 IPv6 时不下发 inet6-address，
+      // 也不替用户打开全局 ipv6。
+      final tunTakesIpv6 = _tunTakesIpv6(
+        updateParams.tun.copyWith(enable: effectiveTunEnable),
+      );
       final message = await coreController.updateConfig(
         updateParams.copyWith(
-          tun: updateParams.tun.copyWith(enable: effectiveTunEnable),
-          // 与 makeRealProfileTask 保持一致：TUN 接管 IPv6。
-          ipv6: updateParams.ipv6 || effectiveTunEnable,
+          tun: updateParams.tun.copyWith(
+            enable: effectiveTunEnable,
+            inet6Address: tunTakesIpv6
+                ? updateParams.tun.inet6Address
+                : const [],
+          ),
+          ipv6: updateParams.ipv6 || tunTakesIpv6,
         ),
       );
       ref.read(checkIpNumProvider.notifier).add();
@@ -438,6 +447,7 @@ class SetupAction extends _$SetupAction {
       ),
     );
     final overrideDns = ref.read(overrideDnsProvider);
+    final tunTakesIpv6 = _tunTakesIpv6(patchConfig.tun);
     final appendSystemDns = networkVM2.a;
     final routeMode = networkVM2.b;
     final configMap = await coreController.getConfig(profileId);
@@ -492,6 +502,7 @@ class SetupAction extends _$SetupAction {
         profileId: profileId,
         rawConfig: rawConfig,
         realPatchConfig: realPatchConfig,
+        tunTakesIpv6: tunTakesIpv6,
         overrideDns: overrideDns,
         appendSystemDns: appendSystemDns,
         addedRules: addedRules,
@@ -519,6 +530,20 @@ class SetupAction extends _$SetupAction {
   bool _getEffectiveTunEnable(bool enableTun) {
     final authorizationState = ref.read(authorizedTunEnableProvider);
     return enableTun && authorizationState == TunAuthorizationState.authorized;
+  }
+
+  /// 虚拟网卡是否接管 IPv6。
+  ///
+  /// 桌面端由 TUN 开关和 TUN IPv6 开关共同决定。Android 上虚拟网卡由 VpnService
+  /// 建立、`tun.enable` 恒为 false，接管与否写在 VPN 的 IPv6 开关里；不跟着它走的话
+  /// VpnService 已经把 ::/0 指向了虚拟网卡，内核那边 `ipv6` 却还是关的，路由接管了
+  /// 但没人能用。
+  bool _tunTakesIpv6(Tun tun) {
+    if (system.isDesktop) {
+      return tun.enable && tun.ipv6;
+    }
+    final vpnSetting = ref.read(vpnSettingProvider);
+    return vpnSetting.enable && vpnSetting.ipv6;
   }
 
   @protected

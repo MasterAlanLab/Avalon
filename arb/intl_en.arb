@@ -37,6 +37,8 @@
   "tunDesc": "only effective in administrator mode",
   "strictRoute": "Strict route",
   "strictRouteDesc": "Block traffic that bypasses the virtual adapter to prevent DNS and WebRTC leaks. May break virtual machines and LAN access",
+  "tunIpv6": "TUN IPv6",
+  "tunIpv6Desc": "Let the virtual adapter carry IPv6. Keeps IPv6 inside the tunnel, but direct traffic then depends on the host having a working IPv6 uplink",
   "minimizeOnExit": "Minimize on exit",
   "minimizeOnExitDesc": "Modify the default system exit event",
   "autoLaunch": "Auto launch",

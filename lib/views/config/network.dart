@@ -74,6 +74,29 @@ class TunStrictRouteItem extends ConsumerWidget {
   }
 }
 
+class TunIpv6Item extends ConsumerWidget {
+  const TunIpv6Item({super.key});
+
+  @override
+  Widget build(BuildContext context, ref) {
+    final appLocalizations = context.appLocalizations;
+    final ipv6 = ref.watch(
+      patchClashConfigProvider.select((state) => state.tun.ipv6),
+    );
+
+    return ListItem.toggle(
+      title: Text(appLocalizations.tunIpv6),
+      subtitle: Text(appLocalizations.tunIpv6Desc),
+      value: ipv6,
+      onChanged: (value) async {
+        ref
+            .read(patchClashConfigProvider.notifier)
+            .update((state) => state.copyWith.tun(ipv6: value));
+      },
+    );
+  }
+}
+
 class AllowBypassItem extends ConsumerWidget {
   const AllowBypassItem({super.key});
 
@@ -356,6 +379,7 @@ class NetworkListView extends StatelessWidget {
         items: [
           if (system.isDesktop) const TUNItem(),
           if (system.isDesktop) const TunStrictRouteItem(),
+          if (system.isDesktop) const TunIpv6Item(),
           if (system.isMacOS) const AutoSetSystemDnsItem(),
           const TunStackItem(),
           if (!system.isDesktop) ...[

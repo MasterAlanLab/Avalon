@@ -907,6 +907,10 @@ class MessageLookup extends MessageLookupByLibrary {
     "trafficUsage": MessageLookupByLibrary.simpleMessage("トラフィック使用量"),
     "tun": MessageLookupByLibrary.simpleMessage("TUN"),
     "tunDesc": MessageLookupByLibrary.simpleMessage("管理者モードでのみ有効"),
+    "tunIpv6": MessageLookupByLibrary.simpleMessage("TUN IPv6"),
+    "tunIpv6Desc": MessageLookupByLibrary.simpleMessage(
+      "仮想アダプターに IPv6 を担当させます。IPv6 がトンネルを迂回しなくなりますが、直結通信は本機に有効な IPv6 接続があることが前提になります",
+    ),
     "turnOff": MessageLookupByLibrary.simpleMessage("オフ"),
     "turnOn": MessageLookupByLibrary.simpleMessage("オン"),
     "unbind": MessageLookupByLibrary.simpleMessage("バインド解除"),

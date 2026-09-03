@@ -119,11 +119,14 @@ Future<VM2<String, String>> _makeRealProfileTask(
   rawConfig['external-ui-url'] = '';
   rawConfig['tcp-concurrent'] = realPatchConfig.tcpConcurrent;
   rawConfig['unified-delay'] = realPatchConfig.unifiedDelay;
-  // TUN 生效时必须打开 IPv6：mihomo 在 `ipv6: false` 时会清空 tun 的 inet6-address
-  // （config.parseIPV6），虚拟网卡不再承载 IPv6，系统的 IPv6 流量会绕过隧道从物理
-  // 网卡直出，泄漏真实地址（DNS 查询、WebRTC 候选地址）。是否解析 AAAA 与此无关，
-  // 仍由 dns.ipv6 决定。setup.dart 的运行时补丁路径需同步这条规则。
-  rawConfig['ipv6'] = realPatchConfig.ipv6 || realPatchConfig.tun.enable;
+  // 虚拟网卡接管 IPv6 时必须同时打开全局 IPv6：mihomo 在 `ipv6: false` 时会清空 tun
+  // 的 inet6-address（config.parseIPV6），虚拟网卡不再承载 IPv6，系统的 IPv6 流量会
+  // 绕过隧道从物理网卡直出，泄漏真实地址（DNS 查询、WebRTC 候选地址）；在 Android 上
+  // 同样意味着 VpnService 已经接管了 ::/0，内核却拿不到 IPv6 能力。
+  // 反过来，不接管时也不该替用户打开全局 IPv6。是否解析 AAAA 与此无关，仍由
+  // dns.ipv6 决定。setup.dart 的运行时补丁路径需同步这条规则。
+  final tunTakesIpv6 = data.tunTakesIpv6;
+  rawConfig['ipv6'] = realPatchConfig.ipv6 || tunTakesIpv6;
   rawConfig['log-level'] = realPatchConfig.logLevel.name;
   rawConfig['port'] = 0;
   rawConfig['socks-port'] = 0;
@@ -146,7 +149,10 @@ Future<VM2<String, String>> _makeRealProfileTask(
   rawConfig['tun']['route-address'] = realPatchConfig.tun.routeAddress;
   rawConfig['tun']['auto-route'] = realPatchConfig.tun.autoRoute;
   rawConfig['tun']['strict-route'] = realPatchConfig.tun.strictRoute;
-  rawConfig['tun']['inet6-address'] = realPatchConfig.tun.inet6Address;
+  // 不接管 IPv6 时不下发 inet6-address，sing-tun 就不会为虚拟网卡装上 ::/0 路由。
+  rawConfig['tun']['inet6-address'] = tunTakesIpv6
+      ? realPatchConfig.tun.inet6Address
+      : const <String>[];
   rawConfig['geodata-loader'] = realPatchConfig.geodataLoader.name;
   if (rawConfig['sniffer']?['sniff'] != null) {
     for (final value in (rawConfig['sniffer']?['sniff'] as Map).values) {
@@ -211,16 +217,23 @@ Future<VM2<String, String>> _makeRealProfileTask(
       false => realPatchConfig.dns,
     };
     rawConfig['dns'] = dns.toJson();
-    // fake-ip 模式下 AAAA 在 withFakeIP 中间件就被短路了，走不到检查 dns.ipv6 的
-    // withResolver，没有 v6 池时一律返回空应答。所以让 dns.ipv6 同时控制 v6 池，
-    // 这个开关在 fake-ip 下才真正有意义。
-    rawConfig['dns']['fake-ip-range6'] = dns.ipv6 ? dns.fakeIpRange6 : '';
     rawConfig['dns']['nameserver-policy'] = {};
     for (final entry in dns.nameserverPolicy.entries) {
       rawConfig['dns']['nameserver-policy'][entry.key] =
           entry.value.splitByMultipleSeparators;
     }
   }
+  // 走到这里 rawConfig['dns'] 可能仍是订阅原样带来的 map（YamlMap / const map 都是
+  // 只读的），先复制成可写的再改。
+  rawConfig['dns'] = Map<String, dynamic>.from(rawConfig['dns'] as Map);
+  // fake-ip 模式下 AAAA 在 withFakeIP 中间件就被短路了，走不到检查 dns.ipv6 的
+  // withResolver，没有 v6 池时一律返回空应答。所以让 dns.ipv6 同时控制 v6 池，
+  // 这个开关在 fake-ip 下才真正有意义。
+  // 这条必须留在上面的分支外：订阅自带 dns 块时（overrideDns 关闭）整段会被跳过，
+  // 订阅写的 `ipv6: true` 会架空本地开关，把 v6 fake 池交回给订阅决定。
+  rawConfig['dns']['fake-ip-range6'] = realPatchConfig.dns.ipv6
+      ? realPatchConfig.dns.fakeIpRange6
+      : '';
   if (appendSystemDns) {
     final List<String> nameserver = List<String>.from(
       rawConfig['dns']['nameserver'] ?? [],

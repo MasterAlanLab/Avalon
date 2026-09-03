@@ -226,14 +226,22 @@ void main() {
     },
   );
 
-  Future<YamlMap> buildRealProfile(PatchClashConfig patchConfig) async {
+  Future<YamlMap> buildRealProfile(
+    PatchClashConfig patchConfig, {
+    Map<String, dynamic> rawConfig = const {},
+    bool overrideDns = true,
+    bool? tunTakesIpv6,
+  }) async {
     final result = await makeRealProfileTask(
       MakeRealProfileState(
         profilesPath: '/profiles',
         profileId: 11,
-        rawConfig: const {},
+        rawConfig: rawConfig,
         realPatchConfig: patchConfig,
-        overrideDns: true,
+        // 桌面端 SetupAction._tunTakesIpv6 就是这么算的。
+        tunTakesIpv6:
+            tunTakesIpv6 ?? (patchConfig.tun.enable && patchConfig.tun.ipv6),
+        overrideDns: overrideDns,
         appendSystemDns: false,
         proxyGroups: const [],
         rules: const [],
@@ -244,18 +252,47 @@ void main() {
     return loadYaml(result.a) as YamlMap;
   }
 
-  test('makeRealProfileTask makes TUN take over IPv6', () async {
+  test('makeRealProfileTask lets TUN take over IPv6 only on request', () async {
+    // 默认：TUN 打开即接管 IPv6，内核在 ipv6: false 时会清空 inet6-address，
+    // 让 IPv6 绕过隧道泄漏真实地址。
     final on = await buildRealProfile(
       const PatchClashConfig(tun: Tun(enable: true, autoRoute: true)),
     );
     expect(on['tun']['strict-route'], true);
     expect(on['tun']['inet6-address'], ['fdfe:dcba:9876::1/126']);
-    // 内核在 ipv6: false 时会清空 inet6-address，让 IPv6 绕过隧道。
     expect(on['ipv6'], true);
 
+    // 用户关掉 TUN IPv6 后不接管：不下发 inet6-address，也不覆盖用户关掉的全局开关。
+    final tunOnly = await buildRealProfile(
+      const PatchClashConfig(
+        tun: Tun(enable: true, autoRoute: true, ipv6: false),
+      ),
+    );
+    expect(tunOnly['tun']['enable'], true);
+    expect(tunOnly['tun']['inet6-address'], isEmpty);
+    expect(tunOnly['ipv6'], false);
+
+    // 用户自己打开全局 IPv6 时保持原样。
+    final globalIpv6 = await buildRealProfile(
+      const PatchClashConfig(ipv6: true, tun: Tun(ipv6: false)),
+    );
+    expect(globalIpv6['ipv6'], true);
+    expect(globalIpv6['tun']['inet6-address'], isEmpty);
+
+    // TUN 没开就不该接管，哪怕 tun.ipv6 是默认的 true。
     final off = await buildRealProfile(const PatchClashConfig());
     expect(off['tun']['enable'], false);
+    expect(off['tun']['inet6-address'], isEmpty);
     expect(off['ipv6'], false);
+
+    // Android：虚拟网卡由 VpnService 建立，tun.enable 恒为 false，接管与否由调用方
+    // 依据 VPN 的 IPv6 开关算出来后传进来。
+    final android = await buildRealProfile(
+      const PatchClashConfig(),
+      tunTakesIpv6: true,
+    );
+    expect(android['tun']['enable'], false);
+    expect(android['ipv6'], true);
   });
 
   test('makeRealProfileTask gates the IPv6 fake-ip pool on dns.ipv6', () async {
@@ -267,6 +304,38 @@ void main() {
     );
     expect(on['dns']['fake-ip-range6'], 'fdfe:dcba:9876::1/64');
   });
+
+  test(
+    'makeRealProfileTask gates the IPv6 fake-ip pool for profile DNS too',
+    () async {
+      // 订阅自带 dns 块且未开启覆盖时，其余键沿用订阅，但 v6 fake 池仍由本地开关
+      // 决定，否则订阅写的 ipv6: true 会架空设置里的 DNS IPv6 开关。
+      const profileDns = {
+        'dns': {
+          'enable': true,
+          'ipv6': true,
+          'enhanced-mode': 'fake-ip',
+          'fake-ip-range6': 'fdfe:dcba:9876::1/64',
+          'nameserver': ['223.5.5.5'],
+        },
+      };
+
+      final off = await buildRealProfile(
+        const PatchClashConfig(),
+        rawConfig: profileDns,
+        overrideDns: false,
+      );
+      expect(off['dns']['nameserver'], ['223.5.5.5']);
+      expect(off['dns']['fake-ip-range6'], '');
+
+      final on = await buildRealProfile(
+        const PatchClashConfig(dns: Dns(ipv6: true)),
+        rawConfig: profileDns,
+        overrideDns: false,
+      );
+      expect(on['dns']['fake-ip-range6'], 'fdfe:dcba:9876::1/64');
+    },
+  );
 
   test('log and list tasks produce stable mapped output', () async {
     final logs = [
