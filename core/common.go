@@ -232,11 +232,17 @@ func updateConfig(params *UpdateParams) {
 		if params.Tun.AutoRoute != nil {
 			general.Tun.AutoRoute = *params.Tun.AutoRoute
 		}
+		if params.Tun.StrictRoute != nil {
+			general.Tun.StrictRoute = *params.Tun.StrictRoute
+		}
 		if params.Tun.Device != nil {
 			general.Tun.Device = *params.Tun.Device
 		}
 		if params.Tun.RouteAddress != nil {
 			general.Tun.RouteAddress = *params.Tun.RouteAddress
+		}
+		if params.Tun.Inet6Address != nil {
+			general.Tun.Inet6Address = *params.Tun.Inet6Address
 		}
 		if params.Tun.DNSHijack != nil {
 			general.Tun.DNSHijack = *params.Tun.DNSHijack

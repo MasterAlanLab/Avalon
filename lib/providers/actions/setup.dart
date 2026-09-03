@@ -326,9 +326,12 @@ class SetupAction extends _$SetupAction {
         await _restartCoreAfterAuthorization();
         return;
       }
+      final effectiveTunEnable = _getEffectiveTunEnable(updateParams.tun.enable);
       final message = await coreController.updateConfig(
-        updateParams.copyWith.tun(
-          enable: _getEffectiveTunEnable(updateParams.tun.enable),
+        updateParams.copyWith(
+          tun: updateParams.tun.copyWith(enable: effectiveTunEnable),
+          // 与 makeRealProfileTask 保持一致：TUN 接管 IPv6。
+          ipv6: updateParams.ipv6 || effectiveTunEnable,
         ),
       );
       ref.read(checkIpNumProvider.notifier).add();

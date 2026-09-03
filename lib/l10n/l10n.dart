@@ -289,6 +289,26 @@ class AppLocalizations {
     );
   }
 
+  /// `Strict route`
+  String get strictRoute {
+    return Intl.message(
+      'Strict route',
+      name: 'strictRoute',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Block traffic that bypasses the virtual adapter to prevent DNS and WebRTC leaks. May break virtual machines and LAN access`
+  String get strictRouteDesc {
+    return Intl.message(
+      'Block traffic that bypasses the virtual adapter to prevent DNS and WebRTC leaks. May break virtual machines and LAN access',
+      name: 'strictRouteDesc',
+      desc: '',
+      args: [],
+    );
+  }
+
   /// `Minimize on exit`
   String get minimizeOnExit {
     return Intl.message(
@@ -1649,6 +1669,16 @@ class AppLocalizations {
     return Intl.message(
       'Fakeip range',
       name: 'fakeipRange',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Fakeip range (IPv6)`
+  String get fakeipRange6 {
+    return Intl.message(
+      'Fakeip range (IPv6)',
+      name: 'fakeipRange6',
       desc: '',
       args: [],
     );

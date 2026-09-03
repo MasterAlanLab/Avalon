@@ -164,6 +164,7 @@ _Tun _$TunFromJson(Map<String, dynamic> json) => _Tun(
   enable: json['enable'] as bool? ?? false,
   device: json['device'] as String? ?? appName,
   autoRoute: json['auto-route'] as bool? ?? false,
+  strictRoute: json['strict-route'] as bool? ?? true,
   stack:
       $enumDecodeNullable(_$TunStackEnumMap, json['stack']) ?? TunStack.mixed,
   dnsHijack:
@@ -176,15 +177,22 @@ _Tun _$TunFromJson(Map<String, dynamic> json) => _Tun(
           ?.map((e) => e as String)
           .toList() ??
       const [],
+  inet6Address:
+      (json['inet6-address'] as List<dynamic>?)
+          ?.map((e) => e as String)
+          .toList() ??
+      const ['fdfe:dcba:9876::1/126'],
 );
 
 Map<String, dynamic> _$TunToJson(_Tun instance) => <String, dynamic>{
   'enable': instance.enable,
   'device': instance.device,
   'auto-route': instance.autoRoute,
+  'strict-route': instance.strictRoute,
   'stack': _$TunStackEnumMap[instance.stack]!,
   'dns-hijack': instance.dnsHijack,
   'route-address': instance.routeAddress,
+  'inet6-address': instance.inet6Address,
 };
 
 const _$TunStackEnumMap = {
@@ -235,6 +243,7 @@ _Dns _$DnsFromJson(Map<String, dynamic> json) => _Dns(
       $enumDecodeNullable(_$DnsModeEnumMap, json['enhanced-mode']) ??
       DnsMode.fakeIp,
   fakeIpRange: json['fake-ip-range'] as String? ?? '198.18.0.1/16',
+  fakeIpRange6: json['fake-ip-range6'] as String? ?? 'fdfe:dcba:9876::1/64',
   fakeIpFilter:
       (json['fake-ip-filter'] as List<dynamic>?)
           ?.map((e) => e as String)
@@ -280,6 +289,7 @@ Map<String, dynamic> _$DnsToJson(_Dns instance) => <String, dynamic>{
   'default-nameserver': instance.defaultNameserver,
   'enhanced-mode': _$DnsModeEnumMap[instance.enhancedMode]!,
   'fake-ip-range': instance.fakeIpRange,
+  'fake-ip-range6': instance.fakeIpRange6,
   'fake-ip-filter': instance.fakeIpFilter,
   'nameserver-policy': instance.nameserverPolicy,
   'nameserver': instance.nameserver,

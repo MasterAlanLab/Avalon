@@ -119,7 +119,11 @@ Future<VM2<String, String>> _makeRealProfileTask(
   rawConfig['external-ui-url'] = '';
   rawConfig['tcp-concurrent'] = realPatchConfig.tcpConcurrent;
   rawConfig['unified-delay'] = realPatchConfig.unifiedDelay;
-  rawConfig['ipv6'] = realPatchConfig.ipv6;
+  // TUN 生效时必须打开 IPv6：mihomo 在 `ipv6: false` 时会清空 tun 的 inet6-address
+  // （config.parseIPV6），虚拟网卡不再承载 IPv6，系统的 IPv6 流量会绕过隧道从物理
+  // 网卡直出，泄漏真实地址（DNS 查询、WebRTC 候选地址）。是否解析 AAAA 与此无关，
+  // 仍由 dns.ipv6 决定。setup.dart 的运行时补丁路径需同步这条规则。
+  rawConfig['ipv6'] = realPatchConfig.ipv6 || realPatchConfig.tun.enable;
   rawConfig['log-level'] = realPatchConfig.logLevel.name;
   rawConfig['port'] = 0;
   rawConfig['socks-port'] = 0;
@@ -141,6 +145,8 @@ Future<VM2<String, String>> _makeRealProfileTask(
   rawConfig['tun']['stack'] = realPatchConfig.tun.stack.name;
   rawConfig['tun']['route-address'] = realPatchConfig.tun.routeAddress;
   rawConfig['tun']['auto-route'] = realPatchConfig.tun.autoRoute;
+  rawConfig['tun']['strict-route'] = realPatchConfig.tun.strictRoute;
+  rawConfig['tun']['inet6-address'] = realPatchConfig.tun.inet6Address;
   rawConfig['geodata-loader'] = realPatchConfig.geodataLoader.name;
   if (rawConfig['sniffer']?['sniff'] != null) {
     for (final value in (rawConfig['sniffer']?['sniff'] as Map).values) {
@@ -205,6 +211,10 @@ Future<VM2<String, String>> _makeRealProfileTask(
       false => realPatchConfig.dns,
     };
     rawConfig['dns'] = dns.toJson();
+    // fake-ip 模式下 AAAA 在 withFakeIP 中间件就被短路了，走不到检查 dns.ipv6 的
+    // withResolver，没有 v6 池时一律返回空应答。所以让 dns.ipv6 同时控制 v6 池，
+    // 这个开关在 fake-ip 下才真正有意义。
+    rawConfig['dns']['fake-ip-range6'] = dns.ipv6 ? dns.fakeIpRange6 : '';
     rawConfig['dns']['nameserver-policy'] = {};
     for (final entry in dns.nameserverPolicy.entries) {
       rawConfig['dns']['nameserver-policy'][entry.key] =

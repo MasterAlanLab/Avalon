@@ -51,6 +51,29 @@ class TUNItem extends ConsumerWidget {
   }
 }
 
+class TunStrictRouteItem extends ConsumerWidget {
+  const TunStrictRouteItem({super.key});
+
+  @override
+  Widget build(BuildContext context, ref) {
+    final appLocalizations = context.appLocalizations;
+    final strictRoute = ref.watch(
+      patchClashConfigProvider.select((state) => state.tun.strictRoute),
+    );
+
+    return ListItem.toggle(
+      title: Text(appLocalizations.strictRoute),
+      subtitle: Text(appLocalizations.strictRouteDesc),
+      value: strictRoute,
+      onChanged: (value) async {
+        ref
+            .read(patchClashConfigProvider.notifier)
+            .update((state) => state.copyWith.tun(strictRoute: value));
+      },
+    );
+  }
+}
+
 class AllowBypassItem extends ConsumerWidget {
   const AllowBypassItem({super.key});
 
@@ -332,6 +355,7 @@ class NetworkListView extends StatelessWidget {
         title: appLocalizations.options,
         items: [
           if (system.isDesktop) const TUNItem(),
+          if (system.isDesktop) const TunStrictRouteItem(),
           if (system.isMacOS) const AutoSetSystemDnsItem(),
           const TunStackItem(),
           if (!system.isDesktop) ...[

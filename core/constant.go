@@ -44,7 +44,9 @@ type tunSchema struct {
 	Stack        *constant.TUNStack `yaml:"stack" json:"stack"`
 	DNSHijack    *[]string          `yaml:"dns-hijack" json:"dns-hijack"`
 	AutoRoute    *bool              `yaml:"auto-route" json:"auto-route"`
+	StrictRoute  *bool              `yaml:"strict-route" json:"strict-route"`
 	RouteAddress *[]netip.Prefix    `yaml:"route-address" json:"route-address,omitempty"`
+	Inet6Address *[]netip.Prefix    `yaml:"inet6-address" json:"inet6-address,omitempty"`
 }
 
 type ChangeProxyParams struct {

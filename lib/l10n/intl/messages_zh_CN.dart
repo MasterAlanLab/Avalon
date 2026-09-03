@@ -321,6 +321,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "externalLink": MessageLookupByLibrary.simpleMessage("外部链接"),
     "fakeipFilter": MessageLookupByLibrary.simpleMessage("Fakeip过滤"),
     "fakeipRange": MessageLookupByLibrary.simpleMessage("Fakeip范围"),
+    "fakeipRange6": MessageLookupByLibrary.simpleMessage("Fakeip范围（IPv6）"),
     "fallback": MessageLookupByLibrary.simpleMessage("Fallback"),
     "fallbackDesc": MessageLookupByLibrary.simpleMessage("一般情况下使用境外DNS"),
     "fallbackFilter": MessageLookupByLibrary.simpleMessage("Fallback过滤"),
@@ -750,6 +751,10 @@ class MessageLookup extends MessageLookupByLibrary {
     "statusDesc": MessageLookupByLibrary.simpleMessage("关闭后将使用系统DNS"),
     "stop": MessageLookupByLibrary.simpleMessage("暂停"),
     "stopVpn": MessageLookupByLibrary.simpleMessage("正在停止VPN..."),
+    "strictRoute": MessageLookupByLibrary.simpleMessage("严格路由"),
+    "strictRouteDesc": MessageLookupByLibrary.simpleMessage(
+      "阻断绕过虚拟网卡的流量，防止 DNS 与 WebRTC 泄漏。可能影响虚拟机与局域网访问",
+    ),
     "style": MessageLookupByLibrary.simpleMessage("风格"),
     "subRule": MessageLookupByLibrary.simpleMessage("子规则"),
     "subRuleEmpty": MessageLookupByLibrary.simpleMessage("子规则为空"),

@@ -219,9 +219,13 @@ abstract class Tun with _$Tun {
     @Default(false) bool enable,
     @Default(appName) String device,
     @JsonKey(name: 'auto-route') @Default(false) bool autoRoute,
+    @JsonKey(name: 'strict-route') @Default(true) bool strictRoute,
     @Default(TunStack.mixed) TunStack stack,
     @JsonKey(name: 'dns-hijack') @Default(['any:53']) List<String> dnsHijack,
     @JsonKey(name: 'route-address') @Default([]) List<String> routeAddress,
+    @JsonKey(name: 'inet6-address')
+    @Default(['fdfe:dcba:9876::1/126'])
+    List<String> inet6Address,
   }) = _Tun;
 
   factory Tun.fromJson(Map<String, Object?> json) => _$TunFromJson(json);
@@ -287,6 +291,9 @@ abstract class Dns with _$Dns {
     @Default('198.18.0.1/16')
     @JsonKey(name: 'fake-ip-range')
     String fakeIpRange,
+    @Default('fdfe:dcba:9876::1/64')
+    @JsonKey(name: 'fake-ip-range6')
+    String fakeIpRange6,
     @Default(['*.lan', 'localhost.ptlogin2.qq.com'])
     @JsonKey(name: 'fake-ip-filter')
     List<String> fakeIpFilter,

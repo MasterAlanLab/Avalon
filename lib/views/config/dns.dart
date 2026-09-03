@@ -203,6 +203,39 @@ class FakeIpRangeItem extends ConsumerWidget {
   }
 }
 
+class FakeIpRange6Item extends ConsumerWidget {
+  const FakeIpRange6Item({super.key});
+
+  @override
+  Widget build(BuildContext context, ref) {
+    final appLocalizations = context.appLocalizations;
+    final fakeIpRange6 = ref.watch(
+      patchClashConfigProvider.select((state) => state.dns.fakeIpRange6),
+    );
+    return ListItem.input(
+      title: Text(appLocalizations.fakeipRange6),
+      subtitle: Text(fakeIpRange6),
+      dialogTitle: appLocalizations.fakeipRange6,
+      value: fakeIpRange6,
+      maxLength: TextInputLimits.cidr,
+      validator: (value) {
+        if (value == null || value.isEmpty) {
+          return appLocalizations.emptyTip(appLocalizations.fakeipRange6);
+        }
+        return null;
+      },
+      onChanged: (String? value) {
+        if (value == null) {
+          return;
+        }
+        ref
+            .read(patchClashConfigProvider.notifier)
+            .update((state) => state.copyWith.dns(fakeIpRange6: value));
+      },
+    );
+  }
+}
+
 class FakeIpFilterItem extends ConsumerWidget {
   const FakeIpFilterItem({super.key});
 
@@ -599,6 +632,7 @@ class DnsOptions extends StatelessWidget {
           const PreferH3Item(),
           const DnsModeItem(),
           const FakeIpRangeItem(),
+          const FakeIpRange6Item(),
           const FakeIpFilterItem(),
           const DefaultNameserverItem(),
           const NameserverPolicyItem(),

@@ -226,6 +226,48 @@ void main() {
     },
   );
 
+  Future<YamlMap> buildRealProfile(PatchClashConfig patchConfig) async {
+    final result = await makeRealProfileTask(
+      MakeRealProfileState(
+        profilesPath: '/profiles',
+        profileId: 11,
+        rawConfig: const {},
+        realPatchConfig: patchConfig,
+        overrideDns: true,
+        appendSystemDns: false,
+        proxyGroups: const [],
+        rules: const [],
+        addedRules: const [],
+        defaultUA: 'Fallback-UA',
+      ),
+    );
+    return loadYaml(result.a) as YamlMap;
+  }
+
+  test('makeRealProfileTask makes TUN take over IPv6', () async {
+    final on = await buildRealProfile(
+      const PatchClashConfig(tun: Tun(enable: true, autoRoute: true)),
+    );
+    expect(on['tun']['strict-route'], true);
+    expect(on['tun']['inet6-address'], ['fdfe:dcba:9876::1/126']);
+    // 内核在 ipv6: false 时会清空 inet6-address，让 IPv6 绕过隧道。
+    expect(on['ipv6'], true);
+
+    final off = await buildRealProfile(const PatchClashConfig());
+    expect(off['tun']['enable'], false);
+    expect(off['ipv6'], false);
+  });
+
+  test('makeRealProfileTask gates the IPv6 fake-ip pool on dns.ipv6', () async {
+    final off = await buildRealProfile(const PatchClashConfig());
+    expect(off['dns']['fake-ip-range6'], '');
+
+    final on = await buildRealProfile(
+      const PatchClashConfig(dns: Dns(ipv6: true)),
+    );
+    expect(on['dns']['fake-ip-range6'], 'fdfe:dcba:9876::1/64');
+  });
+
   test('log and list tasks produce stable mapped output', () async {
     final logs = [
       const Log(
